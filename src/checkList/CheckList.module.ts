@@ -1,0 +1,90 @@
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { CheckList } from "./domain/entities/CheckList.entity";
+import { CheckListController } from "./infrastructure/controllers/CheckList.controller";
+import { CheckListService } from "./application/services/checkList.service";
+import { CreateCheckListCommandHandler } from "./application/commands/CreateCheckList/CreateCheckList.command.handler";
+import { GetCheckListByUuidQueryHandler } from "./application/queries/getCheckListByUuid/getCheckListByUuid.query.handler";
+import { GetCheckListQueryHandler } from "./application/queries/getCheckList/getCheckList.query.handler";
+import { UpdateCheckListCommandHandler } from "./application/commands/UpdateCheckList/UpdateCheckList.command.handler";
+import { DeleteCheckListCommandHandler } from "./application/commands/DeleteCheckList/DeleteCheckList.command.handler";
+import { CheckListRepository } from "./infrastructure/repositories/CheckList.Repository";
+import { CheckListItemService } from "./application/services/checkListItem.service";
+import { CheckListItem } from "./domain/entities/CheckListItem.entity";
+import { CheckListItemRepository } from "./infrastructure/repositories/CheckListItem.Repository";
+import { CreateCheckListItemCommandHandler } from "./application/commands/CreateCheckListItem/CreateCheckListItem.command.handler";
+import { CheckListItemCriteria } from "./domain/entities/CheckListItemCriteria.entity";
+import { CheckListItemCriteriaAnswers } from "./domain/entities/CheckListItemCriteriaAnswers.entity";
+import { CheckListItemCriteriaService } from "./application/services/checkListItemCriteria.service";
+import { CheckListItemCriteriaAnswerRepository } from "./infrastructure/repositories/CheckListItemCriteriaAnswer.Repository";
+import { CheckListItemCriteriaAnswerService } from "./application/services/checkListItemCriteriaAnswer.service";
+import { CreateCheckListItemCriteriaCommandHandler } from "./application/commands/CreateCheckListItemCriteria/CreateCheckListItemCriteria.command.handler";
+import { CheckListItemCriteriaRepository } from "./infrastructure/repositories/CheckListItemCriteria.Repository";
+import { CreateCheckListItemCriteriaAnswerCommandHandler } from "./application/commands/CreateCheckListItemCriteriaAnswer/CreateCheckListItemCriteriaAnswer.command.handler";
+import { DeleteCheckListItemCommandHandler } from "./application/commands/DeleteCheckListItem/DeleteChecklistItem.command.handler";
+import { DeleteCheckListItemCriteriaCommandHandler } from "./application/commands/DeleteCheckListItemCriteria/DeleteChecklistItemCriteria.command.handler";
+import { DeleteCheckListItemCriteriaAnswerCommandHandler } from "./application/commands/DeleteCheckListItemCriteriaAnswer/DeleteChecklistItemCriteriaAnswer.command.handler";
+import { UpdateCheckListItemCommandHandler } from "./application/commands/UpdateCheckListItem/UpdateCheckListItem.command.handler";
+import { UpdateCheckListItemCriteriaCommandHandler } from "./application/commands/UpdateCheckListItemCriteria/UpdateCheckListItemCriteria.command.handler";
+import { UpdateCheckListItemCriteriaAnswerCommandHandler } from "./application/commands/UpdateCheckListItemCriteriaAnswer/UpdateCheckListItemCriteriaAnswer.command.handler";
+import { GetItemCriteriaByItemQueryHandler } from "./application/queries/getItemCriteriaByItem/getItemCriteriaByItem.query.handler";
+import { GetCheckListItemsByCheckListQueryHandler } from "./application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query.handler";
+import { GetCriteriaAnswerByCriteriaQueryHandler } from "./application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query.handler";
+import { CheckListUser } from "./domain/entities/CheckListUser.entity";
+import { CheckListUserRepository } from "./infrastructure/repositories/CheckListUser.Repository";
+import { CheckListUserService } from "./application/services/checkListUser.service";
+import { User } from "src/user/domain/entities/User.entity";
+
+@Module({
+    imports: [
+        ConfigModule.forRoot(),
+        TypeOrmModule.forFeature([CheckList,CheckListItem,CheckListItemCriteria, CheckListItemCriteriaAnswers,CheckListUser,User])
+    ],
+    providers: [
+        CheckListService,
+        CheckListRepository,
+        CreateCheckListCommandHandler,
+        GetCheckListByUuidQueryHandler,
+        GetCheckListQueryHandler,
+        UpdateCheckListCommandHandler,
+        DeleteCheckListCommandHandler,
+
+        CheckListItemService,
+        CheckListItemRepository,
+        GetCheckListItemsByCheckListQueryHandler,
+        CreateCheckListItemCommandHandler,
+        DeleteCheckListItemCommandHandler,
+        UpdateCheckListItemCommandHandler,
+
+        CheckListItemCriteriaService,
+        CheckListItemCriteriaRepository,
+        GetItemCriteriaByItemQueryHandler,
+        CreateCheckListItemCriteriaCommandHandler,
+        DeleteCheckListItemCriteriaCommandHandler,
+        UpdateCheckListItemCriteriaCommandHandler,
+
+        CheckListItemCriteriaAnswerService,
+        CheckListItemCriteriaAnswerRepository,
+        GetCriteriaAnswerByCriteriaQueryHandler,
+        CreateCheckListItemCriteriaAnswerCommandHandler,
+        DeleteCheckListItemCriteriaAnswerCommandHandler,
+        UpdateCheckListItemCriteriaAnswerCommandHandler,
+
+        CheckListUserRepository,
+        CheckListUserService
+
+    ],
+    exports: [
+        CheckListService,
+        CheckListItemService,
+        CheckListItemCriteriaService,
+        CheckListUserService
+
+    ],
+    controllers: [CheckListController]
+
+})
+export class CheckListModule {
+
+}
