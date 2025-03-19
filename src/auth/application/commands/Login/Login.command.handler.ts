@@ -20,7 +20,7 @@ export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
 
     
     const user = await this.userService.getUserByMailAndPassword(command.loginRequestDto)
-    if (!user) return WsResponse.buildNotFoundResponse('USER NOT FOUND');
+    if (!user) return WsResponse.buildBadCredentialsResponse();
 
     //const payload = { user };
     const payload = { uuid : user.uuid, mail : user.mail, uuidRole: user.uuid_role}

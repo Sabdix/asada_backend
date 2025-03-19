@@ -80,5 +80,21 @@ import {
         undefined,
       );
     }
+
+    static buildBadCredentialsResponse<J>() {
+      return new WsResponse<J>(
+        RESPONSE_CODES_CATALOG.UNAUTHORIZED,
+        RESPONSE_MESSAGE_CATALOG.BAD_CREDENTIALS,
+        undefined,
+      );
+    }
+
+    static buildBadPasswordResponse<J>() {
+      return new WsResponse<J>(
+        RESPONSE_CODES_CATALOG.UNAUTHORIZED,
+        RESPONSE_MESSAGE_CATALOG.BAD_PASSWORD,
+        undefined,
+      );
+    }
   }
   

@@ -5,4 +5,7 @@ import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, Dele
 export class Role extends EntityBase {
   @Column()
   name: string;
+
+  @Column()
+  hierarchy: string;
 }

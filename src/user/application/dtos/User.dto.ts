@@ -22,26 +22,8 @@ export class UserDto {
     @Expose()
     mail: string;
   
-    // @Exclude()
-    // password: string;
-  
-    // @Exclude()
-    // refresh_token: string;
-  
-    // @Exclude()
-    // secret: string;
-  
-    // @Expose()
-    // uuid_role: string;
-  
     @Exclude()
     uuid_schedule: string;
-  
-    // @Expose()
-    // uuid_user: string;
-  
-    // @Expose()
-    // uuid_branch: string;
   
     @Expose()
     @Type(() => RoleDto)

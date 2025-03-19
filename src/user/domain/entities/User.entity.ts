@@ -58,7 +58,7 @@ export class User extends EntityBase {
   branch: Branch;
 
   // Si 'uuid_user' apunta a otro usuario para relaciones jerárquicas, puedes agregar:
-   @ManyToOne(() => User)
-   @JoinColumn({ name: 'uuid_user' })
-   manager: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'uuid_user' })
+  manager: User;
 }
