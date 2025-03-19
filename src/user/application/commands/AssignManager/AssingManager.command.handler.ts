@@ -16,7 +16,7 @@ export class AssignManagerCommandHandler implements ICommandHandler<AssignManage
     async execute(command: AssignManagerCommand): Promise<WsResponse<UserDto | string>> {
 
         if(command.uuid == command.body.uuid_manager)
-            return WsResponse.buildConflictResponse('NO SE PUEDE ASIGARNAR AL MISMO USUARIO COMO JEFE')
+            return WsResponse.buildConflictResponse('NO SE PUEDE ASIGARNAR AL MISMO USUARIO COMO JEFE','INVALID USER')
 
         const user = await this.userService.getUserByUuid(command.uuid);
         if (!user)

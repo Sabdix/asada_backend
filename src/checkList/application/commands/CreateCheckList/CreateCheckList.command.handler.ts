@@ -14,7 +14,7 @@ export class CreateCheckListCommandHandler implements ICommandHandler<CreateChec
   async execute(command: CreateCheckListCommand): Promise<WsResponse<CheckListDto | string>> {
 
     if (await this.checkListService.getCheckListByName(command.body.name))
-        return WsResponse.buildConflictResponse('CHECKLIST ALREADY EXISTS');
+        return WsResponse.buildConflictResponse('YA EXISTE UN CHECKLIST CON ESE NOMBRE','CHECKLIST ALREADY EXISTS');
 
     const checkList = await this.checkListService.creteCheckList(command.body)
 

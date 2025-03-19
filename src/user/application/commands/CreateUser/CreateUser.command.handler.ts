@@ -16,7 +16,7 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
   async execute(command: CreateUserCommand): Promise<WsResponse<UserDto | string>> {
 
     if (await this.userService.getUserByMail(command.body.mail))
-        return WsResponse.buildConflictResponse('USER ALREADY EXISTS');
+        return WsResponse.buildConflictResponse('YA EXISTE UN USUARIO CON ESE CORREO ELECTRONICO','USER ALREADY EXISTS');
 
     if(! await this.roleService.getRoleByUuid(command.body.uuid_role))
       return WsResponse.buildNotFoundResponse('ROLE NOT FOUND');
