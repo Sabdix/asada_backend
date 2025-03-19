@@ -73,11 +73,11 @@ import {
       );
     }
 
-    static buildConflictResponse<J>(message: string) {
+    static buildConflictResponse<J>(message: string, data : J) {
       return new WsResponse<J>(
         RESPONSE_CODES_CATALOG.CONFLICT,
         message ?? RESPONSE_MESSAGE_CATALOG.CONFLICT,
-        undefined,
+        data,
       );
     }
 
@@ -89,11 +89,11 @@ import {
       );
     }
 
-    static buildBadPasswordResponse<J>() {
+    static buildBadPasswordResponse<J>(data: J) {
       return new WsResponse<J>(
         RESPONSE_CODES_CATALOG.UNAUTHORIZED,
         RESPONSE_MESSAGE_CATALOG.BAD_PASSWORD,
-        undefined,
+        data,
       );
     }
   }

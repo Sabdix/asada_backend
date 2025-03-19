@@ -14,7 +14,7 @@ export class CreateRoleCommandHandler implements ICommandHandler<CreateRoleComma
   async execute(command: CreateRoleCommand): Promise<WsResponse<RoleDto | string>> {
 
     if (await this.roleService.getRoleByName(command.body.name))
-        return WsResponse.buildConflictResponse('ROLE ALREADY EXISTS');
+        return WsResponse.buildConflictResponse('YA EXISTE UN ROL CON ESE NOMBRE','ROLE ALREADY EXISTS');
 
     const role = await this.roleService.creteRole(command.body)
 

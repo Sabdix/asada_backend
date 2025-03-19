@@ -24,7 +24,7 @@ export class RoleService {
     }
 
     getRoles() {
-        return this.roleRepository.find();
+        return this.roleRepository.find({order:{hierarchy: 'ASC'}});
     }
 
     deleteRole(uuid: string) {

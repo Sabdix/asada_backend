@@ -17,7 +17,7 @@ export class CreateCheckListItemCriteriaCommandHandler implements ICommandHandle
   async execute(command: CreateCheckListItemCriteriaCommand): Promise<WsResponse<CheckListItemCriteriaDto | string>> {
 
     if (await this.checkListItemCriteriaService.getCheckListItemCriteriaByTextAndItem(command.body.text, command.body.uuid_check_list_item))
-        return WsResponse.buildConflictResponse('CHECKLIST_ITEM_CRITERIA ALREADY EXISTS');
+        return WsResponse.buildConflictResponse('YA EXISTE UN CRITERIO CON ESE NOMBRE','CHECKLIST_ITEM_CRITERIA ALREADY EXISTS');
 
     if(! await this.checkListItemService.getCheckListItemByUuid(command.body.uuid_check_list_item))
         return WsResponse.buildNotFoundResponse('CHECKLIST_ITEM NOT FOUND');

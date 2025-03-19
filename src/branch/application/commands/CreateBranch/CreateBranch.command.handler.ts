@@ -14,7 +14,7 @@ export class CreateBranchCommandHandler implements ICommandHandler<CreateBranchC
   async execute(command: CreateBranchCommand): Promise<WsResponse<BranchDto | string>> {
 
     if (await this.branchService.getBranchByName(command.body.name))
-        return WsResponse.buildConflictResponse('BRANCH ALREADY EXISTS');
+        return WsResponse.buildConflictResponse('YA EXISTE UNA SUCURSAL CON ESE NOMBRE','BRANCH ALREADY EXISTS');
 
     const branch = await this.branchService.creteBranch(command.body)
 
