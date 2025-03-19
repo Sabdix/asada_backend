@@ -9,7 +9,7 @@ import { UserDto } from '../../dtos/User.dto';
 import { BranchService } from 'src/branch/application/services/Branch.service';
 
 @CommandHandler(UpdateUserCommand)
-export class updateUserCommandHandler implements ICommandHandler<UpdateUserCommand> {
+export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserCommand> {
     constructor(
         private userService: UserService,
         private roleService: RoleService,

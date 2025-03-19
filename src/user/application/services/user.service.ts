@@ -5,6 +5,7 @@ import { CreateUserRequestDto } from '../dtos/CreateUserRequest.dto';
 import { User } from 'src/user/domain/entities/User.entity';
 import * as crypto from 'crypto';
 import { ChangePasswordRequestDto } from '../dtos/ChangePasswordRequest.dto';
+import { Branch } from 'src/branch/domain/entities/Branch.entity';
 
 @Injectable()
 export class UserService {
@@ -55,5 +56,14 @@ export class UserService {
   UpdateUser(user: User) {
     return this.userRepository.save(user);
   }
-  
+
+  getUsersByBranch(uuid_branch: string) {    
+    return this.userRepository
+          .createQueryBuilder('user')
+          .where('user.uuid_branch = :uuid_branch', { uuid_branch: uuid_branch })
+          .innerJoinAndSelect('user.role','role')
+          .orderBy('role.hierarchy','ASC')
+          .getMany();
+  }
+
 }

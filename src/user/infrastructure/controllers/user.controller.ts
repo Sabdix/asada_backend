@@ -14,6 +14,7 @@ import { CreateUserRequestDto } from "src/user/application/dtos/CreateUserReques
 import { UpdateUserRequestDto } from "src/user/application/dtos/UpdateUserRequest.dto";
 import { GetAssignedCheckListQuery } from "src/user/application/queries/GetAssignedCheckList/GetAssignedCheckList.query";
 import { GetUsersQuery } from "src/user/application/queries/GetUsers/GetUsers.query";
+import { GetUsersByBranchQuery } from "src/user/application/queries/GetUsersByBranch/GetUsersByBranch.query";
 
 @Controller('user')
 export class UserController {
@@ -65,5 +66,10 @@ export class UserController {
     @Delete('assignament/:uuid')
     async deleteUserAssignament(@Param('uuid') uuid: string) {
         return this.commandBus.execute(new DeleteUserAssignamentCommand(uuid));
+    }
+
+    @Get('get-users-by-branch/:uuid')
+    async GetUsersByBranch(@Param('uuid') uuid: string) {
+        return this.queryBus.execute(new GetUsersByBranchQuery(uuid));
     }
 }

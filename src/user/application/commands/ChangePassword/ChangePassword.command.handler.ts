@@ -13,7 +13,7 @@ export class ChangePasswordCommandHandler implements ICommandHandler<ChangePassw
   async execute(command: ChangePasswordCommand): Promise<WsResponse<null | string>> {
 
     const user = await this.userService.getUserByUuidAndPassword(command.request, command.uuid)
-    if (!user) return WsResponse.buildNotFoundResponse('USER NOT FOUND');
+    if (!user) return WsResponse.buildBadPasswordResponse();
 
     user.password = crypto.createHash('sha256').update(command.request.newPassword).digest('hex'),
     user.change_password = false;

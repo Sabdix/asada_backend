@@ -17,7 +17,7 @@ import { CreateUserCommandHandler } from "./application/commands/CreateUser/Crea
 import { DeleteRoleCommandHandler } from "./application/commands/DeleteRole/DeleteRole.command.handler";
 import { DeleteUserCommandHandler } from "./application/commands/DeleteUser/DeleteUser.command.handler";
 import { UpdateRoleCommandHandler } from "./application/commands/UpdateRole/UpdateRole.command.handler";
-import { updateUserCommandHandler } from "./application/commands/UpdateUser/UpdateUser.command.handler";
+import { UpdateUserCommandHandler } from "./application/commands/UpdateUser/UpdateUser.command.handler";
 import { BranchService } from "src/branch/application/services/Branch.service";
 import { BranchRepository } from "src/branch/infrastructure/repositories/branch.repository";
 import { BranchModule } from "src/branch/Branch.module";
@@ -31,6 +31,7 @@ import { CheckListUser } from "src/checkList/domain/entities/CheckListUser.entit
 import { CheckListModule } from "src/checkList/CheckList.module";
 import { GetAssignedCheckListQueryHandler } from "./application/queries/GetAssignedCheckList/GetAssignerCheckList.query.handler";
 import { DeleteUserAssignamentCommandHandler } from "./application/commands/DeleteUserAssignament/DeleteUserAssignament.command.handler";
+import { GetUsersByBranchQueryHandler } from "./application/queries/GetUsersByBranch/GetUsersByBranch.query.handler";
 
 @Module({
     imports: [
@@ -56,12 +57,13 @@ import { DeleteUserAssignamentCommandHandler } from "./application/commands/Dele
         DeleteRoleCommandHandler,
         DeleteUserCommandHandler,
         UpdateRoleCommandHandler,
-        updateUserCommandHandler,
+        UpdateUserCommandHandler,
         AssignManagerCommandHandler,
         ChangePasswordCommandHandler,
         AssignCheckListCommandHandler,
         GetAssignedCheckListQueryHandler,
-        DeleteUserAssignamentCommandHandler
+        DeleteUserAssignamentCommandHandler,
+        GetUsersByBranchQueryHandler
     ],
     exports: [
         UserService,
