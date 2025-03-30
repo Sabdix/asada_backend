@@ -32,13 +32,19 @@ import { CheckListModule } from "src/checkList/CheckList.module";
 import { GetAssignedCheckListQueryHandler } from "./application/queries/GetAssignedCheckList/GetAssignerCheckList.query.handler";
 import { DeleteUserAssignamentCommandHandler } from "./application/commands/DeleteUserAssignament/DeleteUserAssignament.command.handler";
 import { GetUsersByBranchQueryHandler } from "./application/queries/GetUsersByBranch/GetUsersByBranch.query.handler";
+import { ScheduleModule } from "src/schedule/Schedule.module";
+import { Schedule } from "src/schedule/domain/entities/Schedule.entity";
+import { ScheduleRepository } from "src/schedule/infrastructure/repositories/Schedule.repository";
+import { ScheduleService } from "src/schedule/application/services/schedule.service";
+import { AssignScheduleCommandHandler } from "./application/commands/AssginSchedule/AssignSchedule.command.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([User, Role, Branch, CheckListUser]),
+        TypeOrmModule.forFeature([User, Role, Branch, CheckListUser, Schedule]),
         BranchModule,
-        CheckListModule
+        CheckListModule,
+        ScheduleModule
     ],
     providers: [
         UserService,
@@ -49,6 +55,8 @@ import { GetUsersByBranchQueryHandler } from "./application/queries/GetUsersByBr
         BranchRepository,
         CheckListUserService,
         CheckListUserRepository,
+        ScheduleService,
+        ScheduleRepository,
         CreateRoleCommandHandler,
         GetRoleByUuidQueryHandler,
         GetRolesQueryHandler,
@@ -63,7 +71,8 @@ import { GetUsersByBranchQueryHandler } from "./application/queries/GetUsersByBr
         AssignCheckListCommandHandler,
         GetAssignedCheckListQueryHandler,
         DeleteUserAssignamentCommandHandler,
-        GetUsersByBranchQueryHandler
+        GetUsersByBranchQueryHandler,
+        AssignScheduleCommandHandler
     ],
     exports: [
         UserService,

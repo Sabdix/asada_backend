@@ -20,7 +20,7 @@ export class UserService {
   }
 
   getUsers() {
-    return this.userRepository.find({ relations: ['role', 'manager', 'branch'] });
+    return this.userRepository.find({ relations: ['role', 'manager', 'branch', 'schedule'] });
   }
 
   getUserByMail(mail: string) {
@@ -29,7 +29,7 @@ export class UserService {
 
   getUserByUuid(uuid: string) {
     return this.userRepository.findOne(
-      { where: { uuid: uuid }, relations: ['role', 'manager', 'branch'] }
+      { where: { uuid: uuid }, relations: ['role', 'manager', 'branch', 'schedule'] }
     );
   }
 
@@ -57,13 +57,13 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  getUsersByBranch(uuid_branch: string) {    
+  getUsersByBranch(uuid_branch: string) {
     return this.userRepository
-          .createQueryBuilder('user')
-          .where('user.uuid_branch = :uuid_branch', { uuid_branch: uuid_branch })
-          .innerJoinAndSelect('user.role','role')
-          .orderBy('role.hierarchy','ASC')
-          .getMany();
+      .createQueryBuilder('user')
+      .where('user.uuid_branch = :uuid_branch', { uuid_branch: uuid_branch })
+      .innerJoinAndSelect('user.role', 'role')
+      .orderBy('role.hierarchy', 'ASC')
+      .getMany();
   }
 
 }

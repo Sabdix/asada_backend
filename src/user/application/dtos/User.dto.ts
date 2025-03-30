@@ -2,6 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { RoleDto } from './Role.dto';
 import { ManagerDto } from './Manager.dto';
 import { UserBranchDto } from './UserBranch.dto';
+import { UserScheduleDto } from './UserSchedule.dto';
 
 export class UserDto {
     @Expose()
@@ -22,9 +23,6 @@ export class UserDto {
     @Expose()
     mail: string;
   
-    @Exclude()
-    uuid_schedule: string;
-  
     @Expose()
     @Type(() => RoleDto)
     role: RoleDto;
@@ -36,4 +34,8 @@ export class UserDto {
     @Expose()
     @Type(() => UserBranchDto)
     branch: UserBranchDto;
+
+    @Expose()
+    @Type(() => UserScheduleDto)
+    schedule: UserScheduleDto;
 }

@@ -1,31 +1,30 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import { plainToInstance } from 'class-transformer';
-import { AssignManagerCommand } from './AssignManager.command';
 import { UserService } from '../../services/user.service';
 import { UserDto } from '../../dtos/User.dto';
+import { AssignScheduleCommand } from './AssignSchedule.command';
+import { ScheduleService } from 'src/schedule/application/services/schedule.service';
 
-@CommandHandler(AssignManagerCommand)
-export class AssignManagerCommandHandler implements ICommandHandler<AssignManagerCommand> {
+@CommandHandler(AssignScheduleCommand)
+export class AssignScheduleCommandHandler implements ICommandHandler<AssignScheduleCommand> {
     constructor(
         private userService: UserService,
+        private scheduleService: ScheduleService
     ) { }
 
-    async execute(command: AssignManagerCommand): Promise<WsResponse<UserDto | string>> {
-
-        if(command.uuid == command.body.uuid_manager)
-            return WsResponse.buildConflictResponse('NO SE PUEDE ASIGARNAR AL MISMO USUARIO COMO JEFE','INVALID USER')
+    async execute(command: AssignScheduleCommand): Promise<WsResponse<UserDto | string>> {
 
         const user = await this.userService.getUserByUuid(command.uuid);
         if (!user)
             return WsResponse.buildNotFoundResponse('USER NOT FOUND');
 
-        const manager = await this.userService.getUserByUuid(command.body.uuid_manager);
-        if (!manager)
-            return WsResponse.buildNotFoundResponse('MANAGER NOT FOUND');
+        const schedule = await this.scheduleService.getScheduleByUuid(command.body.uuid_schedule);
+        if (!schedule)
+            return WsResponse.buildNotFoundResponse('SCHEDULE NOT FOUND');
 
-        user.uuid_user = manager.uuid
-        user.manager = manager
+        user.uuid_user = schedule.uuid
+        user.schedule = schedule
 
         await this.userService.UpdateUser(user);
 
