@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { AssignScheduleCommand } from "src/user/application/commands/AssginSchedule/AssignSchedule.command";
 import { AssignCheckListCommand } from "src/user/application/commands/AssignCheckList/AssignCheckList.command";
 import { AssignManagerCommand } from "src/user/application/commands/AssignManager/AssignManager.command";
 import { ChangePasswordCommand } from "src/user/application/commands/ChangePassword/ChangePassword.command";
@@ -8,6 +9,7 @@ import { DeleteUserCommand } from "src/user/application/commands/DeleteUser/Dele
 import { DeleteUserAssignamentCommand } from "src/user/application/commands/DeleteUserAssignament/DeleteUserAssignament.command";
 import { UpdateUserCommand } from "src/user/application/commands/UpdateUser/UpdateUser.command";
 import { AssingManagerRequestDto } from "src/user/application/dtos/AssignManagerRequest.dto";
+import { AssingScheduleRequestDto } from "src/user/application/dtos/AssignScheduleRequest.dto";
 import { AssingCheckListRequestDto } from "src/user/application/dtos/AssingCheckListRequest.dto";
 import { ChangePasswordRequestDto } from "src/user/application/dtos/ChangePasswordRequest.dto";
 import { CreateUserRequestDto } from "src/user/application/dtos/CreateUserRequest.dto";
@@ -53,6 +55,11 @@ export class UserController {
         return this.commandBus.execute(new ChangePasswordCommand(request,uuid));
     }
 
+    @Put('change-password/:uuid')
+    async ChangePasswordPut(@Param('uuid') uuid: string, @Body() request: ChangePasswordRequestDto) {
+        return this.commandBus.execute(new ChangePasswordCommand(request,uuid));
+    }
+
     @Post('assign-checklist/:uuid')
     async AssignCheckListToUser(@Param('uuid') uuid: string, @Body() request: AssingCheckListRequestDto) {
         return this.commandBus.execute(new AssignCheckListCommand(request,uuid));
@@ -71,5 +78,10 @@ export class UserController {
     @Get('get-users-by-branch/:uuid')
     async GetUsersByBranch(@Param('uuid') uuid: string) {
         return this.queryBus.execute(new GetUsersByBranchQuery(uuid));
+    }
+
+    @Post('assign-schedule/:uuid')
+    async AssignScheduleToUser(@Param('uuid') uuid: string, @Body() request: AssingScheduleRequestDto) {
+        return this.commandBus.execute(new AssignScheduleCommand(request,uuid));
     }
 }
