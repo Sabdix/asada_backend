@@ -6,7 +6,7 @@ import { ScheduleService } from "./application/services/schedule.service";
 import { ScheduleRepository } from "./infrastructure/repositories/Schedule.repository";
 import { scheduleController } from "./infrastructure/controllers/schedule.controller";
 import { GetSchedulesQueryHandler } from "./application/queries/GetSchedules/GetSchedules.query.handler";
-import { GetScheduleByUuidQueryHandler } from "./application/queries/GerScheduleByUuid/GetScheduleByUuid.query.handler";
+import { GetScheduleByUuidQueryHandler } from "./application/queries/GetScheduleByUuid/GetScheduleByUuid.query.handler";
 import { CreateScheduleCommandHandler } from "./application/commands/CreateSchedule/CreateSchedule.command.handler";
 import { DeleteScheduleCommandHandler } from "./application/commands/DeleteSchedule/DeleteSchedule.command.handler";
 import { UpdateScheduleCommandHandler } from "./application/commands/UpdateSchedule/UpdateSchedule.command.handler";

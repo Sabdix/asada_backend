@@ -35,6 +35,9 @@ import { CheckListUser } from "./domain/entities/CheckListUser.entity";
 import { CheckListUserRepository } from "./infrastructure/repositories/CheckListUser.Repository";
 import { CheckListUserService } from "./application/services/checkListUser.service";
 import { User } from "src/user/domain/entities/User.entity";
+import { GetCheckListQrByUuidQueryHandler } from "./application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query.handler";
+import { DuplicateItemCommandHandler } from "./application/commands/DuplicateItem/DuplicateItem.command.handler";
+import { GetCheckListByUserQueryHandler } from "./application/queries/getCheckListByUser/getCheckListByUser.query.handler";
 
 @Module({
     imports: [
@@ -49,6 +52,9 @@ import { User } from "src/user/domain/entities/User.entity";
         GetCheckListQueryHandler,
         UpdateCheckListCommandHandler,
         DeleteCheckListCommandHandler,
+        GetCheckListQrByUuidQueryHandler,
+        DuplicateItemCommandHandler,
+
 
         CheckListItemService,
         CheckListItemRepository,
@@ -72,7 +78,8 @@ import { User } from "src/user/domain/entities/User.entity";
         UpdateCheckListItemCriteriaAnswerCommandHandler,
 
         CheckListUserRepository,
-        CheckListUserService
+        CheckListUserService,
+        GetCheckListByUserQueryHandler
 
     ],
     exports: [

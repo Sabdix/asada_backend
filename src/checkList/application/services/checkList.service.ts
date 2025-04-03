@@ -26,7 +26,7 @@ export class CheckListService {
     
 
     getCheckList() {
-        return this.chekListRepository.find();
+        return this.chekListRepository.find({order:{name: 'ASC'}});
     }
 
     deleteCheckList(uuid: string) {

@@ -10,7 +10,6 @@ import { Schedule } from 'src/schedule/domain/entities/Schedule.entity';
 import { ScheduleCalendar } from 'src/schedule/domain/entities/ScheduleCalendar.entity';
 import { Role } from 'src/user/domain/entities/Role.entity';
 import { User } from 'src/user/domain/entities/User.entity';
-import { DataSourceOptions } from 'typeorm';
 
 export const databaseProvider: TypeOrmModuleAsyncOptions = {
   /*type: 'mysql',
@@ -34,30 +33,30 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
   synchronize: true,
   logging: true,
   migrationsTableName: 'migrations',*/
-  
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    
-    useFactory: (configService: ConfigService) => ({
-      type: 'mysql', // Change this to 'postgres' if using PostgreSQL
-      host: configService.get<string>('DB_HOST'),
-      port: configService.get<number>('DB_PORT'),
-      username: configService.get<string>('DB_USER'),
-      password: configService.get<string>('DB_PASSWORD'),
-      database: configService.get<string>('DB_DATABASE'),
-      entities: [
-        Branch,
-        User,
-        Role,
-        Schedule,
-        ScheduleCalendar,
-        CheckList,
-        CheckListItem,
-        CheckListItemCriteria,
-        CheckListItemCriteriaAnswers,
-        CheckListUser
-      ],
-      synchronize: false,
-      logging: false,
-    })
+
+  imports: [ConfigModule],
+  inject: [ConfigService],
+
+  useFactory: (configService: ConfigService) => ({
+    type: 'mysql', // Change this to 'postgres' if using PostgreSQL
+    host: configService.get<string>('DB_HOST'),
+    port: configService.get<number>('DB_PORT'),
+    username: configService.get<string>('DB_USER'),
+    password: configService.get<string>('DB_PASSWORD'),
+    database: configService.get<string>('DB_DATABASE'),
+    entities: [
+      Branch,
+      User,
+      Role,
+      Schedule,
+      ScheduleCalendar,
+      CheckList,
+      CheckListItem,
+      CheckListItemCriteria,
+      CheckListItemCriteriaAnswers,
+      CheckListUser
+    ],
+    synchronize: false,
+    logging: false,
+  })
 };

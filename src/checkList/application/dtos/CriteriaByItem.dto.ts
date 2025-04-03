@@ -3,7 +3,7 @@ import { CheckListDto } from './CheckList.dto';
 import { CheckListItemDto } from './CheckListItem.dto';
 import { AnswerByCriteriaDto } from './AnswerByCriteria.dto';
 
-export class CheckListItemCriteriaDto {
+export class CriteriaByItemDto {
     @Expose()
     text: string;
   
@@ -11,10 +11,6 @@ export class CheckListItemCriteriaDto {
     uuid: string;
 
     @Expose()
-    @Type(() => CheckListItemDto)
-    check_list_item: CheckListItemDto;
-
-    @Expose()
     @Type(() => AnswerByCriteriaDto)
-    checkListItemCriteriaAnswer?: AnswerByCriteriaDto[];
+    checkListItemCriteria?: AnswerByCriteriaDto[];
 }
