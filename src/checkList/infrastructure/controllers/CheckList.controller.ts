@@ -8,6 +8,7 @@ import { DeleteCheckListCommand } from "src/checkList/application/commands/Delet
 import { DeleteCheckListItemCommand } from "src/checkList/application/commands/DeleteCheckListItem/DeleteCheckListItem.command";
 import { DeleteCheckListItemCriteriaCommand } from "src/checkList/application/commands/DeleteCheckListItemCriteria/DeleteCheckListItemCriteria.command";
 import { DeleteCheckListItemCriteriaAnswerCommand } from "src/checkList/application/commands/DeleteCheckListItemCriteriaAnswer/DeleteCheckListItemCriteriaAnswer.command";
+import { DuplicateItemCommand } from "src/checkList/application/commands/DuplicateItem/DuplicateItem.command";
 import { UpdateCheckListCommand } from "src/checkList/application/commands/UpdateCheckList/UpdateCheckList.command";
 import { UpdateCheckListItemCommand } from "src/checkList/application/commands/UpdateCheckListItem/UpdateCheckListItem.command";
 import { UpdateCheckListItemCriteriaCommand } from "src/checkList/application/commands/UpdateCheckListItemCriteria/UpdateCheckListItemCriteria.command";
@@ -16,14 +17,17 @@ import { CreateCheckListRequestDto } from "src/checkList/application/dtos/Create
 import { CreateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaAnswerRequestDto";
 import { CreateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaRequest.dto";
 import { CreateCheckListItemRequestDto } from "src/checkList/application/dtos/CreateCheckListItemRequest.dto";
+import { DuplicateItemRequestDto } from "src/checkList/application/dtos/DuplicateItemRequest.dto";
 import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaAnswerRequest.dto";
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
 import { GetCheckListQuery } from "src/checkList/application/queries/getCheckList/getCheckList.query";
+import { GetCheckListByUserQuery } from "src/checkList/application/queries/getCheckListByUser/getCheckListByUser.query";
 import { GetCheckListByUuidQuery } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query";
 import { GetCheckListByUuidQueryHandler } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query.handler";
 import { GetCheckListItemsByCheckListQuery } from "src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query";
+import { GetCheckListQrByUuidQuery } from "src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query";
 import { GetCriteriaAnswerByCriteriaQuery } from "src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query";
 import { GetItemCriteriaByItemQuery } from "src/checkList/application/queries/getItemCriteriaByItem/getItemCriteriaByItem.query";
 
@@ -118,5 +122,20 @@ export class CheckListController {
   @Get('answer/:uuid')
   async getCriteriaAnswerByCriteria(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new GetCriteriaAnswerByCriteriaQuery(uuid));
+  }
+
+  @Get('generate-qr/:uuid')
+  async getCheckListQrByUuid(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetCheckListQrByUuidQuery(uuid));
+  }
+
+  @Post('item/duplicate')
+  async duplicateItem(@Body() duplicateItemRequest: DuplicateItemRequestDto) {
+    return this.commandBus.execute(new DuplicateItemCommand(duplicateItemRequest));
+  }
+
+  @Get('user/:uuid')
+  async getCheckListByUser(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetCheckListByUserQuery(uuid));
   }
 }

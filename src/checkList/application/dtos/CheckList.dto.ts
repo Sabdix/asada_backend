@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { CheckListItemDto } from './CheckListItem.dto';
 
 export class CheckListDto {
     @Expose()
@@ -6,4 +7,8 @@ export class CheckListDto {
   
     @Expose()
     uuid: string;
+
+    @Expose()
+    @Type(() => CheckListItemDto)
+    checkListItem?: CheckListItemDto[];
 }

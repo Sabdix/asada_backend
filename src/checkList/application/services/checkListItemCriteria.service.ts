@@ -25,7 +25,7 @@ export class CheckListItemCriteriaService {
     }
 
     getItemCriteriaByItem(uuid: string) {
-        return this.chekListItemCriteriaRepository.find({ where: { uuid_check_list_item: uuid } });
+        return this.chekListItemCriteriaRepository.find({ where: { uuid_check_list_item: uuid }, order:{text: 'ASC'} });
     }
 
     // getCheckList() {

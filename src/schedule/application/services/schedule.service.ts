@@ -34,4 +34,5 @@ export class ScheduleService {
     UpdateSchedule(schedule: Schedule) {
         return this.scheduleRepository.save(schedule);
     }
+    
 }

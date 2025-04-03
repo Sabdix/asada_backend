@@ -25,7 +25,7 @@ export class CheckListItemService {
     }
 
     getCheckListItemByCheckList(uuid_check_list: string) {
-        return this.chekListItemRepository.find({ where: { uuid_check_list: uuid_check_list } });
+        return this.chekListItemRepository.find({ where: { uuid_check_list: uuid_check_list }, order:{name: 'ASC'} });
     }
     // getCheckList() {
     //     return this.chekListItemRepository.find();

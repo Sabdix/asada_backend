@@ -10,7 +10,7 @@ import { CreateScheduleCalendarRequestDto } from "src/schedule/application/dtos/
 import { CreateScheduleRequestDto } from "src/schedule/application/dtos/CreateScheduleRequest.dto";
 import { UpdateScheduleCalendarRequestDto } from "src/schedule/application/dtos/UpdateScheduleCalendarRequest.dto";
 import { UpdateScheduleRequestDto } from "src/schedule/application/dtos/UpdateScheduleRequest.dto";
-import { GetScheduleByUuidQuery } from "src/schedule/application/queries/GerScheduleByUuid/GetScheduleByUuid.query";
+import { GetScheduleByUuidQuery } from "src/schedule/application/queries/GetScheduleByUuid/GetScheduleByUuid.query";
 import { GetSchedulesQuery } from "src/schedule/application/queries/GetSchedules/GetSchedules.query";
 import { GetScheduleCalendarByScheduleQuery } from "src/schedule/application/queries/GetSchueduleCalendarBySchedule/GetScheduleCalendarBySchedule.query";
 
@@ -66,4 +66,8 @@ export class scheduleController {
     return this.commandBus.execute(new UpdateScheduleCalendarCommand(request, uuid));
   }
 
+  @Get('user/:uuid')
+  async getScheduleByUser(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetScheduleCalendarByScheduleQuery(uuid));
+  }
 }
