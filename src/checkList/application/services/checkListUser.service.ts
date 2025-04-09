@@ -24,10 +24,14 @@ export class CheckListUserService {
     }
 
     getUserCheckListByUuid(uuid: string) {
-        return this.chekListUserRepository.findOneBy({uuid: uuid });
+        return this.chekListUserRepository.findOneBy({ uuid: uuid });
     }
 
     deleteCheckListUser(uuid: string) {
         return this.chekListUserRepository.softDelete({ uuid: uuid });
-      }
+    }
+
+    getAllUserCheckList() {
+        return this.chekListUserRepository.find({relations: ['checkList','user'] });
+    }
 }

@@ -23,9 +23,8 @@ export class AssignScheduleCommandHandler implements ICommandHandler<AssignSched
         if (!schedule)
             return WsResponse.buildNotFoundResponse('SCHEDULE NOT FOUND');
 
-        user.uuid_user = schedule.uuid
+        user.uuid_schedule = schedule.uuid
         user.schedule = schedule
-
         await this.userService.UpdateUser(user);
 
         return WsResponse.buildOkResponse(

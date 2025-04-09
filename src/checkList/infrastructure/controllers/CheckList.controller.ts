@@ -22,10 +22,10 @@ import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/appli
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
+import { GetAssignedCheckListQuery } from "src/checkList/application/queries/getAssignedCheckList/getAssignedCheckList.query";
 import { GetCheckListQuery } from "src/checkList/application/queries/getCheckList/getCheckList.query";
 import { GetCheckListByUserQuery } from "src/checkList/application/queries/getCheckListByUser/getCheckListByUser.query";
 import { GetCheckListByUuidQuery } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query";
-import { GetCheckListByUuidQueryHandler } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query.handler";
 import { GetCheckListItemsByCheckListQuery } from "src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query";
 import { GetCheckListQrByUuidQuery } from "src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query";
 import { GetCriteriaAnswerByCriteriaQuery } from "src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query";
@@ -137,5 +137,9 @@ export class CheckListController {
   @Get('user/:uuid')
   async getCheckListByUser(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new GetCheckListByUserQuery(uuid));
+  }
+  @Get('assigned/all-users')
+  async getAssignedCheckList() {
+    return this.queryBus.execute(new GetAssignedCheckListQuery());
   }
 }

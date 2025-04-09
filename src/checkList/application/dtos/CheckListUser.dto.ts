@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { CheckListDto } from './CheckList.dto';
+import { SimpleUserDto } from './SimpleUser.dto';
 
 export class CheckListUserDto {
   @Expose()
@@ -17,5 +18,8 @@ export class CheckListUserDto {
   @Expose()
   @Type(() => CheckListDto)
   checkList: CheckListDto;
+  @Expose()
+  @Type(() => SimpleUserDto)
+  user: SimpleUserDto;
 }
 

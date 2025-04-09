@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ScheduleCalendarRepository } from 'src/schedule/infrastructure/repositories/ScheduleCalendar.repository';
 import { CreateScheduleCalendarRequestDto } from '../dtos/CreateScheduleCalendarRequest.dto';
 import { ScheduleCalendar } from 'src/schedule/domain/entities/ScheduleCalendar.entity';
+import { CreateSingleCalendarRequestDto } from '../dtos/CreateSingleCalendar.dto';
 
 @Injectable()
 export class ScheduleCalendarService {
@@ -33,5 +34,17 @@ export class ScheduleCalendarService {
 
     UpdateScheduleCalendar(schedule: ScheduleCalendar) {
         return this.scheduleCalendarRepository.save(schedule);
+    }
+
+    creteSingleScheduleCalendar(request: CreateSingleCalendarRequestDto, uuid_schedule: string) {
+        return this.scheduleCalendarRepository.save(
+            this.scheduleCalendarRepository.create({
+                endHour: request.endHour,
+                initHour: request.initHour,
+                mealHourNumber: request.mealHourNumber,
+                uuid_schedule: uuid_schedule,
+                weekDay: request.weekDay
+            })
+        )
     }
 }

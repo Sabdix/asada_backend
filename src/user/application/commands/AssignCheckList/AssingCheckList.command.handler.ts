@@ -7,6 +7,8 @@ import { CheckListUserDto } from 'src/checkList/application/dtos/CheckListUser.d
 import { CheckListUserService } from 'src/checkList/application/services/checkListUser.service';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { plainToInstance } from 'class-transformer';
+import { SimpleUserDto } from 'src/checkList/application/dtos/SimpleUser.dto';
+import { CheckListDto } from 'src/checkList/application/dtos/CheckList.dto';
 
 @CommandHandler(AssignCheckListCommand)
 export class AssignCheckListCommandHandler implements ICommandHandler<AssignCheckListCommand> {
@@ -26,12 +28,30 @@ export class AssignCheckListCommandHandler implements ICommandHandler<AssignChec
         if (!checkList)
             return WsResponse.buildNotFoundResponse('CHECKLIST NOT FOUND');
         
-        const checkListArray = new Array<CheckListUser>
+        const checkListArray = new Array<CheckListUserDto>
 
         for (const weekDay of command.body.weekDay){
             const checkListUser = await this.checkListUserService.creteCheckList(command.body, weekDay, command.uuid)
+            
+            const newcheckListUser = new (CheckListUserDto)
+            
+            newcheckListUser.user = new SimpleUserDto()
+            newcheckListUser.user.uuid = user.uuid
+            newcheckListUser.user.name = user.name
+            newcheckListUser.user.last_name = user.last_name
+            newcheckListUser.user.second_last_name = user.second_last_name
 
-            checkListArray.push(checkListUser)
+            newcheckListUser.checkList = new CheckListDto()
+            newcheckListUser.checkList.uuid = checkList.uuid
+            newcheckListUser.checkList.name = checkList.name
+
+            newcheckListUser.endHour = checkListUser.endHour
+            newcheckListUser.initHour = checkListUser.initHour
+            newcheckListUser.uuid = checkListUser.uuid
+            newcheckListUser.weekDay = checkListUser.weekDay
+            
+
+            checkListArray.push(newcheckListUser)
         }
 
         return WsResponse.buildOkResponse(
