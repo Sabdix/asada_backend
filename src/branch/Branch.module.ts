@@ -11,23 +11,38 @@ import { GetBranchesQueryHandler } from "./application/queries/GetBranches/GetBr
 import { DeleteBranchCommandHandler } from "./application/commands/DeleteBranch/DeleteBranch.command.handler";
 
 import { UpdateBranchCommandHandler } from "./application/commands/UpdateBranch/UpdateBranch.command.handler";
+import { GetBranchQrByUuidQueryHandler } from "./application/queries/GetBranchQrByUuid/GetBranchQrByUuid.query.handler";
+import { BranchReview } from "./domain/entities/BranchReview.entity";
+import { BranchReviewRepository } from "./infrastructure/repositories/branchReview.repository";
+import { BranchReviewService } from "./application/services/BranchReview.service";
+import { CreateBranchReviewCommandHandler } from "./application/commands/CreateBranchReview/CreateBranchReview.command.handler";
+import { GetBranchReviewsQueryHandler } from "./application/queries/GetBranchReviews/GetBranchReviews.query.handler";
+import { GetBranchReviewsByUuidQueryHandler } from "./application/queries/GetBranchReviewsByUuid/GetBranchReviewsByUuid.query.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([Branch])
+        TypeOrmModule.forFeature([Branch, BranchReview]),
     ],
     providers: [
         BranchRepository,
+        BranchReviewRepository,
         BranchService,
+        BranchReviewService,
         CreateBranchCommandHandler,
         GetBranchByUuidQueryHandler,
         GetBranchesQueryHandler,
         DeleteBranchCommandHandler,
-        UpdateBranchCommandHandler
+        UpdateBranchCommandHandler,
+        GetBranchQrByUuidQueryHandler,
+
+        CreateBranchReviewCommandHandler,
+        GetBranchReviewsQueryHandler,
+        GetBranchReviewsByUuidQueryHandler
     ],
     exports: [
-        BranchService
+        BranchService,
+        BranchReviewService
     ],
     controllers: [branchController]
 })
