@@ -43,7 +43,7 @@ import { GetAssignedCheckListQueryHandler } from "./application/queries/getAssig
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([CheckList,CheckListItem,CheckListItemCriteria, CheckListItemCriteriaAnswers,CheckListUser,User])
+        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User])
     ],
     providers: [
         CheckListService,
