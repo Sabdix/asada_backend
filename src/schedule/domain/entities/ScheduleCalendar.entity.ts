@@ -7,14 +7,14 @@ export class ScheduleCalendar extends EntityBase {
   @Column('integer')
   weekDay: number;
 
-  @Column('integer')
-  initHour: number;
+  @Column()
+  initHour: string;
 
-  @Column('integer')
-  endHour: number;
+  @Column()
+  endHour: string;
 
-  @Column('integer')
-  mealHourNumber: number;
+  @Column()
+  mealHourNumber: string;
 
   @Column({ nullable: true })
   uuid_schedule: string;

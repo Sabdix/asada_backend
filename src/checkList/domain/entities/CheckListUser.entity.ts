@@ -9,7 +9,7 @@ export class CheckListUser extends EntityBase {
   uuid_user: string;
 
   @Column()
-  weekDay: string;
+  weekDay: number;
 
   @Column()
   initHour: string;

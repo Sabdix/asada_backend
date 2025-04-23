@@ -8,13 +8,13 @@ export class ScheduleCalendarDto {
     weekDay: number[];
   
     @Expose()
-    initHour: number;
+    initHour: string;
   
     @Expose()
-    endHour: number;
+    endHour: string;
   
     @Expose()
-    mealHourNumber: number;
+    mealHourNumber: string;
   
     @Expose()
     uuid_schedule: string;

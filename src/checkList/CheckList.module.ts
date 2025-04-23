@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CheckList } from "./domain/entities/CheckList.entity";
@@ -39,11 +39,23 @@ import { GetCheckListQrByUuidQueryHandler } from "./application/queries/getCheck
 import { DuplicateItemCommandHandler } from "./application/commands/DuplicateItem/DuplicateItem.command.handler";
 import { GetCheckListByUserQueryHandler } from "./application/queries/getCheckListByUser/getCheckListByUser.query.handler";
 import { GetAssignedCheckListQueryHandler } from "./application/queries/getAssignedCheckList/getAssignedCheckList.query.handler";
+import { CheckListHistoryService } from "./application/services/checkListHistory.service";
+import { CheckListHistoryRepository } from "./infrastructure/repositories/CheckListHistory.Repository";
+import { CheckListHistory } from "./domain/entities/CheckListHistory";
+import { AnswerCheckListCommandHandler } from "./application/commands/AnswerCheckList/AnswerCheckList.command.handler";
+import { CheckListUserAnswersRepository } from "./infrastructure/repositories/CheckListUserAnswers.Repository";
+import { CheckListUserAnswersService } from "./application/services/checkListUserAnswers.service";
+import { CheckListUserAnswers } from "./domain/entities/CheckListUserAnswers";
+import { UserModule } from "src/user/User.module";
+import { GetCheckListHistoryQueryHandler } from "./application/queries/getCheckListHistory/getCheckListHistory.query.handler";
+import { GetCheckListHistoryByUserQueryHandler } from "./application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query.handler";
+import { getCheckListHistoryAnswersByHistoryQueryHandler } from "./application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User])
+        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers]),
+        forwardRef(() => UserModule)
     ],
     providers: [
         CheckListService,
@@ -81,15 +93,26 @@ import { GetAssignedCheckListQueryHandler } from "./application/queries/getAssig
         CheckListUserRepository,
         CheckListUserService,
         GetCheckListByUserQueryHandler,
-        GetAssignedCheckListQueryHandler
+        GetAssignedCheckListQueryHandler,
+
+        CheckListHistoryRepository,
+        CheckListHistoryService,
+        GetCheckListHistoryQueryHandler,
+        GetCheckListHistoryByUserQueryHandler,
+
+        CheckListUserAnswersRepository,
+        CheckListUserAnswersService,
+        AnswerCheckListCommandHandler,
+        getCheckListHistoryAnswersByHistoryQueryHandler
 
     ],
     exports: [
         CheckListService,
         CheckListItemService,
         CheckListItemCriteriaService,
-        CheckListUserService
-
+        CheckListUserService,
+        CheckListHistoryService,
+        CheckListUserAnswersService
     ],
     controllers: [CheckListController]
 

@@ -18,7 +18,7 @@ export class GetBranchQrByUuidQueryHandler implements IQueryHandler<GetBranchQrB
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
         const urlBase = this.configService.get<string>('BASE_URL_QRS'); 
 
-        const response = await QRCode.toDataURL(urlBase+branch.uuid);
+        const response = await QRCode.toDataURL(urlBase+"branch/"+branch.uuid);
         return WsResponse.buildOkResponse(response);
     }
 }

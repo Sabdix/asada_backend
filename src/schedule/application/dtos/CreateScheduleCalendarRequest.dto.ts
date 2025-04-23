@@ -5,11 +5,11 @@ export class CreateScheduleCalendarRequestDto {
     weekDay: number[];
   
     @IsNotEmpty()
-    initHour: number;
+    initHour: string;
   
     @IsNotEmpty()
-    endHour: number;
+    endHour: string;
   
     @IsNotEmpty()
-    mealHourNumber: number;
+    mealHourNumber: string;
 }

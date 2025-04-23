@@ -10,7 +10,7 @@ export class CheckListUserDto {
   @Expose()
   uuid_check_list: string;
   @Expose()
-  weekDay: string;
+  weekDay: number;
   @Expose()
   initHour: string;
   @Expose()

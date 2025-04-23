@@ -5,5 +5,7 @@ export class CreateCheckListItemCriteriaAnswerRequestDto {
   text: string;
   @IsNotEmpty()
   uuid_check_list_item_criteria: string;
+  @IsNotEmpty()
+  requieres_action: boolean;
 }
 

@@ -17,6 +17,6 @@ export class CheckListUserAnswers extends EntityBase {
     check_list_history: CheckListHistory
 
     @ManyToOne(() => CheckListItemCriteriaAnswers)
-    @JoinColumn({ name: 'uuid_check_list_criteria_answer' })
+    @JoinColumn({ name: 'uuid_check_list_item_criteria_answer' })
     check_list_criteria_answer: CheckListItemCriteriaAnswers
 }

@@ -7,4 +7,7 @@ export class AnswerByCriteriaDto {
   
     @Expose()
     uuid: string;
+
+    @Expose()
+    requieres_action: boolean;
 }

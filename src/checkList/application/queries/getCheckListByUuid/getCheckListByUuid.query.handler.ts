@@ -58,6 +58,7 @@ export class GetCheckListByUuidQueryHandler implements IQueryHandler<GetCheckLis
 
           answer.text = element3.text
           answer.uuid = element3.uuid
+          answer.requieres_action = element3.requieres_action
           criteriaWithAnswer.checkListItemCriteria.push(answer)
         }
         
