@@ -17,7 +17,7 @@ export class GetCheckListQrByUuidQueryHandler implements IQueryHandler<GetCheckL
 
         if (!checkList) return WsResponse.buildNotFoundResponse('CHECKLIST NOT FOUND');
         const urlBase = this.configService.get<string>('BASE_URL_QRS');
-        const response = await QRCode.toDataURL(urlBase + checkList.uuid);
+        const response = await QRCode.toDataURL(urlBase+ "checklist/" + checkList.uuid);
         
         return WsResponse.buildOkResponse(response);
     }

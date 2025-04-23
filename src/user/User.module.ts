@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { UserService } from "./application/services/user.service";
 import { UserRepository } from "./infrastructure/repositories/user.repository";
@@ -32,7 +32,7 @@ import { CheckListModule } from "src/checkList/CheckList.module";
 import { GetAssignedCheckListQueryHandler } from "./application/queries/GetAssignedCheckList/GetAssignerCheckList.query.handler";
 import { DeleteUserAssignamentCommandHandler } from "./application/commands/DeleteUserAssignament/DeleteUserAssignament.command.handler";
 import { GetUsersByBranchQueryHandler } from "./application/queries/GetUsersByBranch/GetUsersByBranch.query.handler";
-import { ScheduleModule } from "src/schedule/Schedule.module";
+import { ScheduleLocalModule } from "src/schedule/ScheduleLocal.module";
 import { Schedule } from "src/schedule/domain/entities/Schedule.entity";
 import { ScheduleRepository } from "src/schedule/infrastructure/repositories/Schedule.repository";
 import { ScheduleService } from "src/schedule/application/services/schedule.service";
@@ -43,8 +43,8 @@ import { AssignScheduleCommandHandler } from "./application/commands/AssginSched
         ConfigModule.forRoot(),
         TypeOrmModule.forFeature([User, Role, Branch, CheckListUser, Schedule]),
         BranchModule,
-        CheckListModule,
-        ScheduleModule
+        forwardRef(() =>CheckListModule),
+        ScheduleLocalModule
     ],
     providers: [
         UserService,

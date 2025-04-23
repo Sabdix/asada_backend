@@ -15,6 +15,7 @@ export class UserRepository extends Repository<User> {
   getUserByMailAndPassword(request : LoginRequestDto) {
     return this.repo
       .createQueryBuilder('user')
+      .leftJoinAndSelect('user.branch', 'branch')
       .where('user.mail = :mail', { mail: request.mail })
       .andWhere('user.password = :password', { password: crypto.createHash('sha256').update(request.password).digest('hex') })
       .getOne();

@@ -7,7 +7,7 @@ import { User } from 'src/user/domain/entities/User.entity';
 export class CheckListUserService {
     constructor(private readonly chekListUserRepository: CheckListUserRepository) { }
 
-    creteCheckList(request: AssingCheckListRequestDto, weekDay: string, uuid_user: string) {
+    creteCheckList(request: AssingCheckListRequestDto, weekDay: number, uuid_user: string) {
         return this.chekListUserRepository.save(
             this.chekListUserRepository.create({
                 uuid_user: uuid_user,
@@ -33,5 +33,9 @@ export class CheckListUserService {
 
     getAllUserCheckList() {
         return this.chekListUserRepository.find({relations: ['checkList','user'] });
+    }
+
+    getCheckListByWeekDay(weekDay: number) {
+        return this.chekListUserRepository.find({ where: {weekDay: weekDay} });
     }
 }

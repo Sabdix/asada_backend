@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { AnswerCheckListCommand } from "src/checkList/application/commands/AnswerCheckList/AnswerCheckList.command";
 import { CreateCheckListCommand } from "src/checkList/application/commands/CreateCheckList/CreateCheckList.command";
 import { CreateCheckListItemCommand } from "src/checkList/application/commands/CreateCheckListItem/CreateCheckListItem.command";
 import { CreateCheckListItemCriteriaCommand } from "src/checkList/application/commands/CreateCheckListItemCriteria/CreateCheckListItemCriteria.command";
@@ -17,6 +18,7 @@ import { CreateCheckListRequestDto } from "src/checkList/application/dtos/Create
 import { CreateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaAnswerRequestDto";
 import { CreateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaRequest.dto";
 import { CreateCheckListItemRequestDto } from "src/checkList/application/dtos/CreateCheckListItemRequest.dto";
+import { CreateCheckListUserAnswerRequest } from "src/checkList/application/dtos/CreateCheckListUserAnswerRequest.dto";
 import { DuplicateItemRequestDto } from "src/checkList/application/dtos/DuplicateItemRequest.dto";
 import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaAnswerRequest.dto";
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
@@ -26,6 +28,9 @@ import { GetAssignedCheckListQuery } from "src/checkList/application/queries/get
 import { GetCheckListQuery } from "src/checkList/application/queries/getCheckList/getCheckList.query";
 import { GetCheckListByUserQuery } from "src/checkList/application/queries/getCheckListByUser/getCheckListByUser.query";
 import { GetCheckListByUuidQuery } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query";
+import { GetCheckListHistoryQuery } from "src/checkList/application/queries/getCheckListHistory/getCheckListHistory.query";
+import { getCheckListHistoryAnswersByHistoryQuery } from "src/checkList/application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query";
+import { GetCheckListHistoryByUserQuery } from "src/checkList/application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query";
 import { GetCheckListItemsByCheckListQuery } from "src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query";
 import { GetCheckListQrByUuidQuery } from "src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query";
 import { GetCriteriaAnswerByCriteriaQuery } from "src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query";
@@ -138,8 +143,30 @@ export class CheckListController {
   async getCheckListByUser(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new GetCheckListByUserQuery(uuid));
   }
+
   @Get('assigned/all-users')
   async getAssignedCheckList() {
     return this.queryBus.execute(new GetAssignedCheckListQuery());
   }
+
+  @Post('user/:uuid/answer')
+  async answerCheckList(@Param('uuid') uuid: string, @Body() CreateCheckListUserAnswerRequest: CreateCheckListUserAnswerRequest) {
+    return this.commandBus.execute(new AnswerCheckListCommand(CreateCheckListUserAnswerRequest, uuid));
+  }
+
+  @Get('history/all')
+  async getAllCheckListHistory() {
+    return this.queryBus.execute(new GetCheckListHistoryQuery());
+  }
+
+  @Get('user/:uuid/history/')
+  async getCheckListHistoryByUser(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetCheckListHistoryByUserQuery(uuid));
+  }
+
+  @Get('history/:uuid/answers')
+  async getCheckListHistoryAnswersByHistory(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new getCheckListHistoryAnswersByHistoryQuery(uuid));
+  }
+
 }

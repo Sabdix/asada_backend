@@ -8,13 +8,13 @@ export class UpdateScheduleCalendarRequestDto {
   
     @IsNotEmpty()
     @IsOptional()
-    initHour?: number;
+    initHour?: string;
   
     @IsNotEmpty()
     @IsOptional()
-    endHour?: number;
+    endHour?: string;
   
     @IsNotEmpty()
     @IsOptional()
-    mealHourNumber?: number;
+    mealHourNumber?: string;
 }

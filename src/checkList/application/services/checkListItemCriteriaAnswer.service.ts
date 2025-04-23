@@ -14,7 +14,8 @@ export class CheckListItemCriteriaAnswerService {
         return this.chekListItemCriteriaAnswerRepository.save(
             this.chekListItemCriteriaAnswerRepository.create({
                 text: request.text,
-                uuid_check_list_item_criteria: request.uuid_check_list_item_criteria
+                uuid_check_list_item_criteria: request.uuid_check_list_item_criteria,
+                requieres_action: request.requieres_action
             })
         );
     }

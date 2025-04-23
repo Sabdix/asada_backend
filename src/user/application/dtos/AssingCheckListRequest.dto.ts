@@ -4,7 +4,7 @@ export class AssingCheckListRequestDto {
     @IsNotEmpty()
     uuid_check_list: string;
     @IsNotEmpty()
-    weekDay: string[];
+    weekDay: number[];
     @IsNotEmpty()
     initHour: string;
     @IsNotEmpty()

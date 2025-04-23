@@ -21,6 +21,7 @@ export class UpdateCheckListItemCriteriaAnswerCommandHandler implements ICommand
 
         checkListItemCriteriaAnswer.text =  command.body.text ?? checkListItemCriteriaAnswer.text;
         checkListItemCriteriaAnswer.uuid_check_list_item_criteria =  command.body.uuid_check_list_item_criteria ?? checkListItemCriteriaAnswer.uuid_check_list_item_criteria;
+        checkListItemCriteriaAnswer.requieres_action =  command.body.requieres_action ?? checkListItemCriteriaAnswer.requieres_action;
 
         if(! await this.checkListItemCriteriaService.getCheckListItemCriteriaByUuid(checkListItemCriteriaAnswer.uuid_check_list_item_criteria))
             return WsResponse.buildNotFoundResponse('CHECKLIST_ITEM_CRITERIA NOT FOUND');

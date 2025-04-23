@@ -48,6 +48,6 @@ import { ScheduleCalendarRepository } from "./infrastructure/repositories/Schedu
     controllers: [scheduleController]
 
 })
-export class ScheduleModule {
+export class ScheduleLocalModule {
 
 }
