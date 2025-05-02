@@ -1,4 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { AnswerDto } from './Answer.dto';
+
 
 export class CheckListUserAnswersDto {
     @Expose()
@@ -9,4 +11,8 @@ export class CheckListUserAnswersDto {
 
     @Expose()
     comment: string;
+
+    @Expose()
+    @Type(() => AnswerDto)
+    check_list_criteria_answer?: AnswerDto;
 }

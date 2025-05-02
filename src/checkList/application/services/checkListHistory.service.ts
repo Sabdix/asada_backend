@@ -3,6 +3,7 @@ import { CreateCheckListRequestDto } from '../dtos/CreateCheckList.dto';
 import { CheckListHistoryRepository } from 'src/checkList/infrastructure/repositories/CheckListHistory.Repository';
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
+import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
 
 @Injectable()
 export class CheckListHistoryService {
@@ -32,7 +33,11 @@ export class CheckListHistoryService {
         return this.chekListHistoryRepository.find({ where: { uuid_user: uuid }, relations: ["check_list_user", 'check_list_user.checkList'] });
     }
 
-    getCheckListHistoyByUuid(uuid: string) {
-        return this.chekListHistoryRepository.findOne({ where: { uuid: uuid} });
+    getCheckListHistoryByUuid(uuid: string) {
+        return this.chekListHistoryRepository.findOne({ where: { uuid: uuid } });
+    }
+
+    UpdateCheckListHistoryByUuid(history: CheckListHistory) {
+        return this.chekListHistoryRepository.save(history);
     }
 }
