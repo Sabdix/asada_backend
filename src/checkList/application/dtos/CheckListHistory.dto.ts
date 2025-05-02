@@ -1,5 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { CheckListUserDto } from './CheckListUser.dto';
+import { UserDto } from 'src/user/application/dtos/User.dto';
 
 export class CheckListHistoryDto {
     @Expose()
@@ -12,5 +13,9 @@ export class CheckListHistoryDto {
     @Expose()
     @Type(() => CheckListUserDto)
     check_list_user: CheckListUserDto;
+
+    @Expose()
+    @Type(() => UserDto)
+    user: UserDto;
 
 }
