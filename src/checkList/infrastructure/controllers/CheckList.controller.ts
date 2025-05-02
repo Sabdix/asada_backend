@@ -14,6 +14,7 @@ import { UpdateCheckListCommand } from "src/checkList/application/commands/Updat
 import { UpdateCheckListItemCommand } from "src/checkList/application/commands/UpdateCheckListItem/UpdateCheckListItem.command";
 import { UpdateCheckListItemCriteriaCommand } from "src/checkList/application/commands/UpdateCheckListItemCriteria/UpdateCheckListItemCriteria.command";
 import { UpdateCheckListItemCriteriaAnswerCommand } from "src/checkList/application/commands/UpdateCheckListItemCriteriaAnswer/UpdateCheckListItemCriteriaAnswer.command";
+import { UpdateHistoryStatusCommand } from "src/checkList/application/commands/UpdateHistoryStatus/UpdateHistoryStatus.command";
 import { CreateCheckListRequestDto } from "src/checkList/application/dtos/CreateCheckList.dto";
 import { CreateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaAnswerRequestDto";
 import { CreateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaRequest.dto";
@@ -167,6 +168,11 @@ export class CheckListController {
   @Get('history/:uuid/answers')
   async getCheckListHistoryAnswersByHistory(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new getCheckListHistoryAnswersByHistoryQuery(uuid));
+  }
+
+  @Put('history-status/:uuid')
+  async update(@Param('uuid') uuid: string) {
+    return this.commandBus.execute(new UpdateHistoryStatusCommand( uuid));
   }
 
 }

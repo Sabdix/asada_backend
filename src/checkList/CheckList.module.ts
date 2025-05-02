@@ -50,6 +50,7 @@ import { UserModule } from "src/user/User.module";
 import { GetCheckListHistoryQueryHandler } from "./application/queries/getCheckListHistory/getCheckListHistory.query.handler";
 import { GetCheckListHistoryByUserQueryHandler } from "./application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query.handler";
 import { getCheckListHistoryAnswersByHistoryQueryHandler } from "./application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query.handler";
+import { UpdateHistoryStatusCommandHandler } from "./application/commands/UpdateHistoryStatus/UpdateHistoryStatus.command.handler";
 
 @Module({
     imports: [
@@ -99,6 +100,7 @@ import { getCheckListHistoryAnswersByHistoryQueryHandler } from "./application/q
         CheckListHistoryService,
         GetCheckListHistoryQueryHandler,
         GetCheckListHistoryByUserQueryHandler,
+        UpdateHistoryStatusCommandHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,

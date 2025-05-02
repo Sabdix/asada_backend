@@ -6,7 +6,7 @@ import { GetCriteriaAnswerByCriteriaQuery } from '../../queries/getCriteriaAnswe
 import { CreateCheckListUserAnswerRequest } from '../../dtos/CreateCheckListUserAnswerRequest.dto';
 
 
-export class AnswerCheckListCommand extends Command<WsResponse< null | string>> {
+export class AnswerCheckListCommand extends Command<WsResponse< object | string>> {
   constructor(public body: CreateCheckListUserAnswerRequest, public uuid_user: string) {
     super();
   }

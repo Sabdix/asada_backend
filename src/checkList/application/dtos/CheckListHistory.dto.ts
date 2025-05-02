@@ -1,5 +1,4 @@
 import { Expose, Type } from 'class-transformer';
-import { CheckListItemDto } from './CheckListItem.dto';
 import { CheckListUserDto } from './CheckListUser.dto';
 
 export class CheckListHistoryDto {

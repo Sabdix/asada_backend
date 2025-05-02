@@ -15,7 +15,7 @@ export class AnswerCheckListCommandHandler implements ICommandHandler<AnswerChec
         private checkListItemCriteriaAnswerService: CheckListItemCriteriaAnswerService
     ) { }
 
-    async execute(command: AnswerCheckListCommand): Promise<WsResponse<null | string>> {
+    async execute(command: AnswerCheckListCommand): Promise<WsResponse<object | string>> {
 
         const user = await this.userService.getUserByUuid(command.uuid_user)
         if (!user) return WsResponse.buildNotFoundResponse('USER NOT FOUND');
@@ -29,9 +29,9 @@ export class AnswerCheckListCommandHandler implements ICommandHandler<AnswerChec
         if (await this.checkListUserAnswerService.getCheckListUserAnswerByHistoryAndAnswer(command.body.uuid_check_list_history, command.body.uuid_check_list_item_criteria_answer))
             return WsResponse.buildConflictResponse('YA EXISTE UNA RESPUESTA REGISTRADA', 'CHECKLIST_USER_ANSWER ALREADY EXISTS');
 
-        await this.checkListUserAnswerService.creteCheckListHistory(command.body)
+        const response = await this.checkListUserAnswerService.creteCheckListHistory(command.body)
 
-        return WsResponse.buildOkResponse(null);
+        return WsResponse.buildOkResponse(response);
         /*return WsResponse.buildOkResponse(
           plainToInstance(CheckListDto, checkList, { excludeExtraneousValues: true }),
         );*/

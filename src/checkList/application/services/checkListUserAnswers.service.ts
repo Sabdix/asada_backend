@@ -17,11 +17,11 @@ export class CheckListUserAnswersService {
     }
 
     getCheckListUserAnswerByHistoryAndAnswer(uuid_history: string, uuid_answer: string) {
-        return this.chekListUserAnswersRepository.findOne({ where: { uuid_check_list_history: uuid_history, uuid_check_list_item_criteria_answer: uuid_answer} });
+        return this.chekListUserAnswersRepository.findOne({ where: { uuid_check_list_history: uuid_history, uuid_check_list_item_criteria_answer: uuid_answer}, relations:['check_list_criteria_answer'] });
     }
 
     getCheckListUserAnswerByHistory(uuid_history: string) {
-        return this.chekListUserAnswersRepository.find({ where: { uuid_check_list_history: uuid_history} });
+        return this.chekListUserAnswersRepository.find({ where: { uuid_check_list_history: uuid_history}, relations:['check_list_criteria_answer','check_list_criteria_answer.checkListItemCriteria','check_list_criteria_answer.checkListItemCriteria.checkListItem','check_list_criteria_answer.checkListItemCriteria.checkListItem.check_list'] });
     }
 
 }
