@@ -15,7 +15,8 @@ export class GetCheckListHistoryQueryHandler implements IQueryHandler<GetCheckLi
     async execute() {
         const checkListHistory = await this.checkListHistoryService.getAllCheckListHistory();
 
-       
+        console.log(checkListHistory[0])
+
         return WsResponse.buildOkResponse(
             plainToInstance(CheckListHistoryDto, checkListHistory, { excludeExtraneousValues: true }),
         );

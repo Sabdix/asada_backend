@@ -26,7 +26,7 @@ export class CheckListHistoryService {
     }
 
     getAllCheckListHistory() {
-        return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList'] });
+        return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList','user','user.branch'] });
     }
 
     getCheckListHistoryByUser(uuid: string) {
