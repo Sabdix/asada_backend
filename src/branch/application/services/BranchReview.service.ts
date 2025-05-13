@@ -29,7 +29,7 @@ export class BranchReviewService {
 
     getAllReviewsByRangeTime(initialDate: Date, endDate: Date) {
         return this.branchReviewRepository
-        .createQueryBuilder('branchReview') // Alias para la entidad BranchReview
+        .createQueryBuilder('branchReview') 
         .select([
           'branchReview.name',
           'branchReview.rate',
@@ -37,7 +37,7 @@ export class BranchReviewService {
           'branchReview.createdAt',
           'branch.name', 
         ])
-        .leftJoinAndSelect('branchReview.branch', 'branch') // Carga la relación 'branch' y sus datos
+        .leftJoinAndSelect('branchReview.branch', 'branch') 
         .where('branchReview.createdAt BETWEEN :initialDate AND :endDate', { initialDate, endDate })
         .andWhere('branchReview.rate <= :maxRate', { maxRate: 3 })
         .orderBy('branchReview.rate', 'ASC')
