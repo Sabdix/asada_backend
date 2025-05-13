@@ -18,6 +18,8 @@ import { BranchReviewService } from "./application/services/BranchReview.service
 import { CreateBranchReviewCommandHandler } from "./application/commands/CreateBranchReview/CreateBranchReview.command.handler";
 import { GetBranchReviewsQueryHandler } from "./application/queries/GetBranchReviews/GetBranchReviews.query.handler";
 import { GetBranchReviewsByUuidQueryHandler } from "./application/queries/GetBranchReviewsByUuid/GetBranchReviewsByUuid.query.handler";
+import { DownloadReviewReportQueryHandler } from "./application/queries/DownloadReviewReport/DownloadReviewReport.query.handler";
+import { DownloadReviewReport64QueryHandler } from "./application/queries/DownloadReviewReport64/DownloadReviewReport64.query.handler";
 
 @Module({
     imports: [
@@ -35,6 +37,8 @@ import { GetBranchReviewsByUuidQueryHandler } from "./application/queries/GetBra
         DeleteBranchCommandHandler,
         UpdateBranchCommandHandler,
         GetBranchQrByUuidQueryHandler,
+        DownloadReviewReportQueryHandler,
+        DownloadReviewReport64QueryHandler,
 
         CreateBranchReviewCommandHandler,
         GetBranchReviewsQueryHandler,
