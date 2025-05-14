@@ -22,6 +22,7 @@ export class DownloadReviewReportQueryHandler implements IQueryHandler<DownloadR
                 new Date(query.initialDate),
                 new Date(query.endDate),
             );
+            if (reviews.length == 0) return WsResponse.buildNotFoundResponse('REVIEWS NOT FOUND');
 
             const data: ReviewReportDto[] = [];
             for (const review of reviews) {
@@ -57,7 +58,7 @@ export class DownloadReviewReportQueryHandler implements IQueryHandler<DownloadR
             return WsResponse.buildOkResponse(excelBuffer); // Devuelve el Buffer
         } catch (error) {
             console.error('Error al generar el reporte de Excel:', error);
-            return WsResponse.buildErrorResponse(1,'Error al generar el reporte de Excel.',error); // Manejo de error
+            return WsResponse.buildErrorResponse(1, 'Error al generar el reporte de Excel.', error); // Manejo de error
         }
     }
 }

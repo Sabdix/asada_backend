@@ -16,8 +16,10 @@ export class DownloadReviewReport64QueryHandler implements IQueryHandler<Downloa
         private branchReviewService: BranchReviewService
     ) { }
 
-    async execute(query: DownloadReviewReport64Query){
+    async execute(query: DownloadReviewReport64Query) {
         const reviews = await this.branchReviewService.getAllReviewsByRangeTime(new Date(query.initialDate), new Date(query.endDate));
+        if (reviews.length == 0) return WsResponse.buildNotFoundResponse('REVIEWS NOT FOUND');
+
         const data: ReviewReportDto[] = [];
         for (const review of reviews) {
             const reviewReport = new ReviewReportDto();
