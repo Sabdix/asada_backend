@@ -4,6 +4,7 @@ import { CheckListHistoryRepository } from 'src/checkList/infrastructure/reposit
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
+import { Between } from 'typeorm';
 
 @Injectable()
 export class CheckListHistoryService {
@@ -26,7 +27,7 @@ export class CheckListHistoryService {
     }
 
     getAllCheckListHistory() {
-        return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList','user','user.branch'] });
+        return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'] });
     }
 
     getCheckListHistoryByUser(uuid: string) {
@@ -39,5 +40,9 @@ export class CheckListHistoryService {
 
     UpdateCheckListHistoryByUuid(history: CheckListHistory) {
         return this.chekListHistoryRepository.save(history);
+    }
+
+    getCheckListHistoryByRangeTime(initialDate: Date, endDate: Date) {
+        return this.chekListHistoryRepository.find({ where: {date: Between(initialDate,endDate)}, relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'] });
     }
 }

@@ -1,5 +1,4 @@
-import { Expose, Type } from 'class-transformer';
-import { UserBranchDto } from 'src/user/application/dtos/UserBranch.dto';
+import { Expose } from 'class-transformer';
 
 export class ReviewReportDto {
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { query, Response } from "express";
+import {  Response } from "express";
 import { CreateBranchCommand } from "src/branch/application/commands/CreateBranch/CreateBranch.command";
 import { CreateBranchReviewCommand } from "src/branch/application/commands/CreateBranchReview/CreateBranchReview.command";
 import { DeleteBranchCommand } from "src/branch/application/commands/DeleteBranch/DeleteBranch.command";
@@ -15,7 +15,7 @@ import { GetBranchesQuery } from "src/branch/application/queries/GetBranches/Get
 import { GetBranchQrByUuidQuery } from "src/branch/application/queries/GetBranchQrByUuid/GetBranchQrByUuid.query";
 import { GetBranchReviewsQuery } from "src/branch/application/queries/GetBranchReviews/GetBranchReviews.query";
 import { GetBranchReviewsByUuidQuery } from "src/branch/application/queries/GetBranchReviewsByUuid/GetBranchReviewsByUuid.query";
-import { WsResponse } from "src/common/dtos/WsResponse.dto";
+
 
 @Controller('branch')
 export class branchController {

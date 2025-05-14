@@ -51,6 +51,7 @@ import { GetCheckListHistoryQueryHandler } from "./application/queries/getCheckL
 import { GetCheckListHistoryByUserQueryHandler } from "./application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query.handler";
 import { getCheckListHistoryAnswersByHistoryQueryHandler } from "./application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query.handler";
 import { UpdateHistoryStatusCommandHandler } from "./application/commands/UpdateHistoryStatus/UpdateHistoryStatus.command.handler";
+import { DownloadCheckListHistoryReportQueryHandler } from "./application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query.handler";
 
 @Module({
     imports: [
@@ -101,6 +102,7 @@ import { UpdateHistoryStatusCommandHandler } from "./application/commands/Update
         GetCheckListHistoryQueryHandler,
         GetCheckListHistoryByUserQueryHandler,
         UpdateHistoryStatusCommandHandler,
+        DownloadCheckListHistoryReportQueryHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,

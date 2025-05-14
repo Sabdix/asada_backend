@@ -2,12 +2,9 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import { DownloadReviewReportQuery } from './DownloadReviewReport.query';
 import { BranchReviewService } from '../../services/BranchReview.service';
-//import * as XLSX from 'xlsx';
-import * as base64 from 'base64-node';
 import { ReviewReportDto } from '../../dtos/ReviewReport.dto';
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs/promises';
-import { promises } from 'dns';
 
 
 @QueryHandler(DownloadReviewReportQuery)
