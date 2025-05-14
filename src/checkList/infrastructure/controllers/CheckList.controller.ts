@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
+import { Response } from "express";
 import { AnswerCheckListCommand } from "src/checkList/application/commands/AnswerCheckList/AnswerCheckList.command";
 import { CreateCheckListCommand } from "src/checkList/application/commands/CreateCheckList/CreateCheckList.command";
 import { CreateCheckListItemCommand } from "src/checkList/application/commands/CreateCheckListItem/CreateCheckListItem.command";
@@ -25,6 +26,7 @@ import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/appli
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
+import { DownloadCheckListHistoryReportQuery } from "src/checkList/application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query";
 import { GetAssignedCheckListQuery } from "src/checkList/application/queries/getAssignedCheckList/getAssignedCheckList.query";
 import { GetCheckListQuery } from "src/checkList/application/queries/getCheckList/getCheckList.query";
 import { GetCheckListByUserQuery } from "src/checkList/application/queries/getCheckListByUser/getCheckListByUser.query";
@@ -172,7 +174,24 @@ export class CheckListController {
 
   @Put('history-status/:uuid')
   async update(@Param('uuid') uuid: string) {
-    return this.commandBus.execute(new UpdateHistoryStatusCommand( uuid));
+    return this.commandBus.execute(new UpdateHistoryStatusCommand(uuid));
   }
 
+  @Get('history/report/download')
+  async downloadCheckListHistoryReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Res() res: Response) {
+    try {
+
+      const excelBuffer = await this.queryBus.execute(new DownloadCheckListHistoryReportQuery(initialDate, endDate));
+
+      // Configurar los encabezados de la respuesta
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=reporte.xlsx');
+
+      // Enviar el buffer como respuesta
+      res.status(HttpStatus.OK).send(excelBuffer);
+    } catch (error) {
+      console.error('Error al generar el Excel:', error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Error al generar el reporte.');
+    }
+  }
 }
