@@ -23,4 +23,6 @@ export class BranchDto {
     state: string;
     @Expose()
     locality: string;
+    @Expose()
+    place_id: string;
 }

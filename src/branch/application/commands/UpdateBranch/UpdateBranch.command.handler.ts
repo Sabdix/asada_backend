@@ -27,6 +27,7 @@ export class UpdateBranchCommandHandler implements ICommandHandler<UpdateBranchC
         branch.external_number = command.body.external_number ?? branch.external_number;
         branch.state = command.body.state ?? branch.state;
         branch.locality = command.body.locality ?? branch.locality;
+        branch.place_id = command.body.place_id ?? branch.place_id;
 
         await this.branchService.UpdateBranch(branch);
 

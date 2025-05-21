@@ -37,6 +37,7 @@ import { Schedule } from "src/schedule/domain/entities/Schedule.entity";
 import { ScheduleRepository } from "src/schedule/infrastructure/repositories/Schedule.repository";
 import { ScheduleService } from "src/schedule/application/services/schedule.service";
 import { AssignScheduleCommandHandler } from "./application/commands/AssginSchedule/AssignSchedule.command.handler";
+import { DeleteMultipleUserAssignamentCommandHandler } from "./application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command.handler";
 
 @Module({
     imports: [
@@ -72,7 +73,8 @@ import { AssignScheduleCommandHandler } from "./application/commands/AssginSched
         GetAssignedCheckListQueryHandler,
         DeleteUserAssignamentCommandHandler,
         GetUsersByBranchQueryHandler,
-        AssignScheduleCommandHandler
+        AssignScheduleCommandHandler,
+        DeleteMultipleUserAssignamentCommandHandler
     ],
     exports: [
         UserService,
