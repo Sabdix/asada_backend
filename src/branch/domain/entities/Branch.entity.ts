@@ -32,4 +32,7 @@ export class Branch extends EntityBase {
 
   @Column()
   locality: string;
+
+  @Column({nullable: true})
+  place_id: string;
 }

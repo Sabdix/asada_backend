@@ -21,5 +21,7 @@ export class UpdateBranchRequestDto {
   state: string;
   @IsOptional()
   locality: string;
+  @IsOptional()
+  place_id: string;
 }
 

@@ -5,6 +5,7 @@ import { AssignCheckListCommand } from "src/user/application/commands/AssignChec
 import { AssignManagerCommand } from "src/user/application/commands/AssignManager/AssignManager.command";
 import { ChangePasswordCommand } from "src/user/application/commands/ChangePassword/ChangePassword.command";
 import { CreateUserCommand } from "src/user/application/commands/CreateUser/CreateUser.command";
+import { DeleteMultipleUserAssignamentCommand } from "src/user/application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command";
 import { DeleteUserCommand } from "src/user/application/commands/DeleteUser/DeleteUser.command";
 import { DeleteUserAssignamentCommand } from "src/user/application/commands/DeleteUserAssignament/DeleteUserAssignament.command";
 import { UpdateUserCommand } from "src/user/application/commands/UpdateUser/UpdateUser.command";
@@ -13,6 +14,7 @@ import { AssingScheduleRequestDto } from "src/user/application/dtos/AssignSchedu
 import { AssingCheckListRequestDto } from "src/user/application/dtos/AssingCheckListRequest.dto";
 import { ChangePasswordRequestDto } from "src/user/application/dtos/ChangePasswordRequest.dto";
 import { CreateUserRequestDto } from "src/user/application/dtos/CreateUserRequest.dto";
+import { DeleteMultipleAssignamentsDto } from "src/user/application/dtos/DeleteMultipleAssignaments.dto";
 import { UpdateUserRequestDto } from "src/user/application/dtos/UpdateUserRequest.dto";
 import { GetAssignedCheckListQuery } from "src/user/application/queries/GetAssignedCheckList/GetAssignedCheckList.query";
 import { GetUsersQuery } from "src/user/application/queries/GetUsers/GetUsers.query";
@@ -73,6 +75,11 @@ export class UserController {
     @Delete('assignament/:uuid')
     async deleteUserAssignament(@Param('uuid') uuid: string) {
         return this.commandBus.execute(new DeleteUserAssignamentCommand(uuid));
+    }
+
+    @Delete('multiple/assignament')
+    async deleteMultipleUserAssignament(@Body() request: DeleteMultipleAssignamentsDto ) {
+        return this.commandBus.execute(new DeleteMultipleUserAssignamentCommand(request));
     }
 
     @Get('get-users-by-branch/:uuid')

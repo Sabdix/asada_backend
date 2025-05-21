@@ -19,7 +19,8 @@ export class BranchService {
                 internal_number: request.internal_number ?? '',
                 external_number: request.external_number,
                 state: request.state,
-                locality: request.locality
+                locality: request.locality,
+                place_id: request.place_id ?? ''
             })
         )
     }

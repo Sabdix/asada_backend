@@ -21,5 +21,7 @@ export class CreateBranchRequestDto {
   state: string;
   @IsNotEmpty()
   locality: string;
+  @IsNotEmpty()
+  place_id: string;
 }
 
