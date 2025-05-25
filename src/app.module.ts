@@ -9,6 +9,7 @@ import { UserModule } from './user/User.module';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './Task.Service';
+import { RecipeModule } from './recipe/Recipe.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TasksService } from './Task.Service';
     ScheduleLocalModule,
     UserModule,
     AuthModule,
+    RecipeModule
   ],
   controllers: [],
   providers: [TasksService],
