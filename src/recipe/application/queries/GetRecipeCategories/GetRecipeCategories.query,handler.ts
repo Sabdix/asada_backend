@@ -12,8 +12,6 @@ export class GetRecipeCategoriesQueryHandler implements IQueryHandler<GetRecipeC
   async execute() {
     const recipeCategory = await this.recipeCategoryService.getRecipeCategories();
 
-    if (!recipeCategory) return WsResponse.buildNotFoundResponse('RECIPE CATEGORY NOT FOUND');
-
     return WsResponse.buildOkResponse(
       plainToInstance(RecipeCategoryDto, recipeCategory, { excludeExtraneousValues: true }),
     );

@@ -5,7 +5,6 @@ import { CreateUserRequestDto } from '../dtos/CreateUserRequest.dto';
 import { User } from 'src/user/domain/entities/User.entity';
 import * as crypto from 'crypto';
 import { ChangePasswordRequestDto } from '../dtos/ChangePasswordRequest.dto';
-import { Branch } from 'src/branch/domain/entities/Branch.entity';
 
 @Injectable()
 export class UserService {
@@ -20,7 +19,19 @@ export class UserService {
   }
 
   getUsers() {
-    return this.userRepository.find({ relations: ['role', 'manager', 'branch', 'schedule'] });
+    // return this.userRepository.find({
+    //   relations: ['role', 'manager', 'branch', 'schedule'],
+    //   withDeleted: true
+    // });
+
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
+      .where('user.deletedAt IS NULL') 
+      .getMany(); 
   }
 
   getUserByMail(mail: string) {
@@ -28,9 +39,21 @@ export class UserService {
   }
 
   getUserByUuid(uuid: string) {
-    return this.userRepository.findOne(
-      { where: { uuid: uuid }, relations: ['role', 'manager', 'branch', 'schedule'] }
-    );
+    // return this.userRepository.findOne({
+    //   where: { uuid: uuid },
+    //   relations: ['role', 'manager', 'branch', 'schedule'],
+    //   withDeleted: true
+    // });
+
+    return this.userRepository
+      .createQueryBuilder('user') 
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
+      .where('user.uuid = :uuid', { uuid }) 
+      .andWhere('user.deletedAt IS NULL') 
+      .getOne();
   }
 
   creteUser(request: CreateUserRequestDto) {
