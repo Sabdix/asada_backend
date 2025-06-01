@@ -20,7 +20,17 @@ export class CheckListUserService {
     }
 
     getUserCheckList(uuid_user: string) {
-        return this.chekListUserRepository.find({ where: { uuid_user: uuid_user }, relations: ['checkList'] });
+        // return this.chekListUserRepository.find({ where: { uuid_user: uuid_user }, relations: ['checkList'], withDeleted: true });
+        return this.chekListUserRepository
+            .createQueryBuilder('clu')
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .where('clu.uuid_user = :uuid_user', { uuid_user })
+            .andWhere('clu.deletedAt IS NULL')
+            .getMany();
     }
 
     getUserCheckListByUuid(uuid: string) {
@@ -32,10 +42,25 @@ export class CheckListUserService {
     }
 
     getAllUserCheckList() {
-        return this.chekListUserRepository.find({relations: ['checkList','user'] });
+        // return this.chekListUserRepository.find({relations: ['checkList','user'], withDeleted: true });
+
+        return this.chekListUserRepository
+            .createQueryBuilder('clu')
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .where('clu.deletedAt IS NULL')
+            .getMany();
     }
 
     getCheckListByWeekDay(weekDay: number) {
-        return this.chekListUserRepository.find({ where: {weekDay: weekDay} });
+        return this.chekListUserRepository.find({ where: { weekDay: weekDay } });
     }
 }

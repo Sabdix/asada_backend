@@ -9,8 +9,12 @@ import { CheckListItemCriteria } from 'src/checkList/domain/entities/CheckListIt
 import { CheckListItemCriteriaAnswers } from 'src/checkList/domain/entities/CheckListItemCriteriaAnswers.entity';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListUserAnswers } from 'src/checkList/domain/entities/CheckListUserAnswers';
+import { Recipe } from 'src/recipe/domain/entities/Recipe.entity';
+import { RecipeCategory } from 'src/recipe/domain/entities/RecipeCategory.entity';
 import { Schedule } from 'src/schedule/domain/entities/Schedule.entity';
 import { ScheduleCalendar } from 'src/schedule/domain/entities/ScheduleCalendar.entity';
+import { ProductCategory } from 'src/stock/domain/entities/ProductCategory.entity';
+import { StockProduct } from 'src/stock/domain/entities/StockProduct.entity';
 import { Role } from 'src/user/domain/entities/Role.entity';
 import { User } from 'src/user/domain/entities/User.entity';
 
@@ -60,7 +64,11 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       CheckListItemCriteriaAnswers,
       CheckListUser,
       CheckListHistory,
-      CheckListUserAnswers
+      CheckListUserAnswers,
+      Recipe,
+      RecipeCategory,
+      ProductCategory,
+      StockProduct
     ],
     synchronize: false,
     logging: false,
