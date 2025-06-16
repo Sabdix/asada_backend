@@ -52,12 +52,19 @@ import { GetCheckListHistoryByUserQueryHandler } from "./application/queries/get
 import { getCheckListHistoryAnswersByHistoryQueryHandler } from "./application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query.handler";
 import { UpdateHistoryStatusCommandHandler } from "./application/commands/UpdateHistoryStatus/UpdateHistoryStatus.command.handler";
 import { DownloadCheckListHistoryReportQueryHandler } from "./application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query.handler";
+import { ReassignHistoryCommandHandler } from "./application/commands/ResassingHistory/ReassignHistory.command.handler";
+import { GetAssignedCheckListByBranchQueryHandler } from "./application/queries/getAssignedCheckListByBranch/getAssignedCheckListByBranch.query.handler";
+import { Branch } from "src/branch/domain/entities/Branch.entity";
+import { BranchModule } from "src/branch/Branch.module";
+import { GetCheckListHistoryByBranchQueryHandler } from "./application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query.handler";
+import { DuplicateCheckListCommandHandler } from "./application/commands/DuplicateCheckList/DuplicateCheckList.command.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers]),
-        forwardRef(() => UserModule)
+        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers, Branch]),
+        forwardRef(() => UserModule),
+        BranchModule
     ],
     providers: [
         CheckListService,
@@ -69,7 +76,7 @@ import { DownloadCheckListHistoryReportQueryHandler } from "./application/querie
         DeleteCheckListCommandHandler,
         GetCheckListQrByUuidQueryHandler,
         DuplicateItemCommandHandler,
-
+        DuplicateCheckListCommandHandler,
 
         CheckListItemService,
         CheckListItemRepository,
@@ -103,12 +110,14 @@ import { DownloadCheckListHistoryReportQueryHandler } from "./application/querie
         GetCheckListHistoryByUserQueryHandler,
         UpdateHistoryStatusCommandHandler,
         DownloadCheckListHistoryReportQueryHandler,
+        ReassignHistoryCommandHandler,
+        GetAssignedCheckListByBranchQueryHandler,
+        GetCheckListHistoryByBranchQueryHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,
         AnswerCheckListCommandHandler,
-        getCheckListHistoryAnswersByHistoryQueryHandler
-
+        getCheckListHistoryAnswersByHistoryQueryHandler,
     ],
     exports: [
         CheckListService,
@@ -116,7 +125,7 @@ import { DownloadCheckListHistoryReportQueryHandler } from "./application/querie
         CheckListItemCriteriaService,
         CheckListUserService,
         CheckListHistoryService,
-        CheckListUserAnswersService
+        CheckListUserAnswersService,
     ],
     controllers: [CheckListController]
 

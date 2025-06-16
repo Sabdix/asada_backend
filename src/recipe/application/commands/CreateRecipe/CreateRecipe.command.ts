@@ -5,7 +5,7 @@ import { RecipeDto } from '../../dtos/Recipe.dto';
 
 
 export class CreateRecipeCommand extends Command<WsResponse< RecipeDto | string>> {
-  constructor(public body: CreateRecipeRequestDto, public pdfUrl: string) {
+  constructor(public body: CreateRecipeRequestDto, public pdfUrl: string, public videoUrl: string) {
     super();
   }
 }

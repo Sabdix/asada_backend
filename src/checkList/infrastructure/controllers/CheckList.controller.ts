@@ -10,7 +10,9 @@ import { DeleteCheckListCommand } from "src/checkList/application/commands/Delet
 import { DeleteCheckListItemCommand } from "src/checkList/application/commands/DeleteCheckListItem/DeleteCheckListItem.command";
 import { DeleteCheckListItemCriteriaCommand } from "src/checkList/application/commands/DeleteCheckListItemCriteria/DeleteCheckListItemCriteria.command";
 import { DeleteCheckListItemCriteriaAnswerCommand } from "src/checkList/application/commands/DeleteCheckListItemCriteriaAnswer/DeleteCheckListItemCriteriaAnswer.command";
+import { DuplicateCheckListCommand } from "src/checkList/application/commands/DuplicateCheckList/DuplicateCheckList.command";
 import { DuplicateItemCommand } from "src/checkList/application/commands/DuplicateItem/DuplicateItem.command";
+import { ReassignHistoryCommand } from "src/checkList/application/commands/ResassingHistory/ReassignHistory.command";
 import { UpdateCheckListCommand } from "src/checkList/application/commands/UpdateCheckList/UpdateCheckList.command";
 import { UpdateCheckListItemCommand } from "src/checkList/application/commands/UpdateCheckListItem/UpdateCheckListItem.command";
 import { UpdateCheckListItemCriteriaCommand } from "src/checkList/application/commands/UpdateCheckListItemCriteria/UpdateCheckListItemCriteria.command";
@@ -21,18 +23,22 @@ import { CreateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/appli
 import { CreateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/CreateCheckListItemCriteriaRequest.dto";
 import { CreateCheckListItemRequestDto } from "src/checkList/application/dtos/CreateCheckListItemRequest.dto";
 import { CreateCheckListUserAnswerRequest } from "src/checkList/application/dtos/CreateCheckListUserAnswerRequest.dto";
+import { DuplicateCheckListRequestDto } from "src/checkList/application/dtos/DuplicateCheckListRequest.dto";
 import { DuplicateItemRequestDto } from "src/checkList/application/dtos/DuplicateItemRequest.dto";
+import { ReassignHistoryRequestDto } from "src/checkList/application/dtos/ReassignHistoryRequest.dto";
 import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaAnswerRequest.dto";
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
 import { DownloadCheckListHistoryReportQuery } from "src/checkList/application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query";
 import { GetAssignedCheckListQuery } from "src/checkList/application/queries/getAssignedCheckList/getAssignedCheckList.query";
+import { GetAssignedCheckListByBranchQuery } from "src/checkList/application/queries/getAssignedCheckListByBranch/getAssignedCheckListByBranch.query";
 import { GetCheckListQuery } from "src/checkList/application/queries/getCheckList/getCheckList.query";
 import { GetCheckListByUserQuery } from "src/checkList/application/queries/getCheckListByUser/getCheckListByUser.query";
 import { GetCheckListByUuidQuery } from "src/checkList/application/queries/getCheckListByUuid/getCheckListByUuid.query";
 import { GetCheckListHistoryQuery } from "src/checkList/application/queries/getCheckListHistory/getCheckListHistory.query";
 import { getCheckListHistoryAnswersByHistoryQuery } from "src/checkList/application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query";
+import { GetCheckListHistoryByBranchQuery } from "src/checkList/application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query";
 import { GetCheckListHistoryByUserQuery } from "src/checkList/application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query";
 import { GetCheckListItemsByCheckListQuery } from "src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query";
 import { GetCheckListQrByUuidQuery } from "src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query";
@@ -178,10 +184,10 @@ export class CheckListController {
   }
 
   @Get('history/report/download')
-  async downloadCheckListHistoryReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Res() res: Response) {
+  async downloadCheckListHistoryReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Query('branchId') branchId: string, @Res() res: Response) {
     try {
 
-      const excelBuffer = await this.queryBus.execute(new DownloadCheckListHistoryReportQuery(initialDate, endDate));
+      const excelBuffer = await this.queryBus.execute(new DownloadCheckListHistoryReportQuery(initialDate, endDate, branchId));
 
       // Configurar los encabezados de la respuesta
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -193,5 +199,25 @@ export class CheckListController {
       console.error('Error al generar el Excel:', error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Error al generar el reporte.');
     }
+  }
+
+  @Put('reassign-history/:uuid')
+  async ReassignHistory(@Param('uuid') uuid: string, @Body() reassignHistoryRequestDto: ReassignHistoryRequestDto) {
+    return this.commandBus.execute(new ReassignHistoryCommand(uuid, reassignHistoryRequestDto));
+  }
+
+  @Get('assigned/by-branch/:uuid')
+  async getAssignedCheckListByBranch(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetAssignedCheckListByBranchQuery(uuid));
+  }
+
+  @Get('history/by-branch/:uuid')
+  async getCheckListHistoryByBranch(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid));
+  }
+
+  @Post('duplicate')
+  async duplicateCheckList(@Body() duplicateCheckListRequestDto: DuplicateCheckListRequestDto) {
+    return this.commandBus.execute(new DuplicateCheckListCommand(duplicateCheckListRequestDto));
   }
 }

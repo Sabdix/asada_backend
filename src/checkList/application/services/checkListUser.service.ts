@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CheckListUserRepository } from 'src/checkList/infrastructure/repositories/CheckListUser.Repository';
 import { AssingCheckListRequestDto } from 'src/user/application/dtos/AssingCheckListRequest.dto';
-import { User } from 'src/user/domain/entities/User.entity';
 
 @Injectable()
 export class CheckListUserService {
@@ -62,5 +61,24 @@ export class CheckListUserService {
 
     getCheckListByWeekDay(weekDay: number) {
         return this.chekListUserRepository.find({ where: { weekDay: weekDay } });
+    }
+
+    getUserCheckListByBranch(uuid_branch: string) {
+
+        return this.chekListUserRepository
+            .createQueryBuilder('clu')
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .where('clu.deletedAt IS NULL')
+            .andWhere('u.uuid_branch = :uuid_branch', { uuid_branch })
+            .getMany();
     }
 }

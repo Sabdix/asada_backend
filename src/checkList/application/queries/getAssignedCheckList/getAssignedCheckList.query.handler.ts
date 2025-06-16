@@ -13,7 +13,6 @@ export class GetAssignedCheckListQueryHandler implements IQueryHandler<GetAssign
 
     async execute() {
         const checkListUser = await this.checkListUserService.getAllUserCheckList();
-
        
         return WsResponse.buildOkResponse(
             plainToInstance(CheckListUserDto, checkListUser, { excludeExtraneousValues: true }),

@@ -76,9 +76,48 @@ export class BranchReviewService {
             .leftJoinAndSelect(
                 'branchReview.branch',
                 'branch',
-                'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL' 
+                'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
             .where('branchReview.createdAt BETWEEN :initialDate AND :endDate', { initialDate, endDate })
+            .andWhere('branchReview.rate <= :maxRate', { maxRate: 3 })
+            .andWhere('branchReview.deletedAt IS NULL')
+            .orderBy('branchReview.rate', 'ASC')
+            .getMany();
+    }
+
+    getBranchReviewsByRangeTime(initialDate: Date, endDate: Date, uuid_branch: string) {
+        // return this.branchReviewRepository
+        //     .createQueryBuilder('branchReview')
+        //     .select([
+        //         'branchReview.name',
+        //         'branchReview.rate',
+        //         'branchReview.comment',
+        //         'branchReview.createdAt',
+        //         'branch.name',
+        //     ])
+        //     .leftJoinAndSelect('branchReview.branch', 'branch')
+        //     .withDeleted()
+        //     .where('branchReview.createdAt BETWEEN :initialDate AND :endDate', { initialDate, endDate })
+        //     .andWhere('branchReview.rate <= :maxRate', { maxRate: 3 })
+        //     .orderBy('branchReview.rate', 'ASC')
+        //     .getMany();
+
+        return this.branchReviewRepository
+            .createQueryBuilder('branchReview')
+            .select([
+                'branchReview.name',
+                'branchReview.rate',
+                'branchReview.comment',
+                'branchReview.createdAt',
+                'branch.name',
+            ])
+            .leftJoinAndSelect(
+                'branchReview.branch',
+                'branch',
+                'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .where('branchReview.createdAt BETWEEN :initialDate AND :endDate', { initialDate, endDate })
+            .andWhere('branch.uuid = :uuid_branch', { uuid_branch })
             .andWhere('branchReview.rate <= :maxRate', { maxRate: 3 })
             .andWhere('branchReview.deletedAt IS NULL')
             .orderBy('branchReview.rate', 'ASC')

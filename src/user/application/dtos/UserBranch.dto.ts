@@ -6,4 +6,10 @@ export class UserBranchDto {
   
     @Expose()
     uuid: string;
+
+    @Expose()
+    lng: number;
+
+    @Expose()
+    lat: number;
 }

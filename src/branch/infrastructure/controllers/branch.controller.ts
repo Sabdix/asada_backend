@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import {  Response } from "express";
+import { Response } from "express";
 import { CreateBranchCommand } from "src/branch/application/commands/CreateBranch/CreateBranch.command";
 import { CreateBranchReviewCommand } from "src/branch/application/commands/CreateBranchReview/CreateBranchReview.command";
 import { DeleteBranchCommand } from "src/branch/application/commands/DeleteBranch/DeleteBranch.command";
@@ -70,12 +70,12 @@ export class branchController {
   }
 
   @Get('review/report/download')
-  async downloadReviewReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Res() res: Response) {
+  async downloadReviewReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Query('branchId') branchId: string, @Res() res: Response) {
     //return this.queryBus.execute(new DownloadReviewReportQuery(initialDate, endDate));
 
     try {
 
-      const excelBuffer = await this.queryBus.execute(new DownloadReviewReportQuery(initialDate, endDate));
+      const excelBuffer = await this.queryBus.execute(new DownloadReviewReportQuery(initialDate, endDate, branchId));
 
       // Configurar los encabezados de la respuesta
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -89,9 +89,9 @@ export class branchController {
     }
   }
 
-    @Get('review/report/download-64')
-    async downloadReviewReport64(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date) {
-      return this.queryBus.execute(new DownloadReviewReport64Query(initialDate, endDate));
+  @Get('review/report/download-64')
+  async downloadReviewReport64(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date) {
+    return this.queryBus.execute(new DownloadReviewReport64Query(initialDate, endDate));
 
-    }
   }
+}

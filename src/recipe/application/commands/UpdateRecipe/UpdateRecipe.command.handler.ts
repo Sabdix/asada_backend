@@ -25,11 +25,14 @@ export class UpdateRecipeCommandHandler implements ICommandHandler<UpdateRecipeC
 
         recipe.name = command.body.name ?? recipe.name;
         recipe.description = command.body.description ?? recipe.description;
-        recipe.video = command.body.video ?? recipe.video;
         recipe.uuid_category = command.body.uuid_category ?? recipe.uuid_category;
-        if (command.updateFile == true) {
-            const urlBase = this.configService.get<string>('BASE_URL_PDFS');
-            recipe.pdf = urlBase+command.filePath.replaceAll("\\","/")
+        if (command.updatePdfName == true) {
+            
+            recipe.pdf = command.pdfFileName
+        }
+        if (command.updateVideoName == true) {
+            
+            recipe.video = command.videoFileName
         }
 
         const recipieCategory = await this.recipeCategoryService.getRecipeCategoryByUuid(recipe.uuid_category)
