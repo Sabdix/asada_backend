@@ -3,6 +3,7 @@ import { RoleDto } from './Role.dto';
 import { ManagerDto } from './Manager.dto';
 import { UserBranchDto } from './UserBranch.dto';
 import { UserScheduleDto } from './UserSchedule.dto';
+import { BlobOptions } from 'buffer';
 
 export class UserDto {
     @Expose()
@@ -22,6 +23,9 @@ export class UserDto {
   
     @Expose()
     mail: string;
+
+    @Expose()
+    empowered: boolean;
   
     @Expose()
     @Type(() => RoleDto)

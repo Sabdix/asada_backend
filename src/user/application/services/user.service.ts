@@ -84,7 +84,9 @@ export class UserService {
     return this.userRepository
       .createQueryBuilder('user')
       .where('user.uuid_branch = :uuid_branch', { uuid_branch: uuid_branch })
-      .innerJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .orderBy('role.hierarchy', 'ASC')
       .getMany();
   }

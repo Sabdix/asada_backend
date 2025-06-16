@@ -8,6 +8,7 @@ import { CreateUserCommand } from "src/user/application/commands/CreateUser/Crea
 import { DeleteMultipleUserAssignamentCommand } from "src/user/application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command";
 import { DeleteUserCommand } from "src/user/application/commands/DeleteUser/DeleteUser.command";
 import { DeleteUserAssignamentCommand } from "src/user/application/commands/DeleteUserAssignament/DeleteUserAssignament.command";
+import { ChangeEmpoweredStatusCommand} from "src/user/application/commands/ChangeEmpoweredStatus/ChangeEmpoweredStatus.command";
 import { UpdateUserCommand } from "src/user/application/commands/UpdateUser/UpdateUser.command";
 import { AssingManagerRequestDto } from "src/user/application/dtos/AssignManagerRequest.dto";
 import { AssingScheduleRequestDto } from "src/user/application/dtos/AssignScheduleRequest.dto";
@@ -49,22 +50,22 @@ export class UserController {
 
     @Post('assign-manager/:uuid')
     async AssignManagerToUser(@Param('uuid') uuid: string, @Body() request: AssingManagerRequestDto) {
-        return this.commandBus.execute(new AssignManagerCommand(request,uuid));
+        return this.commandBus.execute(new AssignManagerCommand(request, uuid));
     }
 
     @Patch('change-password/:uuid')
     async ChangePassword(@Param('uuid') uuid: string, @Body() request: ChangePasswordRequestDto) {
-        return this.commandBus.execute(new ChangePasswordCommand(request,uuid));
+        return this.commandBus.execute(new ChangePasswordCommand(request, uuid));
     }
 
     @Put('change-password/:uuid')
     async ChangePasswordPut(@Param('uuid') uuid: string, @Body() request: ChangePasswordRequestDto) {
-        return this.commandBus.execute(new ChangePasswordCommand(request,uuid));
+        return this.commandBus.execute(new ChangePasswordCommand(request, uuid));
     }
 
     @Post('assign-checklist/:uuid')
     async AssignCheckListToUser(@Param('uuid') uuid: string, @Body() request: AssingCheckListRequestDto) {
-        return this.commandBus.execute(new AssignCheckListCommand(request,uuid));
+        return this.commandBus.execute(new AssignCheckListCommand(request, uuid));
     }
 
     @Get('assigned-checklist/:uuid')
@@ -78,7 +79,7 @@ export class UserController {
     }
 
     @Delete('multiple/assignament')
-    async deleteMultipleUserAssignament(@Body() request: DeleteMultipleAssignamentsDto ) {
+    async deleteMultipleUserAssignament(@Body() request: DeleteMultipleAssignamentsDto) {
         return this.commandBus.execute(new DeleteMultipleUserAssignamentCommand(request));
     }
 
@@ -89,6 +90,11 @@ export class UserController {
 
     @Post('assign-schedule/:uuid')
     async AssignScheduleToUser(@Param('uuid') uuid: string, @Body() request: AssingScheduleRequestDto) {
-        return this.commandBus.execute(new AssignScheduleCommand(request,uuid));
+        return this.commandBus.execute(new AssignScheduleCommand(request, uuid));
+    }
+
+    @Post('change-empowered-status/:uuid')
+    async empowerUser(@Param('uuid') uuid: string) {
+        return this.commandBus.execute(new ChangeEmpoweredStatusCommand(uuid));
     }
 }

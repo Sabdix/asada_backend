@@ -38,6 +38,7 @@ import { ScheduleRepository } from "src/schedule/infrastructure/repositories/Sch
 import { ScheduleService } from "src/schedule/application/services/schedule.service";
 import { AssignScheduleCommandHandler } from "./application/commands/AssginSchedule/AssignSchedule.command.handler";
 import { DeleteMultipleUserAssignamentCommandHandler } from "./application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command.handler";
+import { ChangeEmpoweredStatusCommandHandler } from "./application/commands/ChangeEmpoweredStatus/ChangeEmpowered.command.handler";
 
 @Module({
     imports: [
@@ -74,7 +75,8 @@ import { DeleteMultipleUserAssignamentCommandHandler } from "./application/comma
         DeleteUserAssignamentCommandHandler,
         GetUsersByBranchQueryHandler,
         AssignScheduleCommandHandler,
-        DeleteMultipleUserAssignamentCommandHandler
+        DeleteMultipleUserAssignamentCommandHandler,
+        ChangeEmpoweredStatusCommandHandler
     ],
     exports: [
         UserService,

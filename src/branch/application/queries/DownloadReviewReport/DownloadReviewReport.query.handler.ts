@@ -5,20 +5,39 @@ import { BranchReviewService } from '../../services/BranchReview.service';
 import { ReviewReportDto } from '../../dtos/ReviewReport.dto';
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs/promises';
+import { BranchService } from '../../services/Branch.service';
 
 
 @QueryHandler(DownloadReviewReportQuery)
 export class DownloadReviewReportQueryHandler implements IQueryHandler<DownloadReviewReportQuery> {
     constructor(
-        private branchReviewService: BranchReviewService
+        private branchReviewService: BranchReviewService,
+        private branchService: BranchService
     ) { }
 
     async execute(query: DownloadReviewReportQuery): Promise<WsResponse<string | Buffer>> {
         try {
-            const reviews = await this.branchReviewService.getAllReviewsByRangeTime(
-                new Date(query.initialDate),
-                new Date(query.endDate),
-            );
+
+            let reviews
+            if (query.branchId) {
+
+                const branch = await this.branchService.getBranchByUuid(query.branchId)
+                if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
+
+                reviews = await this.branchReviewService.getBranchReviewsByRangeTime(
+                    new Date(query.initialDate),
+                    new Date(query.endDate),
+                    branch.uuid
+                );
+            } else {
+                reviews = await this.branchReviewService.getAllReviewsByRangeTime(
+                    new Date(query.initialDate),
+                    new Date(query.endDate),
+                );;
+
+            }
+
+
             if (reviews.length == 0) return WsResponse.buildNotFoundResponse('REVIEWS NOT FOUND');
 
             const data: ReviewReportDto[] = [];

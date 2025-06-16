@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 import { WsResponse } from "src/common/dtos/WsResponse.dto";
@@ -16,7 +16,9 @@ import { UpdateRecipeCategoryRequestDto } from "src/recipe/application/dtos/Upda
 import { GetRecipeByUuidQuery } from "src/recipe/application/queries/GetRecipeByUuid/GetRecipeByUuid.query";
 import { GetRecipeCategoriesQuery } from "src/recipe/application/queries/GetRecipeCategories/GetRecipeCategories.query";
 import { GetRecipeCategoryByUuidQuery } from "src/recipe/application/queries/GetRecipeCategoryByUuid/GetRecipeCategoryByUuid.query";
+import { GetRecipePdfQuery } from "src/recipe/application/queries/GetRecipePdf/GetRecipePdf.query";
 import { GetRecipesQuery } from "src/recipe/application/queries/GetRecipes/GetRecipes.query";
+import { GetRecipeVideoQuery } from "src/recipe/application/queries/GetRecipeVideo/GetRecipeVideo.query";
 
 
 
@@ -54,31 +56,70 @@ export class recipeController {
 
     @Post('create')
     @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './media/recipe/pdfs',
-                filename: (req, file, cb) => {
-                    const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-                    return cb(null, `${randomName}${extname(file.originalname)}`);
+        FileFieldsInterceptor(
+            [
+                {
+                    name: 'pdfFile',
+                    maxCount: 1,
                 },
-            }),
-            fileFilter: (req, file, cb) => {
-                if (!file.originalname.match(/\.(pdf)$/)) {
-                    return cb(new Error('Solo se permiten archivos PDF'), false);
-                }
-                cb(null, true);
+                {
+                    name: 'videoFile',
+                    maxCount: 1,
+                },
+            ],
+            {
+                storage: diskStorage({
+                    destination: (req, file, cb) => {
+                        if (file.fieldname === 'pdfFile') {
+                            cb(null, './media/recipe/pdfs');
+                        } else if (file.fieldname === 'videoFile') {
+                            cb(null, './media/recipe/videos');
+                        } else {
+                            cb(new Error('Campo de archivo no reconocido'), "");
+                        }
+                    },
+                    filename: (req, file, cb) => {
+                        return cb(null, file.originalname);
+                    },
+                }),
+                fileFilter: (req, file, cb) => {
+                    if (file.fieldname === 'pdfFile') {
+                        if (!file.originalname.match(/\.(pdf)$/)) {
+                            return cb(new Error('Solo se permiten archivos PDF'), false);
+                        }
+                    } else if (file.fieldname === 'videoFile') {
+                        if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
+                            return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
+                        }
+                    }
+                    cb(null, true);
+                },
+                limits: {
+                    fileSize: 100 * 1024 * 1024,
+                },
             },
-            limits: {
-                fileSize: 10 * 1024 * 1024, // Limite de 10 MB
-            },
-        }),
+        ),
     )
-    async createRecipe(@Body() createRecipeRequestDto: CreateRecipeRequestDto, @UploadedFile() file: Express.Multer.File) {
-        if (!file) {
-            return WsResponse.buildBadRequestResponse('File is requiered');
-        }
+    async createRecipe(
+        @Body() createRecipeRequestDto: CreateRecipeRequestDto,
+        @UploadedFiles() files: Record<string, Express.Multer.File[]>,
+    ) {
+        const pdfFile = files.pdfFile ? files.pdfFile[0] : null;
+        const videoFile = files.videoFile ? files.videoFile[0] : null;
 
-        return this.commandBus.execute(new CreateRecipeCommand(createRecipeRequestDto, file.path));
+        if (!pdfFile) {
+            return WsResponse.buildBadRequestResponse('PDF file is required.');
+        }
+        if (!videoFile) {
+            return WsResponse.buildBadRequestResponse('Video file is required.');
+        }
+        return this.commandBus.execute(
+            new CreateRecipeCommand(
+                createRecipeRequestDto,
+                pdfFile.filename,
+                videoFile.filename,
+            ),
+        );
     }
 
     @Get('')
@@ -98,31 +139,68 @@ export class recipeController {
 
     @Put(':uuid')
     @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './media/recipe/pdfs',
-                filename: (req, file, cb) => {
-                    const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-                    return cb(null, `${randomName}${extname(file.originalname)}`);
+        FileFieldsInterceptor(
+            [
+                {
+                    name: 'pdfFile',
+                    maxCount: 1,
                 },
-            }),
-            fileFilter: (req, file, cb) => {
-                if (!file.originalname.match(/\.(pdf)$/)) {
-                    return cb(new Error('Solo se permiten archivos PDF'), false);
-                }
-                cb(null, true);
+                {
+                    name: 'videoFile',
+                    maxCount: 1,
+                },
+            ],
+            {
+                storage: diskStorage({
+                    destination: (req, file, cb) => {
+                        if (file.fieldname === 'pdfFile') {
+                            cb(null, './media/recipe/pdfs');
+                        } else if (file.fieldname === 'videoFile') {
+                            cb(null, './media/recipe/videos');
+                        } else {
+                            cb(new Error('Campo de archivo no reconocido'), "");
+                        }
+                    },
+                    filename: (req, file, cb) => {
+                        return cb(null, file.originalname);
+                    },
+                }),
+                fileFilter: (req, file, cb) => {
+                    if (file.fieldname === 'pdfFile') {
+                        if (!file.originalname.match(/\.(pdf)$/)) {
+                            return cb(new Error('Solo se permiten archivos PDF'), false);
+                        }
+                    } else if (file.fieldname === 'videoFile') {
+                        if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
+                            return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
+                        }
+                    }
+                    cb(null, true);
+                },
+                limits: {
+                    fileSize: 100 * 1024 * 1024,
+                },
             },
-            limits: {
-                fileSize: 10 * 1024 * 1024, // Limite de 10 MB
-            },
-        }),
+        ),
     )
-    async UpdateRecipe(@Param('uuid') uuid: string, @Body() request: UpdateRecipeCategoryRequestDto, @UploadedFile() file: Express.Multer.File) {
-        
-        const updateFile = !!file
+    async UpdateRecipe(@Param('uuid') uuid: string, @Body() request: UpdateRecipeCategoryRequestDto, @UploadedFiles() files: Record<string, Express.Multer.File[]>,) {
+        const updatePdfName = !!files.pdfFile
+        const updateVideoName = !!files.videoFile
 
-        const filePath = file ? file.path : "";
+        const pdfFileName = files.pdfFile ? files.pdfFile[0].filename : "";
+        const videoFileName = files.videoFile ? files.videoFile[0].filename : "";
 
-        return this.commandBus.execute(new UpdateRecipeCommand(request, uuid, filePath, updateFile));
+
+        return this.commandBus.execute(new UpdateRecipeCommand(request, uuid, pdfFileName, updatePdfName, videoFileName, updateVideoName));
+    }
+
+    @Get('video/:uuid')
+    async getRecipeVideo(@Param('uuid') uuid: string) {
+        return this.queryBus.execute(new GetRecipeVideoQuery(uuid));
+    }
+
+    @Get('pdf/:uuid')
+    async getRecipePdf(@Param('uuid') uuid: string) {
+        return this.queryBus.execute(new GetRecipePdfQuery(uuid));
     }
 }

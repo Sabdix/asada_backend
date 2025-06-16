@@ -115,4 +115,68 @@ export class CheckListHistoryService {
             .andWhere('clh.deletedAt IS NULL')
             .getMany();
     }
+
+    getBranchCheckListHistoryByRangeTime(initialDate: Date, endDate: Date, uuid_branch: string) {
+        // return this.chekListHistoryRepository.find({
+        //     where: { date: Between(initialDate, endDate) },
+        //     relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true
+        // });
+
+        return this.chekListHistoryRepository
+            .createQueryBuilder('clh')
+            .leftJoinAndSelect(
+                'clh.check_list_user',
+                'clu',
+                'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clh.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'u.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .where('clh.date BETWEEN :initialDate AND :endDate', { initialDate, endDate })
+            .andWhere('clh.deletedAt IS NULL')
+            .andWhere('u.uuid_branch = :uuid_branch', { uuid_branch })
+            .getMany();
+    }
+
+    getCheckListHistoryByBranch(uuid_branch: string) {
+        // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
+
+        return this.chekListHistoryRepository
+            .createQueryBuilder('clh')
+            .leftJoinAndSelect(
+                'clh.check_list_user',
+                'clu',
+                'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clh.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'u.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .where('clh.deletedAt IS NULL')
+            .andWhere('b.uuid = :uuid_branch', { uuid_branch })
+            .getMany();
+    }
 }

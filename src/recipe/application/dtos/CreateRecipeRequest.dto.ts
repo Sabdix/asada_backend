@@ -7,8 +7,8 @@ export class CreateRecipeRequestDto {
     @IsNotEmpty()
     description: string;
 
-    @IsOptional()
-    video: string;
+    // @IsOptional()
+    // video: string;
 
     @IsNotEmpty()
     uuid_category: string;

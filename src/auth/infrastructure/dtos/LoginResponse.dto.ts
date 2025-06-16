@@ -4,11 +4,11 @@ import { User } from "src/user/domain/entities/User.entity";
 
 export class LoginResponseDto {
   constructor(
-    public accessToken: string,
-    public refreshToken: string,
-    public user: UserDto
+    // public accessToken: string,
+    // public refreshToken: string,
+    //public user: UserDto
   ) { }
-  // @Expose()
+  @Expose()
   // name: string;
 
   // @Expose()
@@ -23,14 +23,14 @@ export class LoginResponseDto {
   // @Expose()
   // mail: string;
 
-  // // @Exclude()
-  // // password: string;
+  // @Exclude()
+  // password: string;
 
-  // // @Exclude()
-  // // refresh_token: string;
+  // @Exclude()
+  // refresh_token: string;
 
-  // // @Exclude()
-  // // secret: string;
+  // @Exclude()
+  // secret: string;
 
   // @Expose()
   // uuid_role: string;
@@ -44,8 +44,14 @@ export class LoginResponseDto {
   // @Expose()
   // uuid_branch: string;
 
-  // @Expose()
-  // change_password: boolean;
+  @Expose()
+  change_password: boolean;
+
+  @Expose()
+  accessToken: string;
+
+  @Expose()
+  refreshToken: string;
 
   @Expose()
   @Type(() => UserDto)

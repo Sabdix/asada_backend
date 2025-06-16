@@ -47,6 +47,7 @@ export class CheckListUserAnswersService {
             .createQueryBuilder('clua')
             .leftJoinAndSelect(
                 'clua.check_list_criteria_answer',
+                'clca',
                 'clca.deletedAt IS NOT NULL OR clca.deletedAt IS NULL'
             )
             .leftJoinAndSelect(

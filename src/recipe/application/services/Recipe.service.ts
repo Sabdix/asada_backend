@@ -9,13 +9,13 @@ import { Recipe } from 'src/recipe/domain/entities/Recipe.entity';
 export class RecipeService {
     constructor(private readonly recipeRepository: RecipeRepository) { }
 
-    creteRecipe(request: CreateRecipeRequestDto, pdfUrl: string, recipeCategory: RecipeCategory) {
+    creteRecipe(request: CreateRecipeRequestDto, pdfUrl: string, recipeCategory: RecipeCategory, videoUrl: string) {
         return this.recipeRepository.save(
             this.recipeRepository.create({
                 name: request.name,
                 description: request.description,
                 pdf: pdfUrl,
-                video: request.video,
+                video: videoUrl,
                 category: recipeCategory
             })
         )

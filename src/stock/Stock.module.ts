@@ -18,18 +18,36 @@ import { GetProductByUuidQueryHandler } from "./application/queries/GetProductBy
 import { GetProductsQueryQueryHandler } from "./application/queries/GetProducts/GetProducts.query.handler";
 import { DeleteProductCommandHandler } from "./application/commands/DeleteProduct/DeleteProduct.command.handler";
 import { UpdateProductCommandHandler } from "./application/commands/UpdateProduct/UpdateProduct.command.handler";
+import { Stock } from "./domain/entities/Stock.entity";
+import { StockRepository } from "./infrastructure/repositories/Stock.repository";
+import { StockService } from "./application/services/Stock.service";
+import { CreateStockCommandHandler } from "./application/commands/CreateStock/CreateStock.command.handler";
+import { BranchService } from "src/branch/application/services/Branch.service";
+import { Branch } from "src/branch/domain/entities/Branch.entity";
+import { BranchModule } from "src/branch/Branch.module";
+import { BranchRepository } from "src/branch/infrastructure/repositories/branch.repository";
+import { GetStocksQueryHandler } from "./application/queries/GetStocks/GetStocks.query.handler";
+import { GetStockByBranchQueryHandler } from "./application/queries/GetStockByBranch/GEtStockByBranch.query.handler";
+import { GetStockByUuidQueryHandler } from "./application/queries/GetStockByUuid/GetStockByUuid.query.handler";
+import { DeleteStockCommandHandler } from "./application/commands/DeleteStock/DeleteStock.command.handler";
+import { UpdateStockCommandHandler } from "./application/commands/UpdateStock/UpdateStock.command.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([ProductCategory, StockProduct]),
+        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch]),
+        BranchModule
     ],
     providers: [
         ProductCategoryRepository,
         StockProductRepository,
+        StockRepository,
+        BranchRepository,
 
         ProductService,
         ProductCategoryService,
+        StockService,
+        BranchService,
 
         GetProductsQueryQueryHandler,
         GetProductByUuidQueryHandler,
@@ -44,10 +62,19 @@ import { UpdateProductCommandHandler } from "./application/commands/UpdateProduc
         DeleteProductCategoryCommandHandler,
         UpdateProductCategoryCommandHandler,
         CreateProductCategoryCommandHandler,
+
+        GetStocksQueryHandler,
+        GetStockByBranchQueryHandler,
+        GetStockByUuidQueryHandler,
+
+        CreateStockCommandHandler,
+        DeleteStockCommandHandler,
+        UpdateStockCommandHandler
     ],
     exports: [
         ProductCategoryService,
-        ProductService
+        ProductService,
+        StockService
     ],
     controllers: [stockController]
 })

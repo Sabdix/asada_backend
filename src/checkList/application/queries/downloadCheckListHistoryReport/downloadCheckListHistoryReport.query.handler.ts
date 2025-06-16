@@ -5,29 +5,50 @@ import * as fs from 'fs/promises';
 import { DownloadCheckListHistoryReportQuery } from './downloadCheckListHistoryReport.query';
 import { CheckListHistoryService } from '../../services/checkListHistory.service';
 import { CheckListHistoryReportDto } from '../../dtos/CheckListHistoryReport.dto';
+import { BranchService } from 'src/branch/application/services/Branch.service';
+import { UserService } from 'src/user/application/services/user.service';
 
 
 @QueryHandler(DownloadCheckListHistoryReportQuery)
 export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler<DownloadCheckListHistoryReportQuery> {
     constructor(
-        private checkListHistoryService: CheckListHistoryService
+        private checkListHistoryService: CheckListHistoryService,
+        private branchService: BranchService,
+        private userService: UserService
     ) { }
 
     async execute(query: DownloadCheckListHistoryReportQuery): Promise<WsResponse<string | Buffer>> {
         try {
-            const histories = await this.checkListHistoryService.getCheckListHistoryByRangeTime(
-                new Date(query.initialDate),
-                new Date(query.endDate),
-            );
+
+            let histories
+            if (query.branchId) {
+
+                const branch = await this.branchService.getBranchByUuid(query.branchId)
+                 if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
+
+                histories = await this.checkListHistoryService.getBranchCheckListHistoryByRangeTime(
+                    new Date(query.initialDate),
+                    new Date(query.endDate),
+                    branch.uuid
+                );
+            } else {
+                histories = await this.checkListHistoryService.getCheckListHistoryByRangeTime(
+                    new Date(query.initialDate),
+                    new Date(query.endDate),
+                );
+
+            }
             if (histories.length == 0) return WsResponse.buildNotFoundResponse('REVIEWS NOT FOUND');
 
             const data: CheckListHistoryReportDto[] = [];
-
+            
             for (const history of histories) {
+                
                 const historyReport = new CheckListHistoryReportDto();
                 historyReport.Lista = history.check_list_user.checkList.name;
-                historyReport.Empleado = history.user.name + " " + history.user.last_name + " " + history.user.second_last_name;
-                historyReport.Sucursal = history.user.branch.name;
+                const user = await  this.userService.getUserByUuid(history.uuid_user)
+                historyReport.Empleado = user?.name + " " + user?.last_name + " " + user?.second_last_name;
+                historyReport.Sucursal = user?.branch?.name ? user?.branch.name :"";
                 let dayName = "";
                 switch (history.check_list_user.weekDay) {
                     case 0:
@@ -52,7 +73,7 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                         dayName = 'Sábado';
                         break;
                     default:
-                        dayName = 'Día Inválido'; 
+                        dayName = 'Día Inválido';
                         break;
                 }
                 historyReport.Dia = dayName;

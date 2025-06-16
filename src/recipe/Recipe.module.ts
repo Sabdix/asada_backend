@@ -19,6 +19,8 @@ import { GetRecipesQueryHandler } from "./application/queries/GetRecipes/GetReci
 import { GetRecipeByUuidQueryHandler } from "./application/queries/GetRecipeByUuid/GetRecipeByUuid.query.handler";
 import { DeleteRecipeCommandHandler } from "./application/commands/DeleteRecipe/DeleteRecipe.command.handler";
 import { UpdateRecipeCommandHandler } from "./application/commands/UpdateRecipe/UpdateRecipe.command.handler";
+import { GetRecipePdfQueryHandler } from "./application/queries/GetRecipePdf/GetRecipePdf.query.handler";
+import { GetRecipeVideoQueryHandler } from "./application/queries/GetRecipeVideo/GetRecipeVideo.query.handler";
 
 
 @Module({
@@ -38,6 +40,8 @@ import { UpdateRecipeCommandHandler } from "./application/commands/UpdateRecipe/
 
         GetRecipesQueryHandler,
         GetRecipeByUuidQueryHandler,
+        GetRecipePdfQueryHandler,
+        GetRecipeVideoQueryHandler,
 
         CreateRecipeCategoryCommandHandler,
         DeleteRecipeCommandHandler,

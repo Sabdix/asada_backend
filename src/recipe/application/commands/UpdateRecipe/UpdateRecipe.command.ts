@@ -5,7 +5,7 @@ import { UpdateRecipeRequestDto } from '../../dtos/UpdateRecipeRequest.dto';
 
 
 export class UpdateRecipeCommand extends Command<WsResponse<RecipeDto | string>> {
-  constructor(public body: UpdateRecipeRequestDto, public uuid: string, public filePath: string, public updateFile: boolean
+  constructor(public body: UpdateRecipeRequestDto, public uuid: string, public pdfFileName: string, public updatePdfName: boolean, public videoFileName: string, public updateVideoName: boolean
   ) {
     super();
   }
