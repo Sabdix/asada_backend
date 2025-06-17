@@ -9,12 +9,14 @@ import { DeleteStockCommand } from "src/stock/application/commands/DeleteStock/D
 import { UpdateProductCommand } from "src/stock/application/commands/UpdateProduct/UpdateProduct.command";
 import { UpdateProductCategoryCommand } from "src/stock/application/commands/UpdateProductCategory/UpdateProductCategory.command";
 import { UpdateStockCommand } from "src/stock/application/commands/UpdateStock/UpdateStock.command";
+import { ValidateStockCommand } from "src/stock/application/commands/ValidateStock/ValidateStock.command";
 import { CreateProductCategoryRequestDto } from "src/stock/application/dtos/CreateProductCategory.dto";
 import { CreateProductRequestDto } from "src/stock/application/dtos/CreateProductRequest.dto";
 import { CreateStockRequestDto } from "src/stock/application/dtos/CreateStock.dto";
 import { UpdateProductCategoryRequestDto } from "src/stock/application/dtos/UpdateProductCategoryRequest.dto";
 import { UpdateProductRequestDto } from "src/stock/application/dtos/UpdateProductRequest.dto";
 import { UpdateStockRequestDto } from "src/stock/application/dtos/UpdateStockRequest.dto";
+import { ValidateStockRequestDto } from "src/stock/application/dtos/ValidateStockRequest.dto";
 import { GetProductCategoriesQuery } from "src/stock/application/queries/GerProductCategories/GetProductCategories.query";
 import { GetProductByUuidQuery } from "src/stock/application/queries/GetProductByUuid/GetProductByUuid.query";
 import { GetProductCategoryByUuidQuery } from "src/stock/application/queries/GetProductCategoryByUuid/GetProductCategoryByUuid.query";
@@ -110,5 +112,10 @@ export class stockController {
     @Put(':uuid')
     async UpdateStock(@Param('uuid') uuid: string, @Body() request: UpdateStockRequestDto) {
         return this.commandBus.execute(new UpdateStockCommand(request, uuid));
+    }
+
+    @Post('validation')
+    async validateStock(@Body() validateStockRequestDto: ValidateStockRequestDto) {
+        return this.commandBus.execute(new ValidateStockCommand(validateStockRequestDto));
     }
 }
