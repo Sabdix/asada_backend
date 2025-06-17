@@ -31,23 +31,36 @@ import { GetStockByBranchQueryHandler } from "./application/queries/GetStockByBr
 import { GetStockByUuidQueryHandler } from "./application/queries/GetStockByUuid/GetStockByUuid.query.handler";
 import { DeleteStockCommandHandler } from "./application/commands/DeleteStock/DeleteStock.command.handler";
 import { UpdateStockCommandHandler } from "./application/commands/UpdateStock/UpdateStock.command.handler";
+import { StockHistoryService } from "./application/services/StockHistory.service";
+import { UserService } from "src/user/application/services/user.service";
+import { UserRepository } from "src/user/infrastructure/repositories/user.repository";
+import { UserModule } from "src/user/User.module";
+import { User } from "src/user/domain/entities/User.entity";
+import { ValidateStockCommandHandler } from "./application/commands/ValidateStock/ValidateStock.command.handler";
+import { StockHistory } from "./domain/entities/StockHistory.entity";
+import { StockHistoryRepository } from "./infrastructure/repositories/StockHistory.repository";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch]),
-        BranchModule
+        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch, User, StockHistory]),
+        BranchModule,
+        UserModule
     ],
     providers: [
         ProductCategoryRepository,
         StockProductRepository,
         StockRepository,
         BranchRepository,
+        UserRepository,
+        StockHistoryRepository,
 
         ProductService,
         ProductCategoryService,
         StockService,
         BranchService,
+        UserService,
+        StockHistoryService,
 
         GetProductsQueryQueryHandler,
         GetProductByUuidQueryHandler,
@@ -69,12 +82,14 @@ import { UpdateStockCommandHandler } from "./application/commands/UpdateStock/Up
 
         CreateStockCommandHandler,
         DeleteStockCommandHandler,
-        UpdateStockCommandHandler
+        UpdateStockCommandHandler,
+        ValidateStockCommandHandler
     ],
     exports: [
         ProductCategoryService,
         ProductService,
-        StockService
+        StockService,
+        StockHistoryService
     ],
     controllers: [stockController]
 })
