@@ -54,72 +54,102 @@ export class recipeController {
         return this.commandBus.execute(new UpdateRecipeCategoryCommand(request, uuid));
     }
 
+    // @Post('create')
+    // @UseInterceptors(
+    //     FileFieldsInterceptor(
+    //         [
+    //             {
+    //                 name: 'pdfFile',
+    //                 maxCount: 1,
+    //             },
+    //             {
+    //                 name: 'videoFile',
+    //                 maxCount: 1,
+    //             },
+    //         ],
+    //         {
+    //             storage: diskStorage({
+    //                 destination: (req, file, cb) => {
+    //                     if (file.fieldname === 'pdfFile') {
+    //                         cb(null, './media/recipe/pdfs');
+    //                     } else if (file.fieldname === 'videoFile') {
+    //                         cb(null, './media/recipe/videos');
+    //                     } else {
+    //                         cb(new Error('Campo de archivo no reconocido'), "");
+    //                     }
+    //                 },
+    //                 filename: (req, file, cb) => {
+    //                     return cb(null, file.originalname);
+    //                 },
+    //             }),
+    //             fileFilter: (req, file, cb) => {
+    //                 if (file.fieldname === 'pdfFile') {
+    //                     if (!file.originalname.match(/\.(pdf)$/)) {
+    //                         return cb(new Error('Solo se permiten archivos PDF'), false);
+    //                     }
+    //                 } else if (file.fieldname === 'videoFile') {
+    //                     if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
+    //                         return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
+    //                     }
+    //                 }
+    //                 cb(null, true);
+    //             },
+    //             limits: {
+    //                 fileSize: 100 * 1024 * 1024,
+    //             },
+    //         },
+    //     ),
+    // )
+    // async createRecipe(
+    //     @Body() createRecipeRequestDto: CreateRecipeRequestDto,
+    //     @UploadedFiles() files: Record<string, Express.Multer.File[]>,
+    // ) {
+    //     const pdfFile = files.pdfFile ? files.pdfFile[0] : null;
+    //     const videoFile = files.videoFile ? files.videoFile[0] : null;
+
+    //     if (!pdfFile) {
+    //         return WsResponse.buildBadRequestResponse('PDF file is required.');
+    //     }
+    //     if (!videoFile) {
+    //         return WsResponse.buildBadRequestResponse('Video file is required.');
+    //     }
+    //     return this.commandBus.execute(
+    //         new CreateRecipeCommand(
+    //             createRecipeRequestDto,
+    //             pdfFile.filename,
+    //             videoFile.filename,
+    //         ),
+    //     );
+    // }
+
     @Post('create')
     @UseInterceptors(
-        FileFieldsInterceptor(
-            [
-                {
-                    name: 'pdfFile',
-                    maxCount: 1,
-                },
-                {
-                    name: 'videoFile',
-                    maxCount: 1,
-                },
-            ],
-            {
-                storage: diskStorage({
-                    destination: (req, file, cb) => {
-                        if (file.fieldname === 'pdfFile') {
-                            cb(null, './media/recipe/pdfs');
-                        } else if (file.fieldname === 'videoFile') {
-                            cb(null, './media/recipe/videos');
-                        } else {
-                            cb(new Error('Campo de archivo no reconocido'), "");
-                        }
-                    },
-                    filename: (req, file, cb) => {
-                        return cb(null, file.originalname);
-                    },
-                }),
-                fileFilter: (req, file, cb) => {
-                    if (file.fieldname === 'pdfFile') {
-                        if (!file.originalname.match(/\.(pdf)$/)) {
-                            return cb(new Error('Solo se permiten archivos PDF'), false);
-                        }
-                    } else if (file.fieldname === 'videoFile') {
-                        if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
-                            return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
-                        }
-                    }
-                    cb(null, true);
-                },
-                limits: {
-                    fileSize: 100 * 1024 * 1024,
-                },
-            },
-        ),
-    )
-    async createRecipe(
-        @Body() createRecipeRequestDto: CreateRecipeRequestDto,
-        @UploadedFiles() files: Record<string, Express.Multer.File[]>,
-    ) {
-        const pdfFile = files.pdfFile ? files.pdfFile[0] : null;
-        const videoFile = files.videoFile ? files.videoFile[0] : null;
+        FileInterceptor('pdfFile', {
+            storage: diskStorage({
+                destination: './media/recipe/pdfs',
+                filename: (req, pdfFile, cb) => {
+                    const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                    return cb(null, pdfFile.originalname);
 
+                },
+            }),
+            fileFilter: (req, file, cb) => {
+                if (!file.originalname.match(/\.(pdf)$/)) {
+                    return cb(new Error('Solo se permiten archivos PDF'), false);
+                }
+                cb(null, true);
+            },
+            limits: {
+                fileSize: 10 * 1024 * 1024, // Limite de 10 MB
+            },
+        }),
+    )
+    async createRecipe(@Body() createRecipeRequestDto: CreateRecipeRequestDto, @UploadedFile() pdfFile: Express.Multer.File) {
         if (!pdfFile) {
-            return WsResponse.buildBadRequestResponse('PDF file is required.');
+            return WsResponse.buildBadRequestResponse('pdfFile is requiered');
         }
-        if (!videoFile) {
-            return WsResponse.buildBadRequestResponse('Video file is required.');
-        }
-        return this.commandBus.execute(
-            new CreateRecipeCommand(
-                createRecipeRequestDto,
-                pdfFile.filename,
-                videoFile.filename,
-            ),
-        );
+
+        return this.commandBus.execute(new CreateRecipeCommand(createRecipeRequestDto, pdfFile.filename));
     }
 
     @Get('')
@@ -137,61 +167,92 @@ export class recipeController {
         return this.commandBus.execute(new DeleteRecipeCommand(uuid));
     }
 
+    // @Put(':uuid')
+    // @UseInterceptors(
+    //     FileFieldsInterceptor(
+    //         [
+    //             {
+    //                 name: 'pdfFile',
+    //                 maxCount: 1,
+    //             },
+    //             {
+    //                 name: 'videoFile',
+    //                 maxCount: 1,
+    //             },
+    //         ],
+    //         {
+    //             storage: diskStorage({
+    //                 destination: (req, file, cb) => {
+    //                     if (file.fieldname === 'pdfFile') {
+    //                         cb(null, './media/recipe/pdfs');
+    //                     } else if (file.fieldname === 'videoFile') {
+    //                         cb(null, './media/recipe/videos');
+    //                     } else {
+    //                         cb(new Error('Campo de archivo no reconocido'), "");
+    //                     }
+    //                 },
+    //                 filename: (req, file, cb) => {
+    //                     return cb(null, file.originalname);
+    //                 },
+    //             }),
+    //             fileFilter: (req, file, cb) => {
+    //                 if (file.fieldname === 'pdfFile') {
+    //                     if (!file.originalname.match(/\.(pdf)$/)) {
+    //                         return cb(new Error('Solo se permiten archivos PDF'), false);
+    //                     }
+    //                 } else if (file.fieldname === 'videoFile') {
+    //                     if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
+    //                         return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
+    //                     }
+    //                 }
+    //                 cb(null, true);
+    //             },
+    //             limits: {
+    //                 fileSize: 100 * 1024 * 1024,
+    //             },
+    //         },
+    //     ),
+    // )
+    // async UpdateRecipe(@Param('uuid') uuid: string, @Body() request: UpdateRecipeCategoryRequestDto, @UploadedFiles() files: Record<string, Express.Multer.File[]>,) {
+    //     const updatePdfName = !!files.pdfFile
+    //     const updateVideoName = !!files.videoFile
+
+    //     const pdfFileName = files.pdfFile ? files.pdfFile[0].filename : "";
+    //     const videoFileName = files.videoFile ? files.videoFile[0].filename : "";
+
+
+    //     return this.commandBus.execute(new UpdateRecipeCommand(request, uuid, pdfFileName, updatePdfName, videoFileName, updateVideoName));
+    // }
+
     @Put(':uuid')
     @UseInterceptors(
-        FileFieldsInterceptor(
-            [
-                {
-                    name: 'pdfFile',
-                    maxCount: 1,
+        FileInterceptor('pdfFile', {
+            storage: diskStorage({
+                destination: './media/recipe/pdfs',
+                filename: (req, PdfFile, cb) => {
+                    const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
+                    return cb(null, PdfFile.originalname);
+
                 },
-                {
-                    name: 'videoFile',
-                    maxCount: 1,
-                },
-            ],
-            {
-                storage: diskStorage({
-                    destination: (req, file, cb) => {
-                        if (file.fieldname === 'pdfFile') {
-                            cb(null, './media/recipe/pdfs');
-                        } else if (file.fieldname === 'videoFile') {
-                            cb(null, './media/recipe/videos');
-                        } else {
-                            cb(new Error('Campo de archivo no reconocido'), "");
-                        }
-                    },
-                    filename: (req, file, cb) => {
-                        return cb(null, file.originalname);
-                    },
-                }),
-                fileFilter: (req, file, cb) => {
-                    if (file.fieldname === 'pdfFile') {
-                        if (!file.originalname.match(/\.(pdf)$/)) {
-                            return cb(new Error('Solo se permiten archivos PDF'), false);
-                        }
-                    } else if (file.fieldname === 'videoFile') {
-                        if (!file.originalname.match(/\.(mp4|mov|avi|wmv|flv|webm)$/i)) {
-                            return cb(new Error('Solo se permiten archivos de video (mp4, mov, avi, etc.)'), false);
-                        }
-                    }
-                    cb(null, true);
-                },
-                limits: {
-                    fileSize: 100 * 1024 * 1024,
-                },
+            }),
+            fileFilter: (req, PdfFile, cb) => {
+                if (!PdfFile.originalname.match(/\.(pdf)$/)) {
+                    return cb(new Error('Solo se permiten archivos PDF'), false);
+                }
+                cb(null, true);
             },
-        ),
+            limits: {
+                fileSize: 10 * 1024 * 1024, // Limite de 10 MB
+            },
+        }),
     )
-    async UpdateRecipe(@Param('uuid') uuid: string, @Body() request: UpdateRecipeCategoryRequestDto, @UploadedFiles() files: Record<string, Express.Multer.File[]>,) {
-        const updatePdfName = !!files.pdfFile
-        const updateVideoName = !!files.videoFile
+    async UpdateRecipe(@Param('uuid') uuid: string, @Body() request: UpdateRecipeCategoryRequestDto, @UploadedFile() pdfFile: Express.Multer.File) {
 
-        const pdfFileName = files.pdfFile ? files.pdfFile[0].filename : "";
-        const videoFileName = files.videoFile ? files.videoFile[0].filename : "";
+        const updateFile = !!pdfFile
 
+        const filename = pdfFile ? pdfFile.filename : "";
 
-        return this.commandBus.execute(new UpdateRecipeCommand(request, uuid, pdfFileName, updatePdfName, videoFileName, updateVideoName));
+        return this.commandBus.execute(new UpdateRecipeCommand(request, uuid, filename, updateFile));
     }
 
     @Get('video/:uuid')

@@ -30,6 +30,7 @@ import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/appli
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
+import { UpdateHistoryStatusRequestDto } from "src/checkList/application/dtos/UpdateHistoryStatusRequest.dto";
 import { DownloadCheckListHistoryReportQuery } from "src/checkList/application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query";
 import { GetAssignedCheckListQuery } from "src/checkList/application/queries/getAssignedCheckList/getAssignedCheckList.query";
 import { GetAssignedCheckListByBranchQuery } from "src/checkList/application/queries/getAssignedCheckListByBranch/getAssignedCheckListByBranch.query";
@@ -179,8 +180,8 @@ export class CheckListController {
   }
 
   @Put('history-status/:uuid')
-  async update(@Param('uuid') uuid: string) {
-    return this.commandBus.execute(new UpdateHistoryStatusCommand(uuid));
+  async updateHistoryStatus(@Param('uuid') uuid: string, @Body() request: UpdateHistoryStatusRequestDto) {
+    return this.commandBus.execute(new UpdateHistoryStatusCommand(uuid, request));
   }
 
   @Get('history/report/download')

@@ -29,7 +29,7 @@ export class TasksService {
 
     for (const checkList of checkListOfTheDay) {
       const checkListHistory = new CreateCheckListHistoryRequestDto
-      checkListHistory.status = false
+      checkListHistory.status = 0
       checkListHistory.uuid_check_list = checkList.uuid_check_list
       checkListHistory.uuid_user = checkList.uuid_user
       checkListHistory.date = new Date()

@@ -9,13 +9,14 @@ import { Recipe } from 'src/recipe/domain/entities/Recipe.entity';
 export class RecipeService {
     constructor(private readonly recipeRepository: RecipeRepository) { }
 
-    creteRecipe(request: CreateRecipeRequestDto, pdfUrl: string, recipeCategory: RecipeCategory, videoUrl: string) {
+    // creteRecipe(request: CreateRecipeRequestDto, pdfUrl: string, recipeCategory: RecipeCategory, videoUrl: string) {
+    creteRecipe(request: CreateRecipeRequestDto, pdfUrl: string, recipeCategory: RecipeCategory) {
         return this.recipeRepository.save(
             this.recipeRepository.create({
                 name: request.name,
                 description: request.description,
                 pdf: pdfUrl,
-                video: videoUrl,
+                video: request.video,
                 category: recipeCategory
             })
         )
@@ -35,7 +36,7 @@ export class RecipeService {
             .createQueryBuilder('recipe') // Alias para la tabla de recipes
             .leftJoinAndSelect('recipe.category', 'category', 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL')
             .where('recipe.uuid = :uuid', { uuid })
-            .andWhere('recipe.deletedAt IS NULL') 
+            .andWhere('recipe.deletedAt IS NULL')
             .getOne();
     }
 

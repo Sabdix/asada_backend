@@ -4,7 +4,7 @@ export class CreateCheckListHistoryRequestDto {
     @IsNotEmpty()
     date: Date;
     @IsNotEmpty()
-    status: boolean;
+    status: number;
     @IsNotEmpty()
     uuid_check_list: string;
     @IsNotEmpty()
