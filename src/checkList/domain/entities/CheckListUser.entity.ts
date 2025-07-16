@@ -17,6 +17,12 @@ export class CheckListUser extends EntityBase {
   @Column()
   endHour: string;
 
+  @Column({default: false})
+  specialEvent: boolean;
+
+  @Column({ type: 'date', nullable: true})
+  eventDate: Date;
+
   @Column()
   uuid_check_list: string;
 

@@ -9,6 +9,7 @@ import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entit
 import { plainToInstance } from 'class-transformer';
 import { SimpleUserDto } from 'src/checkList/application/dtos/SimpleUser.dto';
 import { CheckListDto } from 'src/checkList/application/dtos/CheckList.dto';
+import { startOfDay } from 'date-fns';
 
 @CommandHandler(AssignCheckListCommand)
 export class AssignCheckListCommandHandler implements ICommandHandler<AssignCheckListCommand> {
@@ -30,6 +31,8 @@ export class AssignCheckListCommandHandler implements ICommandHandler<AssignChec
         
         const checkListArray = new Array<CheckListUserDto>
 
+        command.body.eventDate = startOfDay(command.body.eventDate)
+
         for (const weekDay of command.body.weekDay){
             const checkListUser = await this.checkListUserService.creteCheckList(command.body, weekDay, command.uuid)
             
@@ -49,6 +52,8 @@ export class AssignCheckListCommandHandler implements ICommandHandler<AssignChec
             newcheckListUser.initHour = checkListUser.initHour
             newcheckListUser.uuid = checkListUser.uuid
             newcheckListUser.weekDay = checkListUser.weekDay
+            newcheckListUser.specialEvent = checkListUser.specialEvent
+            newcheckListUser.eventDate = checkListUser.eventDate
             
 
             checkListArray.push(newcheckListUser)

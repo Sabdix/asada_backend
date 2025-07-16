@@ -10,6 +10,12 @@ export class CheckListHistory extends EntityBase {
     date: Date;
     @Column({default: 0})
     status: number;
+    @Column({default: false})
+    revised: boolean;
+    @Column({nullable: true})
+    comment: string;
+    @Column({default: false})
+    approved: boolean;
     @Column()
     uuid_check_list
     @Column()
