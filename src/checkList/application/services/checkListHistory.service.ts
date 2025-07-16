@@ -51,6 +51,11 @@ export class CheckListHistoryService {
                 'b', // Alias para Branch
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
             )
+            .leftJoinAndSelect(
+                'u.manager',
+                'm', // Alias para Manager
+                'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
+            )
             .where('clh.deletedAt IS NULL')
             .getMany();
     }
@@ -174,6 +179,11 @@ export class CheckListHistoryService {
                 'u.branch',
                 'b',
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'u.manager',
+                'm',
+                'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })

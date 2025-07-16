@@ -13,7 +13,9 @@ export class CheckListUserService {
                 uuid_check_list: request.uuid_check_list,
                 weekDay: weekDay,
                 initHour: request.initHour,
-                endHour: request.endHour
+                endHour: request.endHour,
+                specialEvent: request.specialEvent,
+                eventDate: request.eventDate
             })
         )
     }
@@ -59,8 +61,12 @@ export class CheckListUserService {
             .getMany();
     }
 
-    getCheckListByWeekDay(weekDay: number) {
-        return this.chekListUserRepository.find({ where: { weekDay: weekDay } });
+    getCheckListByWeekDay(weekDay: number, eventDate: Date) {
+        return this.chekListUserRepository.find(
+            {
+                where: [{ weekDay: weekDay, specialEvent: false },
+                { eventDate: eventDate, specialEvent: true }] 
+            });
     }
 
     getUserCheckListByBranch(uuid_branch: string) {

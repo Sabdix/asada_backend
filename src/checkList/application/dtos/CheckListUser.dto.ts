@@ -16,6 +16,10 @@ export class CheckListUserDto {
   @Expose()
   endHour: string;
   @Expose()
+  specialEvent: boolean;
+  @Expose()
+  eventDate: Date;
+  @Expose()
   @Type(() => CheckListDto)
   checkList: CheckListDto;
   @Expose()

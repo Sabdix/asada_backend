@@ -91,4 +91,23 @@ export class UserService {
       .getMany();
   }
 
+  getUserMannagerByUuid(uuid: string, uuid_manager: string) {
+    // return this.userRepository.findOne({
+    //   where: { uuid: uuid },
+    //   relations: ['role', 'manager', 'branch', 'schedule'],
+    //   withDeleted: true
+    // });
+
+    return this.userRepository
+      .createQueryBuilder('user') 
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
+      .where('user.uuid = :uuid', { uuid }) 
+      .andWhere('manager.uuid = :uuid_manager', { uuid_manager })
+      .andWhere('user.deletedAt IS NULL') 
+      .getOne();
+  }
+
 }

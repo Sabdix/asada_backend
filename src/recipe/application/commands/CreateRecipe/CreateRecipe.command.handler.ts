@@ -22,7 +22,8 @@ export class CreateRecipeCommandHandler implements ICommandHandler<CreateRecipeC
         if (!recipeCategory)
             return WsResponse.buildNotFoundResponse('RECIPE CATEGORY NOT FOUND');
         
-        const recipe = await this.recipeService.creteRecipe(command.body, command.pdfUrl, recipeCategory, command.videoUrl)
+        // const recipe = await this.recipeService.creteRecipe(command.body, command.pdfUrl, recipeCategory, command.videoUrl)
+        const recipe = await this.recipeService.creteRecipe(command.body, command.pdfUrl, recipeCategory)
 
         return WsResponse.buildOkResponse(
             plainToInstance(RecipeDto, recipe, { excludeExtraneousValues: true }),

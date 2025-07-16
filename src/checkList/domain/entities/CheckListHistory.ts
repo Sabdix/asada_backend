@@ -8,8 +8,14 @@ import { CheckListUser } from './CheckListUser.entity';
 export class CheckListHistory extends EntityBase {
     @Column({ type: 'date' })
     date: Date;
-    @Column()
-    status: boolean;
+    @Column({default: 0})
+    status: number;
+    @Column({default: false})
+    revised: boolean;
+    @Column({nullable: true})
+    comment: string;
+    @Column({default: false})
+    approved: boolean;
     @Column()
     uuid_check_list
     @Column()

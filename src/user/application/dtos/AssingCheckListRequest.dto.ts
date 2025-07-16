@@ -9,4 +9,8 @@ export class AssingCheckListRequestDto {
     initHour: string;
     @IsNotEmpty()
     endHour: string;
+    @IsNotEmpty()
+    specialEvent: boolean;
+    @IsNotEmpty()
+    eventDate: Date;
 }

@@ -17,7 +17,7 @@ export class UpdateHistoryStatusCommandHandler implements ICommandHandler<Update
         if (!checkListHistory)
             return WsResponse.buildNotFoundResponse('CHECKLIST_HISTORY NOT FOUND');
 
-        checkListHistory.status = true
+        checkListHistory.status = command.request.status
 
         await this.checkListHistoryService.UpdateCheckListHistoryByUuid(checkListHistory)
        

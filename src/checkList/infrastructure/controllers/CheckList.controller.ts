@@ -13,6 +13,7 @@ import { DeleteCheckListItemCriteriaAnswerCommand } from "src/checkList/applicat
 import { DuplicateCheckListCommand } from "src/checkList/application/commands/DuplicateCheckList/DuplicateCheckList.command";
 import { DuplicateItemCommand } from "src/checkList/application/commands/DuplicateItem/DuplicateItem.command";
 import { ReassignHistoryCommand } from "src/checkList/application/commands/ResassingHistory/ReassignHistory.command";
+import { ReviewCheckListHistoryCommand } from "src/checkList/application/commands/ReviewCheckListHistory/ReviewCheckListHistory.command";
 import { UpdateCheckListCommand } from "src/checkList/application/commands/UpdateCheckList/UpdateCheckList.command";
 import { UpdateCheckListItemCommand } from "src/checkList/application/commands/UpdateCheckListItem/UpdateCheckListItem.command";
 import { UpdateCheckListItemCriteriaCommand } from "src/checkList/application/commands/UpdateCheckListItemCriteria/UpdateCheckListItemCriteria.command";
@@ -26,10 +27,12 @@ import { CreateCheckListUserAnswerRequest } from "src/checkList/application/dtos
 import { DuplicateCheckListRequestDto } from "src/checkList/application/dtos/DuplicateCheckListRequest.dto";
 import { DuplicateItemRequestDto } from "src/checkList/application/dtos/DuplicateItemRequest.dto";
 import { ReassignHistoryRequestDto } from "src/checkList/application/dtos/ReassignHistoryRequest.dto";
+import { ReviewCheckListHistoryDto } from "src/checkList/application/dtos/ReviewCheckListHistory.dto";
 import { UpdateCheckListItemCriteriaAnswerRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaAnswerRequest.dto";
 import { UpdateCheckListItemCriteriaRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemCriteriaRequest.dto";
 import { UpdateCheckListItemRequestDto } from "src/checkList/application/dtos/UpdateCheckListItemRequest.dto";
 import { UpdateCheckListRequestDto } from "src/checkList/application/dtos/UpdateCheckListRequest.dto";
+import { UpdateHistoryStatusRequestDto } from "src/checkList/application/dtos/UpdateHistoryStatusRequest.dto";
 import { DownloadCheckListHistoryReportQuery } from "src/checkList/application/queries/downloadCheckListHistoryReport/downloadCheckListHistoryReport.query";
 import { GetAssignedCheckListQuery } from "src/checkList/application/queries/getAssignedCheckList/getAssignedCheckList.query";
 import { GetAssignedCheckListByBranchQuery } from "src/checkList/application/queries/getAssignedCheckListByBranch/getAssignedCheckListByBranch.query";
@@ -179,8 +182,8 @@ export class CheckListController {
   }
 
   @Put('history-status/:uuid')
-  async update(@Param('uuid') uuid: string) {
-    return this.commandBus.execute(new UpdateHistoryStatusCommand(uuid));
+  async updateHistoryStatus(@Param('uuid') uuid: string, @Body() request: UpdateHistoryStatusRequestDto) {
+    return this.commandBus.execute(new UpdateHistoryStatusCommand(uuid, request));
   }
 
   @Get('history/report/download')
@@ -219,5 +222,10 @@ export class CheckListController {
   @Post('duplicate')
   async duplicateCheckList(@Body() duplicateCheckListRequestDto: DuplicateCheckListRequestDto) {
     return this.commandBus.execute(new DuplicateCheckListCommand(duplicateCheckListRequestDto));
+  }
+
+  @Post('review/:uuid')
+  async reviewCheckListHistory(@Param('uuid') uuid: string, @Body() reviewCheckListHistoryDto: ReviewCheckListHistoryDto) {
+    return this.commandBus.execute(new ReviewCheckListHistoryCommand(uuid,reviewCheckListHistoryDto));
   }
 }

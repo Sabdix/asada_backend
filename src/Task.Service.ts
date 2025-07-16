@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { CheckListUserService } from './checkList/application/services/checkListUser.service';
 import { CreateCheckListHistoryRequestDto } from './checkList/application/dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListHistoryService } from './checkList/application/services/checkListHistory.service';
+import { startOfDay } from 'date-fns';
 
 @Injectable()
 export class TasksService {
@@ -24,12 +25,14 @@ export class TasksService {
     const weekDay = new Date().getDay();
     this.logger.log('Se obtiene el weekday actual: ' + weekDay.toString());
 
-    const checkListOfTheDay = await this.checkListUserService.getCheckListByWeekDay(weekDay)
+    const today = new Date()
+    
+    const checkListOfTheDay = await this.checkListUserService.getCheckListByWeekDay(weekDay, startOfDay(today))
     this.logger.log('Se obtienen todos los checklist a los que se les generará un registro en el historial');
 
     for (const checkList of checkListOfTheDay) {
       const checkListHistory = new CreateCheckListHistoryRequestDto
-      checkListHistory.status = false
+      checkListHistory.status = 0
       checkListHistory.uuid_check_list = checkList.uuid_check_list
       checkListHistory.uuid_user = checkList.uuid_user
       checkListHistory.date = new Date()

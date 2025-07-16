@@ -9,6 +9,12 @@ export class CheckListHistoryDto {
     date: Date;
     @Expose()
     status: boolean;
+    @Expose()
+    comment: string;
+    @Expose()
+    approved: boolean;
+    @Expose()
+    revised: boolean;
 
     @Expose()
     @Type(() => CheckListUserDto)
