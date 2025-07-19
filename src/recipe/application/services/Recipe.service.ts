@@ -3,6 +3,7 @@ import { RecipeRepository } from 'src/recipe/infrastructure/repositories/recipe.
 import { CreateRecipeRequestDto } from '../dtos/CreateRecipeRequest.dto';
 import { RecipeCategory } from 'src/recipe/domain/entities/RecipeCategory.entity';
 import { Recipe } from 'src/recipe/domain/entities/Recipe.entity';
+import { take } from 'rxjs';
 
 
 @Injectable()
@@ -47,6 +48,17 @@ export class RecipeService {
             .leftJoinAndSelect('recipe.category', 'category', 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL')
             .where('recipe.deletedAt IS NULL')
             .getMany();
+    }
+
+    getRecipesPaginated(size: number, offset:number) {
+        //return this.recipeRepository.find({ relations: ['category'], withDeleted: true });
+        return this.recipeRepository
+            .createQueryBuilder('recipe')
+            .leftJoinAndSelect('recipe.category', 'category', 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL')
+            .where('recipe.deletedAt IS NULL')
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();
     }
 
     deleteRecipe(uuid: string) {
