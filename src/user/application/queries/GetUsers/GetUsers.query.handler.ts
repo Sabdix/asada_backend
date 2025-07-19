@@ -1,6 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
-import { RoleDto } from '../../dtos/Role.dto';
 import { plainToInstance } from 'class-transformer';
 import { GetUsersQuery } from './GetUsers.query';
 import { UserService } from '../../services/user.service';
@@ -10,11 +9,11 @@ import { UserDto } from '../../dtos/User.dto';
 export class GetUsersQueryHandler implements IQueryHandler<GetUsersQuery> {
   constructor(private  userService: UserService) {}
 
-  async execute(): Promise<WsResponse<UserDto[]>> {
-    const users = await this.userService.getUsers();
+  async execute(query: GetUsersQuery): Promise<WsResponse<UserDto[]>> {
+    const [users, total] = await this.userService.getUsersPaginated(query.size, query.offset);
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(UserDto, users, { excludeExtraneousValues: true }),
+    return WsResponse.buildOkListResponse(
+      plainToInstance(UserDto, users, { excludeExtraneousValues: true }), total
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AssignScheduleCommand } from "src/user/application/commands/AssginSchedule/AssignSchedule.command";
 import { AssignCheckListCommand } from "src/user/application/commands/AssignCheckList/AssignCheckList.command";
@@ -28,9 +28,9 @@ export class UserController {
         private queryBus: QueryBus,
     ) { }
 
-    @Get('')
-    async getUsers() {
-        return this.queryBus.execute(new GetUsersQuery());
+    @Get()
+    async getUsers(@Query('size') size:number, @Query('offset') offset:number) {
+        return this.queryBus.execute(new GetUsersQuery(size, offset));
     }
 
     @Post('create')
