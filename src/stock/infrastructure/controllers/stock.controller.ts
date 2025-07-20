@@ -89,9 +89,9 @@ export class stockController {
         return this.commandBus.execute(new CreateStockCommand(createStockRequestDto));
     }
 
-    @Get('')
-    async getStocks() {
-        return this.queryBus.execute(new GetStocksQuery());
+    @Get()
+    async getStocks(@Query('size') size:number, @Query('offset') offset:number) {
+        return this.queryBus.execute(new GetStocksQuery(size, offset));
     }
 
     @Get('by-branch/:uuid')

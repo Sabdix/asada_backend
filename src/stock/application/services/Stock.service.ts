@@ -92,6 +92,30 @@ export class StockService {
             .getMany();
     }
 
+    getStocksPaginated(size:number, offset:number) {
+          return this.stockRepository
+            .createQueryBuilder('stock')
+            .leftJoinAndSelect(
+                'stock.category',
+                'category',
+                'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.product',
+                'product',
+                'product.deletedAt IS NOT NULL OR product.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.branch',
+                'branch',
+                'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .andWhere('product.deletedAt IS NULL')
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();
+    }
+
     deleteStock(uuid: string) {
         return this.stockRepository.softDelete({ uuid: uuid });
     }

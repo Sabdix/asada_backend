@@ -9,11 +9,11 @@ import { StockService } from '../../services/Stock.service';
 export class GetStocksQueryHandler implements IQueryHandler<GetStocksQuery> {
   constructor(private  stockService: StockService) {}
 
-  async execute() {
-    const stocks = await this.stockService.getStocks();
+  async execute(query: GetStocksQuery) {
+    const [stocks, total] = await this.stockService.getStocksPaginated(query.size, query.offset);
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }),
+    return WsResponse.buildOkListResponse(
+      plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }), total
     );
   }
 }
