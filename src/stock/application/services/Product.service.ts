@@ -47,6 +47,20 @@ export class ProductService {
             .getMany();
     }
 
+     getProductsPaginated(size: number, offset:number) {
+        return this.productRepository
+            .createQueryBuilder('product') 
+            .leftJoinAndSelect(
+                'product.category',
+                'category', 
+                'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+            )
+            .andWhere('product.deletedAt IS NULL')
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();
+    }
+
     deleteProduct(uuid: string) {
         return this.productRepository.softDelete({ uuid: uuid });
     }

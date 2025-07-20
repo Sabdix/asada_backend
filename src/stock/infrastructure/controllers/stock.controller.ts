@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { CreateProductCommand } from "src/stock/application/commands/CreateProduct/CreateProduct.command";
 import { CreateProductCategoryCommand } from "src/stock/application/commands/CreateProductCategory/CreateProductCategory.command";
@@ -70,8 +70,8 @@ export class stockController {
     }
 
     @Get('/product')
-    async getProducts() {
-        return this.queryBus.execute(new GetProductsQuery());
+    async getProducts(@Query('size') size:number, @Query('offset') offset:number) {
+        return this.queryBus.execute(new GetProductsQuery(size, offset));
     }
 
     @Delete('product/:uuid')

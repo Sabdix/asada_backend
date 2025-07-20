@@ -9,11 +9,11 @@ import { ProductDto } from '../../dtos/Product.dto';
 export class GetProductsQueryQueryHandler implements IQueryHandler<GetProductsQuery> {
   constructor(private  productService: ProductService) {}
 
-  async execute() {
-    const products = await this.productService.getProducts();
+  async execute(query: GetProductsQuery) {
+    const [products, total] = await this.productService.getProductsPaginated(query.size, query.offset);
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(ProductDto, products, { excludeExtraneousValues: true }),
+    return WsResponse.buildOkListResponse(
+      plainToInstance(ProductDto, products, { excludeExtraneousValues: true }), total
     );
   }
 }
