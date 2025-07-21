@@ -7,6 +7,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { JwtModule } from "@nestjs/jwt";
 import { UserService } from "src/user/application/services/user.service";
 import { UserModule } from "src/user/User.module";
+import { ForgotPasswordCommandHandler } from "./application/commands/ForgotPassword/ForgotPassword.command.handler";
 
 @Module({ 
     imports:[
@@ -20,7 +21,7 @@ import { UserModule } from "src/user/User.module";
       signOptions: { expiresIn: '1h' },
     }),
     ],
-    providers : [LoginCommandHandler, AuthService],
+    providers : [LoginCommandHandler, AuthService, ForgotPasswordCommandHandler],
     controllers : [AuthController],
     
 })

@@ -19,6 +19,7 @@ import { StockHistory } from 'src/stock/domain/entities/StockHistory.entity';
 import { StockProduct } from 'src/stock/domain/entities/StockProduct.entity';
 import { Role } from 'src/user/domain/entities/Role.entity';
 import { User } from 'src/user/domain/entities/User.entity';
+import { WorkArea } from 'src/user/domain/entities/WorkArea.entity';
 
 export const databaseProvider: TypeOrmModuleAsyncOptions = {
   /*type: 'mysql',
@@ -72,7 +73,8 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       ProductCategory,
       StockProduct,
       Stock,
-      StockHistory
+      StockHistory,
+      WorkArea
     ],
     synchronize: false,
     logging: false,

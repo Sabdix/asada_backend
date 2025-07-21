@@ -7,13 +7,15 @@ import { UpdateUserCommand } from './UpdateUser.command';
 import { UserService } from '../../services/user.service';
 import { UserDto } from '../../dtos/User.dto';
 import { BranchService } from 'src/branch/application/services/Branch.service';
+import { WorkAreaService } from '../../services/workArea.service';
 
 @CommandHandler(UpdateUserCommand)
 export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserCommand> {
     constructor(
         private userService: UserService,
         private roleService: RoleService,
-        private branchService: BranchService
+        private branchService: BranchService,
+        private workAreaService: WorkAreaService
     ) { }
 
     async execute(command: UpdateUserCommand): Promise<WsResponse<UserDto | string>> {
@@ -28,6 +30,7 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
         user.phone = command.body.phone ?? user.phone;
         user.uuid_branch = command.body.uuid_branch ?? user.uuid_branch;
         user.uuid_role = command.body.uuid_role ?? user.uuid_role;
+        user.uuid_work_area = command.body.uuid_work_area
 
         const role = await this.roleService.getRoleByUuid(user.uuid_role);
         if (!role)
@@ -38,6 +41,17 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
         if (!branch)
             return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
         user.branch = branch;
+
+        console.debug(user.uuid_work_area)
+
+        if (user.uuid_work_area != null) {
+            const workArea = await this.workAreaService.getWorkAreaByUuid(user.uuid_work_area);
+            if (!workArea)
+                return WsResponse.buildNotFoundResponse('WORK_AREA NOT FOUND');
+            user.workArea = workArea;
+        }else{
+            user.workArea = null
+        }
 
         await this.userService.UpdateUser(user);
 

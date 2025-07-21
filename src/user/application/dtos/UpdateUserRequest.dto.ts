@@ -1,5 +1,4 @@
 import { Optional } from '@nestjs/common';
-import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class UpdateUserRequestDto {
     @Optional()
@@ -14,5 +13,7 @@ export class UpdateUserRequestDto {
     uuid_role: string;
     @Optional()
     uuid_branch: string;
+    @Optional()
+    uuid_work_area: string;
 }
 

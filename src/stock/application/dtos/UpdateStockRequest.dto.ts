@@ -8,6 +8,8 @@ export class UpdateStockRequestDto {
     @IsOptional()
     uuid_branch: string;
     @IsOptional()
+    uuid_work_area: string;
+    @IsOptional()
     quantity: number;
     @IsOptional()
     requiredStock: number;

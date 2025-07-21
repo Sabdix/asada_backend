@@ -17,6 +17,7 @@ export class UserRepository extends Repository<User> {
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.branch', 'branch')
       .leftJoinAndSelect('user.role','role')
+      .leftJoinAndSelect('user.workArea','workArea')
       .where('user.mail = :mail', { mail: request.mail })
       .andWhere('user.password = :password', { password: crypto.createHash('sha256').update(request.password).digest('hex') })
       .getOne();

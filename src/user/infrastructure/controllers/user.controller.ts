@@ -8,7 +8,7 @@ import { CreateUserCommand } from "src/user/application/commands/CreateUser/Crea
 import { DeleteMultipleUserAssignamentCommand } from "src/user/application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command";
 import { DeleteUserCommand } from "src/user/application/commands/DeleteUser/DeleteUser.command";
 import { DeleteUserAssignamentCommand } from "src/user/application/commands/DeleteUserAssignament/DeleteUserAssignament.command";
-import { ChangeEmpoweredStatusCommand} from "src/user/application/commands/ChangeEmpoweredStatus/ChangeEmpoweredStatus.command";
+import { ChangeEmpoweredStatusCommand } from "src/user/application/commands/ChangeEmpoweredStatus/ChangeEmpoweredStatus.command";
 import { UpdateUserCommand } from "src/user/application/commands/UpdateUser/UpdateUser.command";
 import { AssingManagerRequestDto } from "src/user/application/dtos/AssignManagerRequest.dto";
 import { AssingScheduleRequestDto } from "src/user/application/dtos/AssignScheduleRequest.dto";
@@ -20,6 +20,10 @@ import { UpdateUserRequestDto } from "src/user/application/dtos/UpdateUserReques
 import { GetAssignedCheckListQuery } from "src/user/application/queries/GetAssignedCheckList/GetAssignedCheckList.query";
 import { GetUsersQuery } from "src/user/application/queries/GetUsers/GetUsers.query";
 import { GetUsersByBranchQuery } from "src/user/application/queries/GetUsersByBranch/GetUsersByBranch.query";
+import { GetAllWorkAreaQuery } from "src/user/application/queries/GetAllWorkArea/GetAllWorkArea.query";
+import { AssingWorkAreaRequestDto } from "src/user/application/dtos/AssignWorkAreaRequest.dto";
+import { AssignWorkAreaCommand } from "src/user/application/commands/AssignWorkArea/AssignWorkArea.command";
+import { UnassignManagerCommand } from "src/user/application/commands/UnassignManager/UnassignManager.command";
 
 @Controller('user')
 export class UserController {
@@ -96,5 +100,20 @@ export class UserController {
     @Post('change-empowered-status/:uuid')
     async empowerUser(@Param('uuid') uuid: string) {
         return this.commandBus.execute(new ChangeEmpoweredStatusCommand(uuid));
+    }
+
+    @Get('work-area')
+    async getAllWorkArea() {
+        return this.queryBus.execute(new GetAllWorkAreaQuery());
+    }
+
+    @Post('assign-work-area/:uuid')
+    async AssignWorkAreaToUser(@Param('uuid') uuid: string, @Body() request: AssingWorkAreaRequestDto) {
+        return this.commandBus.execute(new AssignWorkAreaCommand(request, uuid));
+    }
+
+    @Post('unassign-manager/:uuid')
+    async UnassignManagerToUser(@Param('uuid') uuid: string) {
+        return this.commandBus.execute(new UnassignManagerCommand(uuid));
     }
 }

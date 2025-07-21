@@ -39,11 +39,14 @@ import { User } from "src/user/domain/entities/User.entity";
 import { ValidateStockCommandHandler } from "./application/commands/ValidateStock/ValidateStock.command.handler";
 import { StockHistory } from "./domain/entities/StockHistory.entity";
 import { StockHistoryRepository } from "./infrastructure/repositories/StockHistory.repository";
+import { WorkArea } from "src/user/domain/entities/WorkArea.entity";
+import { WorkAreaRepository } from "src/user/infrastructure/repositories/workArea.repository";
+import { WorkAreaService } from "src/user/application/services/workArea.service";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch, User, StockHistory]),
+        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch, User, StockHistory, WorkArea]),
         BranchModule,
         UserModule
     ],
@@ -54,6 +57,7 @@ import { StockHistoryRepository } from "./infrastructure/repositories/StockHisto
         BranchRepository,
         UserRepository,
         StockHistoryRepository,
+        WorkAreaRepository,
 
         ProductService,
         ProductCategoryService,
@@ -61,6 +65,7 @@ import { StockHistoryRepository } from "./infrastructure/repositories/StockHisto
         BranchService,
         UserService,
         StockHistoryService,
+        WorkAreaService,
 
         GetProductsQueryQueryHandler,
         GetProductByUuidQueryHandler,
