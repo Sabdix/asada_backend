@@ -42,8 +42,6 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
             return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
         user.branch = branch;
 
-        console.debug(user.uuid_work_area)
-
         if (user.uuid_work_area != null) {
             const workArea = await this.workAreaService.getWorkAreaByUuid(user.uuid_work_area);
             if (!workArea)
