@@ -81,6 +81,10 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 historyReport.HoraFin = history.check_list_user.endHour;
                 historyReport.Fecha = history.date.toString();
                 historyReport.Estado = history.status ? "Realizada" : "Sin Realizar"
+                historyReport.Evaluador = user?.manager?.name + " " + user?.manager?.last_name + " " + user?.manager?.second_last_name;
+                historyReport.Evaluacion = history.approved ? "Aprobada" : "No Aprobada"
+                historyReport.Comentarios = history.comment
+                
                 data.push(historyReport);
             }
 
@@ -96,6 +100,9 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 { header: 'HoraFin', key: 'HoraFin', width: 10 },
                 { header: 'Fecha', key: 'Fecha', width: 15 },
                 { header: 'Estado', key: 'Estado', width: 10 },
+                { header: 'Evaluador', key: 'Evaluador', width: 30 },
+                { header: 'Evaluacion', key: 'Evaluacion', width: 15 },
+                { header: 'Comentarios', key: 'Comentarios', width: 50 },
             ];
 
             data.forEach((item) => {

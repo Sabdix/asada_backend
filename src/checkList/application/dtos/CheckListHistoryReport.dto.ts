@@ -18,5 +18,10 @@ export class CheckListHistoryReportDto {
     Fecha: string;
     @Expose()
     Estado: string;
-
+    @Expose()
+    Evaluador: string;
+    @Expose()
+    Evaluacion: string;
+    @Expose()
+    Comentarios: string;
 }
