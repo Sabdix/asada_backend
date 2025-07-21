@@ -3,6 +3,7 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ProductCategory } from './ProductCategory.entity';
 import { Branch } from 'src/branch/domain/entities/Branch.entity';
 import { StockProduct } from './StockProduct.entity';
+import { WorkArea } from 'src/user/domain/entities/WorkArea.entity';
 
 @Entity('stock')
 export class Stock extends EntityBase {
@@ -14,6 +15,9 @@ export class Stock extends EntityBase {
 
     @Column()
     uuid_branch: string;
+    
+    @Column()
+    uuid_work_area: string;
 
     @Column({ type: 'decimal' })
     quantity: number;
@@ -35,4 +39,8 @@ export class Stock extends EntityBase {
     @ManyToOne(() => StockProduct)
     @JoinColumn({ name: 'uuid_product' })
     product: StockProduct;
+
+    @ManyToOne(() => WorkArea)
+    @JoinColumn({ name: 'uuid_work_area' })
+    workArea: WorkArea;
 }

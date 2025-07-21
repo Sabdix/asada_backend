@@ -17,6 +17,7 @@ export class StockService {
                 uuid_category: request.uuid_category,
                 uuid_product: request.uuid_product,
                 uuid_branch: request.uuid_branch,
+                uuid_work_area: request.uuid_work_area,
                 quantity: request.quantity,
                 requiredStock: request.requiredStock,
                 holidayRequiredStock: request.holidayRequiredStock
@@ -42,6 +43,11 @@ export class StockService {
                 'branch',
                 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
+            .leftJoinAndSelect(
+                'stock.workArea',
+                'workArea',
+                'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
             .where('stock.uuid_branch = :uuid_branch', { uuid_branch })
             .andWhere('product.deletedAt IS NULL')
             .getMany();
@@ -65,6 +71,11 @@ export class StockService {
                 'branch',
                 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
+            .leftJoinAndSelect(
+                'stock.workArea',
+                'workArea',
+                'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
             .where('stock.uuid = :uuid', { uuid })
             .andWhere('stock.deletedAt IS NULL')
             .getOne();
@@ -87,6 +98,11 @@ export class StockService {
                 'stock.branch',
                 'branch',
                 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.workArea',
+                'workArea',
+                'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
             .andWhere('product.deletedAt IS NULL')
             .getMany();

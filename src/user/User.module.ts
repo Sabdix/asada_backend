@@ -39,11 +39,17 @@ import { ScheduleService } from "src/schedule/application/services/schedule.serv
 import { AssignScheduleCommandHandler } from "./application/commands/AssginSchedule/AssignSchedule.command.handler";
 import { DeleteMultipleUserAssignamentCommandHandler } from "./application/commands/DeleteMultipleUserAssignament/DeleteMultipleUserAssignament.command.handler";
 import { ChangeEmpoweredStatusCommandHandler } from "./application/commands/ChangeEmpoweredStatus/ChangeEmpowered.command.handler";
+import { WorkArea } from "./domain/entities/WorkArea.entity";
+import { WorkAreaRepository } from "./infrastructure/repositories/workArea.repository";
+import { GetAllWorkAreaQueryHandler } from "./application/queries/GetAllWorkArea/GetAllWorkArea.query.handler";
+import { WorkAreaService } from "./application/services/workArea.service";
+import { AssignWorkAreaCommandHandler } from "./application/commands/AssignWorkArea/AssignWorkArea.command.handler";
+import { UnassignManagerCommandHandler } from "./application/commands/UnassignManager/UnassignManager.command.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([User, Role, Branch, CheckListUser, Schedule]),
+        TypeOrmModule.forFeature([User, Role, Branch, CheckListUser, Schedule, WorkArea]),
         BranchModule,
         forwardRef(() =>CheckListModule),
         ScheduleLocalModule
@@ -59,6 +65,8 @@ import { ChangeEmpoweredStatusCommandHandler } from "./application/commands/Chan
         CheckListUserRepository,
         ScheduleService,
         ScheduleRepository,
+        WorkAreaRepository,
+        WorkAreaService,
         CreateRoleCommandHandler,
         GetRoleByUuidQueryHandler,
         GetRolesQueryHandler,
@@ -76,7 +84,10 @@ import { ChangeEmpoweredStatusCommandHandler } from "./application/commands/Chan
         GetUsersByBranchQueryHandler,
         AssignScheduleCommandHandler,
         DeleteMultipleUserAssignamentCommandHandler,
-        ChangeEmpoweredStatusCommandHandler
+        ChangeEmpoweredStatusCommandHandler,
+        GetAllWorkAreaQueryHandler,
+        AssignWorkAreaCommandHandler,
+        UnassignManagerCommandHandler
     ],
     exports: [
         UserService,

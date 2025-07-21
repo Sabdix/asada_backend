@@ -18,5 +18,7 @@ export class CreateUserRequestDto {
     uuid_role: string;
     @IsNotEmpty()
     uuid_branch: string;
+    @IsNotEmpty()
+    uuid_work_area: string;
 }
 

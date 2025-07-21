@@ -2,6 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import { ProductCategoryDto } from './ProductCategory.dto';
 import { BranchDto } from 'src/branch/application/dtos/Branch.dto';
 import { ProductDto } from './Product.dto';
+import { WorkAreaDto } from 'src/user/application/dtos/WorkArea.dto';
 
 export class StockDto {
     @Expose()
@@ -36,4 +37,8 @@ export class StockDto {
     @Expose()
     @Type(() => ProductCategoryDto)
     branch?: BranchDto;
+
+    @Expose()
+    @Type(() => WorkAreaDto)
+    workArea?: WorkAreaDto;
 }

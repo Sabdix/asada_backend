@@ -1,9 +1,9 @@
-import { Exclude, Expose, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { RoleDto } from './Role.dto';
 import { ManagerDto } from './Manager.dto';
 import { UserBranchDto } from './UserBranch.dto';
 import { UserScheduleDto } from './UserSchedule.dto';
-import { BlobOptions } from 'buffer';
+import { WorkAreaDto } from './WorkArea.dto';
 
 export class UserDto {
     @Expose()
@@ -33,7 +33,7 @@ export class UserDto {
 
     @Expose()
     @Type(() => ManagerDto)
-    manager: ManagerDto;
+    manager: ManagerDto | null;
 
     @Expose()
     @Type(() => UserBranchDto)
@@ -42,4 +42,8 @@ export class UserDto {
     @Expose()
     @Type(() => UserScheduleDto)
     schedule: UserScheduleDto;
+
+    @Expose()
+    @Type(() => WorkAreaDto)
+    workArea: WorkAreaDto | null;
 }

@@ -1,6 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
-import { RoleDto } from '../../dtos/Role.dto';
 import { plainToInstance } from 'class-transformer';
 import { GetUsersQuery } from './GetUsers.query';
 import { UserService } from '../../services/user.service';

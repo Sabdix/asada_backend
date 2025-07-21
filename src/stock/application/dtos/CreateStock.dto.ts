@@ -8,6 +8,8 @@ export class CreateStockRequestDto {
     @IsNotEmpty()
     uuid_branch: string;
     @IsNotEmpty()
+    uuid_work_area: string;
+    @IsNotEmpty()
     quantity: number;
     @IsNotEmpty()
     requiredStock: number;

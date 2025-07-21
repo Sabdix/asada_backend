@@ -3,6 +3,7 @@ import { Role } from './Role.entity';
 import { Schedule } from '../../../schedule/domain/entities/Schedule.entity';
 import { Branch } from '../../../branch/domain/entities/Branch.entity';
 import { EntityBase } from 'src/common/entities/EntityBase';
+import { WorkArea } from './WorkArea.entity';
 
 @Entity()
 export class User extends EntityBase {
@@ -37,10 +38,13 @@ export class User extends EntityBase {
   uuid_schedule: string;
 
   @Column({ nullable: true })
-  uuid_user: string;
+  uuid_user: string | null;
 
   @Column({ nullable: true })
   uuid_branch: string;
+
+  @Column({ nullable: true })
+  uuid_work_area: string;
 
   @Column({ default: true })
   change_password: boolean;
@@ -63,5 +67,9 @@ export class User extends EntityBase {
   // Si 'uuid_user' apunta a otro usuario para relaciones jerárquicas, puedes agregar:
   @ManyToOne(() => User)
   @JoinColumn({ name: 'uuid_user' })
-  manager: User;
+  manager: User | null;
+
+  @ManyToOne(() => WorkArea)
+  @JoinColumn({ name: 'uuid_work_area' })
+  workArea: WorkArea | null;
 }

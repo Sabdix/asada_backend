@@ -5,6 +5,7 @@ import { CreateUserRequestDto } from '../dtos/CreateUserRequest.dto';
 import { User } from 'src/user/domain/entities/User.entity';
 import * as crypto from 'crypto';
 import { ChangePasswordRequestDto } from '../dtos/ChangePasswordRequest.dto';
+import { ForgotPasswordRequestDto } from 'src/auth/infrastructure/dtos/ForgotPaswordRequest.dto';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,10 @@ export class UserService {
 
   getUserByUuidAndPassword(request: ChangePasswordRequestDto, uuid: string) {
     return this.userRepository.getUserByUuidAndPassword(request, uuid)
+  }
+
+  getUserByUuidMailAndPhone(request: ForgotPasswordRequestDto, uuid: string) {
+    return this.userRepository.findOne({ where: { uuid: uuid, mail: request.mail, phone: request.phone } })
   }
 
   getUsers() {
@@ -30,8 +35,9 @@ export class UserService {
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
-      .where('user.deletedAt IS NULL') 
-      .getMany(); 
+      .leftJoinAndSelect('user.workArea', 'workArea', 'workArea.deletedAt IS NOT NULL OR workArea.deletedAt IS NULL')
+      .where('user.deletedAt IS NULL')
+      .getMany();
   }
 
   getUserByMail(mail: string) {
@@ -46,13 +52,14 @@ export class UserService {
     // });
 
     return this.userRepository
-      .createQueryBuilder('user') 
+      .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
-      .where('user.uuid = :uuid', { uuid }) 
-      .andWhere('user.deletedAt IS NULL') 
+      .leftJoinAndSelect('user.workArea', 'workArea', 'workArea.deletedAt IS NOT NULL OR workArea.deletedAt IS NULL')
+      .where('user.uuid = :uuid', { uuid })
+      .andWhere('user.deletedAt IS NULL')
       .getOne();
   }
 
@@ -67,7 +74,8 @@ export class UserService {
         phone: request.phone,
         secret: crypto.randomBytes(64).toString('hex'),
         uuid_role: request.uuid_role,
-        uuid_branch: request.uuid_branch
+        uuid_branch: request.uuid_branch,
+        uuid_work_area: request.uuid_work_area
       })
     )
   }
@@ -87,6 +95,7 @@ export class UserService {
       .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.workArea', 'workArea', 'workArea.deletedAt IS NOT NULL OR workArea.deletedAt IS NULL')
       .orderBy('role.hierarchy', 'ASC')
       .getMany();
   }
@@ -99,15 +108,19 @@ export class UserService {
     // });
 
     return this.userRepository
-      .createQueryBuilder('user') 
+      .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
-      .where('user.uuid = :uuid', { uuid }) 
+      .leftJoinAndSelect('user.workArea', 'workArea', 'workArea.deletedAt IS NOT NULL OR workArea.deletedAt IS NULL')
+      .where('user.uuid = :uuid', { uuid })
       .andWhere('manager.uuid = :uuid_manager', { uuid_manager })
-      .andWhere('user.deletedAt IS NULL') 
+      .andWhere('user.deletedAt IS NULL')
       .getOne();
   }
 
+  UnassignManager(user: User) {
+    return this.userRepository.update({ uuid: user.uuid }, { manager: new User, uuid_user: null });
+  }
 }
