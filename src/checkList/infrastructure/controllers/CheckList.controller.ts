@@ -157,8 +157,8 @@ export class CheckListController {
   }
 
   @Get('assigned/all-users')
-  async getAssignedCheckList() {
-    return this.queryBus.execute(new GetAssignedCheckListQuery());
+  async getAssignedCheckList(@Query('size') size: number, @Query('offset') offset: number) {
+    return this.queryBus.execute(new GetAssignedCheckListQuery(size, offset));
   }
 
   @Post('user/:uuid/answer')
@@ -167,8 +167,8 @@ export class CheckListController {
   }
 
   @Get('history/all')
-  async getAllCheckListHistory() {
-    return this.queryBus.execute(new GetCheckListHistoryQuery());
+  async getAllCheckListHistory(@Query('size') size: number, @Query('offset') offset) {
+    return this.queryBus.execute(new GetCheckListHistoryQuery(size, offset));
   }
 
   @Get('user/:uuid/history/')
