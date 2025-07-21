@@ -33,6 +33,22 @@ export class BranchReviewService {
             .getMany();
     }
 
+    getBranchReviewsPaginated(size: number, offset: number) {
+        //return this.branchReviewRepository.find({ relations: ['branch'], withDeleted: true });
+
+        return this.branchReviewRepository
+            .createQueryBuilder('br')
+            .leftJoinAndSelect(
+                'br.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .where('br.deletedAt IS NULL')
+            .skip(offset)
+            .take(size)
+            .getManyAndCount();
+    }
+
     getBranchReviewsByUuid(uuid: string) {
         // return this.branchReviewRepository.find({ where: { uuid_branch: uuid }, relations: ['branch'], withDeleted: true });
         return this.branchReviewRepository
@@ -45,6 +61,22 @@ export class BranchReviewService {
             .where('br.uuid_branch = :uuid', { uuid })
             .andWhere('br.deletedAt IS NULL')
             .getMany();
+    }
+
+    getBranchReviewsByUuidPaginated(uuid: string, size: number, offset: number) {
+        // return this.branchReviewRepository.find({ where: { uuid_branch: uuid }, relations: ['branch'], withDeleted: true });
+        return this.branchReviewRepository
+            .createQueryBuilder('br')
+            .leftJoinAndSelect(
+                'br.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .where('br.uuid_branch = :uuid', { uuid })
+            .andWhere('br.deletedAt IS NULL')
+            .skip(size)
+            .take(offset)
+            .getManyAndCount();
     }
 
     getAllReviewsByRangeTime(initialDate: Date, endDate: Date) {
