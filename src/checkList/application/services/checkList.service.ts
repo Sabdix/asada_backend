@@ -29,6 +29,10 @@ export class CheckListService {
         return this.chekListRepository.find({order:{name: 'ASC'}});
     }
 
+    getCheckListPaginated(size: number, offset:number) {
+        return this.chekListRepository.findAndCount({order:{name: 'ASC'}, skip: offset, take: size});
+    }
+
     deleteCheckList(uuid: string) {
         return this.chekListRepository.softDelete({uuid: uuid});
     }

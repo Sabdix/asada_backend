@@ -61,6 +61,27 @@ export class CheckListUserService {
             .getMany();
     }
 
+     getAllUserCheckListPaginated(size:number, offset:number) {
+        // return this.chekListUserRepository.find({relations: ['checkList','user'], withDeleted: true });
+
+        return this.chekListUserRepository
+            .createQueryBuilder('clu')
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .where('clu.deletedAt IS NULL')
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();
+    }
+
     getCheckListByWeekDay(weekDay: number, eventDate: Date) {
         return this.chekListUserRepository.find(
             {

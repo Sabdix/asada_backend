@@ -13,8 +13,8 @@ export class GetCheckListQueryHandler implements IQueryHandler<GetCheckListQuery
     private checkListItemService: CheckListItemService
   ) { }
 
-  async execute(): Promise<WsResponse<CheckListDto[]>> {
-    const checkList = await this.checkService.getCheckList();
+  async execute(query: GetCheckListQuery): Promise<WsResponse<CheckListDto[]>> {
+    const [checkList, total] = await this.checkService.getCheckListPaginated(query.size, query.offset);
 
     const response = new Array<CheckListDto>
 
@@ -27,8 +27,8 @@ export class GetCheckListQueryHandler implements IQueryHandler<GetCheckListQuery
       response.push(checkListWithItems)
     }
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(CheckListDto, response, { excludeExtraneousValues: true }),
+    return WsResponse.buildOkListResponse(
+      plainToInstance(CheckListDto, response, { excludeExtraneousValues: true }), total
     );
   }
 }

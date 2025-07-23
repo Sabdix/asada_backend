@@ -40,6 +40,19 @@ export class UserService {
       .getMany();
   }
 
+   getUsersPaginated(size: number, offset:number) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
+      .where('user.deletedAt IS NULL') 
+      .take(size)
+      .skip(offset)
+      .getManyAndCount(); 
+  }
+
   getUserByMail(mail: string) {
     return this.userRepository.findOneBy({ mail: mail })
   }

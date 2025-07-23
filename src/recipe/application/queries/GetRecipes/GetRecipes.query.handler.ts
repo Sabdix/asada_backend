@@ -9,11 +9,11 @@ import { RecipeDto } from '../../dtos/Recipe.dto';
 export class GetRecipesQueryHandler implements IQueryHandler<GetRecipesQuery> {
   constructor(private  recipeService: RecipeService) {}
 
-  async execute() {
-    const recipes = await this.recipeService.getRecipes();
+  async execute(query: GetRecipesQuery) {
+    const [recipes, total] = await this.recipeService.getRecipesPaginated(query.size, query.offset);
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(RecipeDto, recipes, { excludeExtraneousValues: true }),
+    return WsResponse.buildOkListResponse(
+      plainToInstance(RecipeDto, recipes, { excludeExtraneousValues: true }), total
     );
   }
 }
