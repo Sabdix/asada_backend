@@ -18,10 +18,10 @@ export class GetCheckListHistoryByBranchQueryHandler implements IQueryHandler<Ge
         const branch = await this.branchService.getBranchByUuid(query.uuid);
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-        const checkListHistory = await this.checkListHistoryService.getCheckListHistoryByBranch(query.uuid);
+        const [checkListHistory, total] = await this.checkListHistoryService.getCheckListHistoryByBranchPaginated(query.uuid, query.size, query.offset);
 
-        return WsResponse.buildOkResponse(
-            plainToInstance(CheckListHistoryDto, checkListHistory, { excludeExtraneousValues: true }),
+        return WsResponse.buildOkListResponse(
+            plainToInstance(CheckListHistoryDto, checkListHistory, { excludeExtraneousValues: true }), total
         );
     }
 }

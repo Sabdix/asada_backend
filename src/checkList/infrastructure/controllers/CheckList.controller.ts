@@ -215,8 +215,11 @@ export class CheckListController {
   }
 
   @Get('history/by-branch/:uuid')
-  async getCheckListHistoryByBranch(@Param('uuid') uuid: string) {
-    return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid));
+  async getCheckListHistoryByBranch(
+    @Param('uuid') uuid: string, 
+    @Query('size') size: number, 
+    @Query('offset') offset: number) {
+    return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid, size, offset));
   }
 
   @Post('duplicate')
