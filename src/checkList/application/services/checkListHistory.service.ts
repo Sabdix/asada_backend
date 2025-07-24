@@ -5,6 +5,7 @@ import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistory
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
 import { Between } from 'typeorm';
+import { format, subMinutes } from 'date-fns';
 
 @Injectable()
 export class CheckListHistoryService {
@@ -57,6 +58,7 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
+            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
             .getMany();
     }
 
@@ -187,6 +189,43 @@ export class CheckListHistoryService {
             )
             .where('clh.deletedAt IS NULL')
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })
+            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .getMany();
+    }
+
+    getCheckListHistoryToNotify() {
+        // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
+
+        return this.chekListHistoryRepository
+            .createQueryBuilder('clh')
+            .leftJoinAndSelect(
+                'clh.check_list_user',
+                'clu',
+                'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clh.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'u.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'u.manager',
+                'm',
+                'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
+            )
+            .where('clh.deletedAt IS NULL')
+            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .andWhere('clu.endHour =:endHour', {endHour: format(subMinutes(new Date(),30), 'HH:mm')})
             .getMany();
     }
 }

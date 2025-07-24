@@ -1,5 +1,6 @@
 import { EntityBase } from 'src/common/entities/EntityBase';
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { WorkArea } from './WorkArea.entity';
 
 @Entity()
 export class Role extends EntityBase {
@@ -8,4 +9,11 @@ export class Role extends EntityBase {
 
   @Column()
   hierarchy: string;
+
+  @Column({ nullable: true })
+  uuid_work_area: string;
+
+  @ManyToOne(() => WorkArea)
+  @JoinColumn({ name: 'uuid_work_area' })
+  workArea: WorkArea | null;
 }

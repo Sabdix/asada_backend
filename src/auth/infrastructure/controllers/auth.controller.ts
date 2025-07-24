@@ -15,8 +15,8 @@ export class AuthController {
     return this.commandBus.execute(new LoginCommand(loginRequestDto));
   }
 
-  @Post('forgot-password/:uuid')
-  async ForgotPassword(@Param('uuid') uuid: string, @Body() ForgotPasswordRequestDto: ForgotPasswordRequestDto) {
-    return this.commandBus.execute(new ForgotPasswordCommand(uuid,ForgotPasswordRequestDto));
+  @Post('forgot-password')
+  async ForgotPassword(@Body() ForgotPasswordRequestDto: ForgotPasswordRequestDto) {
+    return this.commandBus.execute(new ForgotPasswordCommand( ForgotPasswordRequestDto));
   }
 }

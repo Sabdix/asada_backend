@@ -3,7 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { CheckListUserService } from './checkList/application/services/checkListUser.service';
 import { CreateCheckListHistoryRequestDto } from './checkList/application/dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListHistoryService } from './checkList/application/services/checkListHistory.service';
-import { startOfDay } from 'date-fns';
+import { format, startOfDay, subMinutes } from 'date-fns';
 
 @Injectable()
 export class TasksService {
@@ -26,7 +26,7 @@ export class TasksService {
     this.logger.log('Se obtiene el weekday actual: ' + weekDay.toString());
 
     const today = new Date()
-    
+
     const checkListOfTheDay = await this.checkListUserService.getCheckListByWeekDay(weekDay, startOfDay(today))
     this.logger.log('Se obtienen todos los checklist a los que se les generará un registro en el historial');
 
@@ -43,4 +43,16 @@ export class TasksService {
     }
 
   }
+
+  //@Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_30_SECONDS)
+  async handleNotifyUnsolvedCheckList() {
+    this.logger.log('Incia ejecucion del cronjob de alertamiento de checklists');
+
+    console.log(format(new Date(), 'HH:mm'))
+    console.log( format(subMinutes(new Date(),30), 'HH:mm'))
+    const checkListToNotify = await this.checkListHistoryService.getCheckListHistoryToNotify()
+    console.log(checkListToNotify)
+  }
+
 }

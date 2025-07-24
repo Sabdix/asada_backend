@@ -6,7 +6,5 @@ export class ForgotPasswordRequestDto {
   mail: string;
   @IsNotEmpty()
   phone: string;
-  @IsNotEmpty()
-  password: string;
 }
 
