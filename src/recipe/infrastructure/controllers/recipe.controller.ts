@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { FileFieldsInterceptor, FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -152,9 +152,9 @@ export class recipeController {
         return this.commandBus.execute(new CreateRecipeCommand(createRecipeRequestDto, pdfFile.filename));
     }
 
-    @Get('')
-    async getRecipes() {
-        return this.queryBus.execute(new GetRecipesQuery());
+    @Get()
+    async getRecipes(@Query('size')size:number, @Query('offset') offset:number) {
+        return this.queryBus.execute(new GetRecipesQuery(size, offset));
     }
 
     @Get('by-uuid/:uuid')

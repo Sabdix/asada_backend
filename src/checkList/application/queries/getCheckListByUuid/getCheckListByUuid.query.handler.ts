@@ -5,7 +5,6 @@ import { GetCheckListByUuidQuery } from './getCheckListByUuid.query';
 import { CheckListService } from '../../services/checkList.service';
 import { CheckListDto } from '../../dtos/CheckList.dto';
 import { CheckListItemService } from '../../services/checkListItem.service';
-import { CheckListItemCriteriaDto } from '../../dtos/CheckListItemCriteria.dto';
 import { CheckListItemCriteriaService } from '../../services/checkListItemCriteria.service';
 import { CheckListItemDto } from '../../dtos/CheckListItem.dto';
 import { CriteriaByItemDto } from '../../dtos/CriteriaByItem.dto';

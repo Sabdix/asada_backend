@@ -3,7 +3,10 @@ import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import { CheckListHistoryDto } from '../../dtos/CheckListHistory.dto';
 
 export class GetCheckListHistoryQuery extends Query<WsResponse<CheckListHistoryDto[] | string>> {
-  constructor() {
+  constructor(
+    public readonly size: number,
+    public readonly offset: number
+  ) {
     super();
   }
 }

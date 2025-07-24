@@ -9,11 +9,11 @@ import { BranchReviewService } from '../../services/BranchReview.service';
 export class GetBranchReviewsQueryHandler implements IQueryHandler<GetBranchReviewsQuery> {
     constructor(private branchReviewService: BranchReviewService) { }
 
-    async execute(): Promise<WsResponse<BranchReviewDto[]>> {
-        const branchReviews = await this.branchReviewService.getBranchReviews();
+    async execute(query: GetBranchReviewsQuery): Promise<WsResponse<BranchReviewDto[]>> {
+        const [branchReviews, total] = await this.branchReviewService.getBranchReviewsPaginated(query.size, query.offset);
 
-        return WsResponse.buildOkResponse(
-            plainToInstance(BranchReviewDto, branchReviews, { excludeExtraneousValues: true }),
+        return WsResponse.buildOkListResponse(
+            plainToInstance(BranchReviewDto, branchReviews, { excludeExtraneousValues: true }), total
         );
     }
 }
