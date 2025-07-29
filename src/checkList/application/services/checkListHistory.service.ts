@@ -255,7 +255,7 @@ export class CheckListHistoryService {
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .andWhere('clh.status not in (:...status)', { status: [1,2]})
+            .andWhere('clh.status = :status', { status: 0})
             .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
             .andWhere('clu.endHour =:endHour', {endHour: format(subMinutes(new Date(),30), 'HH:mm')})
             .getMany();
