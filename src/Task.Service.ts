@@ -68,7 +68,7 @@ export class TasksService {
     
   }
 
-  async getListOfManagers(uuidUser: string, managers: User[] = []) {
+  private async getListOfManagers(uuidUser: string, managers: User[] = []) {
     const manager = await this.userService.getUserByUuid(uuidUser)
     if (!manager) return managers;
     
@@ -79,7 +79,7 @@ export class TasksService {
     return managers
   }
 
-  async sendMail(to: string, cc: string) {
+  private async sendMail(to: string, cc: string) {
     const notificationService: INotificationService =
         new MailNotificationFactory().createNotificationService();
   
