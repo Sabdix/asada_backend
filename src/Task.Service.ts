@@ -4,6 +4,8 @@ import { CheckListUserService } from './checkList/application/services/checkList
 import { CreateCheckListHistoryRequestDto } from './checkList/application/dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListHistoryService } from './checkList/application/services/checkListHistory.service';
 import { format, startOfDay, subMinutes } from 'date-fns';
+import { UserService } from './user/application/services/user.service';
+import { User } from './user/domain/entities/User.entity';
 
 @Injectable()
 export class TasksService {
@@ -11,6 +13,7 @@ export class TasksService {
   constructor(
     private checkListUserService: CheckListUserService,
     private checkListHistoryService: CheckListHistoryService,
+    private userService: UserService
   ) {
     this.checkListUserService = checkListUserService,
       this.checkListHistoryService = checkListHistoryService
@@ -52,7 +55,26 @@ export class TasksService {
     console.log(format(new Date(), 'HH:mm'))
     console.log( format(subMinutes(new Date(),30), 'HH:mm'))
     const checkListToNotify = await this.checkListHistoryService.getCheckListHistoryToNotify()
-    console.log(checkListToNotify)
+
+    for(let checkList of checkListToNotify) {
+      if (checkList.user.uuid_user == null) continue;
+      const managers = await this.getListOfManagers(checkList.user.uuid_user)
+      managers.map(m => {
+        console.log("SEND MAIL TO -> ", m.mail)
+      });
+      
+    }
+    
   }
 
+  async getListOfManagers(uuidUser: string, managers: User[] = []) {
+    const manager = await this.userService.getUserByUuid(uuidUser)
+    if (!manager) return managers;
+    
+    managers.push(manager)
+
+    if (manager.uuid_user)
+      await this.getListOfManagers(manager.uuid_user, managers)
+    return managers
+  }
 }
