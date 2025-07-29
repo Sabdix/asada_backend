@@ -254,11 +254,6 @@ export class CheckListHistoryService {
                 'b',
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
             )
-            .leftJoinAndSelect(
-                'u.manager',
-                'm',
-                'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
-            )
             .where('clh.deletedAt IS NULL')
             .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
             .andWhere('clu.endHour =:endHour', {endHour: format(subMinutes(new Date(),30), 'HH:mm')})
