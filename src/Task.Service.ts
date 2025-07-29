@@ -83,14 +83,15 @@ export class TasksService {
     const notificationService: INotificationService =
         new MailNotificationFactory().createNotificationService();
   
-      const notificationDto : MailNotificationDto = {
-        cc: cc,
-        dynamicTemplateData: {},
-        subject: "Test Subject",
-        templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
-        to: to
-      };
-      await notificationService.sendNotification(notificationDto);
-      return true;
+    // TODO: Personalize the mail content 
+    const notificationDto : MailNotificationDto = {
+      cc: cc,
+      dynamicTemplateData: {},
+      subject: "Test Subject",
+      templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
+      to: to
+    };
+    await notificationService.sendNotification(notificationDto);
+    return true;
   }
 }
