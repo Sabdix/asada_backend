@@ -6,6 +6,10 @@ import { CheckListHistoryService } from './checkList/application/services/checkL
 import { format, startOfDay, subMinutes } from 'date-fns';
 import { UserService } from './user/application/services/user.service';
 import { User } from './user/domain/entities/User.entity';
+import { INotificationService } from './notification/application/interfaces/INotification.service';
+import { MailNotificationFactory } from './notification/application/factories/MailNotification.factory';
+import { MailNotificationDto } from './notification/application/dto/MailNotification.dto';
+import { mailJetTemplateIds } from './notification/domain/enums/templateIds';
 
 @Injectable()
 export class TasksService {
@@ -59,10 +63,7 @@ export class TasksService {
     for(let checkList of checkListToNotify) {
       if (checkList.user.uuid_user == null) continue;
       const managers = await this.getListOfManagers(checkList.user.uuid_user)
-      managers.map(m => {
-        console.log("SEND MAIL TO -> ", m.mail)
-      });
-      
+      await this.sendMail(checkList.user.mail, managers.map(manager => manager.mail).join(','));
     }
     
   }
@@ -76,5 +77,20 @@ export class TasksService {
     if (manager.uuid_user)
       await this.getListOfManagers(manager.uuid_user, managers)
     return managers
+  }
+
+  async sendMail(to: string, cc: string) {
+    const notificationService: INotificationService =
+        new MailNotificationFactory().createNotificationService();
+  
+      const notificationDto : MailNotificationDto = {
+        cc: cc,
+        dynamicTemplateData: {},
+        subject: "Test Subject",
+        templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
+        to: to
+      };
+      await notificationService.sendNotification(notificationDto);
+      return true;
   }
 }
