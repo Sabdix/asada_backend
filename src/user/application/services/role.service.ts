@@ -34,4 +34,8 @@ export class RoleService {
     updateRole(role: Role) {
         return this.roleRepository.save(role);
     }
+
+    getRoleByHierarchy(hierarchy: string) {
+        return this.roleRepository.findOneBy({ hierarchy: hierarchy });
+    }
 }

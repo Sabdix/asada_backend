@@ -136,4 +136,8 @@ export class UserService {
   UnassignManager(user: User) {
     return this.userRepository.update({ uuid: user.uuid }, { manager: new User, uuid_user: null });
   }
+
+  GetUserByBranchAndRole(uuid_branch: string, uuid_role) {
+    return this.userRepository.findOne({ where: {uuid_branch: uuid_branch, uuid_role: uuid_role}});
+  }
 }
