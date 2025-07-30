@@ -19,8 +19,8 @@ export class UserService {
     return this.userRepository.getUserByUuidAndPassword(request, uuid)
   }
 
-  getUserByUuidMailAndPhone(request: ForgotPasswordRequestDto, uuid: string) {
-    return this.userRepository.findOne({ where: { uuid: uuid, mail: request.mail, phone: request.phone } })
+  getUserByMailAndPhone(request: ForgotPasswordRequestDto) {
+    return this.userRepository.findOne({ where: { mail: request.mail, phone: request.phone } })
   }
 
   getUsers() {
