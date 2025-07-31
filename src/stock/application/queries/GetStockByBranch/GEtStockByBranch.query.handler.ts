@@ -19,10 +19,13 @@ export class GetStockByBranchQueryHandler implements IQueryHandler<GetStockByBra
 
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH  NOT FOUND');
 
-        const stocks = await this.stockService.getStockByBranch(query.uuid);
-
-        return WsResponse.buildOkResponse(
-            plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }),
+        const [stocks, total] = await this.stockService.getStockByBranchPaginated(query.uuid, query.size, query.offset);
+        //const stocks = await this.stockService.getStockByBranch(query.uuid);
+        return WsResponse.buildOkListResponse(
+            plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }), total
         );
+        /*return WsResponse.buildOkResponse(
+            plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }),
+        );*/
     }
 }

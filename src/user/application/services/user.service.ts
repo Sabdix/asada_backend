@@ -40,17 +40,17 @@ export class UserService {
       .getMany();
   }
 
-   getUsersPaginated(size: number, offset:number) {
+  getUsersPaginated(size: number, offset: number) {
     return this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
-      .where('user.deletedAt IS NULL') 
+      .where('user.deletedAt IS NULL')
       .take(size)
       .skip(offset)
-      .getManyAndCount(); 
+      .getManyAndCount();
   }
 
   getUserByMail(mail: string) {
@@ -113,6 +113,20 @@ export class UserService {
       .getMany();
   }
 
+  getUsersByBranchPaginated(uuid_branch: string, size: number, offset: number) {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.uuid_branch = :uuid_branch', { uuid_branch: uuid_branch })
+      .leftJoinAndSelect('user.role', 'role', 'role.deletedAt IS NOT NULL OR role.deletedAt IS NULL')
+      .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
+      .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
+      .leftJoinAndSelect('user.workArea', 'workArea', 'workArea.deletedAt IS NOT NULL OR workArea.deletedAt IS NULL')
+      .orderBy('role.hierarchy', 'ASC')
+      .take(size)
+      .skip(offset)
+      .getManyAndCount();;
+  }
+
   getUserMannagerByUuid(uuid: string, uuid_manager: string) {
     // return this.userRepository.findOne({
     //   where: { uuid: uuid },
@@ -137,7 +151,7 @@ export class UserService {
     return this.userRepository.update({ uuid: user.uuid }, { manager: new User, uuid_user: null });
   }
 
-  GetUserByBranchAndRole(uuid_branch: string, uuid_role) {
-    return this.userRepository.findOne({ where: {uuid_branch: uuid_branch, uuid_role: uuid_role}});
+  GetUserByBranchAndRole(uuid_branch: string, uuid_role ) {
+    return this.userRepository.findOne({ where: { uuid_branch: uuid_branch, uuid_role: uuid_role} });
   }
 }

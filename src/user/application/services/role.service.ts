@@ -35,7 +35,7 @@ export class RoleService {
         return this.roleRepository.save(role);
     }
 
-    getRoleByHierarchy(hierarchy: string) {
-        return this.roleRepository.findOneBy({ hierarchy: hierarchy });
+    getRoleByHierarchy(hierarchy: string, uuid_work_area) {
+        return this.roleRepository.findOne({ where: {hierarchy: hierarchy, uuid_work_area: uuid_work_area}  });
     }
 }

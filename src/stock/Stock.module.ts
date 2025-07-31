@@ -42,6 +42,7 @@ import { StockHistoryRepository } from "./infrastructure/repositories/StockHisto
 import { WorkArea } from "src/user/domain/entities/WorkArea.entity";
 import { WorkAreaRepository } from "src/user/infrastructure/repositories/workArea.repository";
 import { WorkAreaService } from "src/user/application/services/workArea.service";
+import { DownloadStockReportQueryHandler } from "./application/queries/DownloadStockReport/DownloadStockReport.query.handler";
 
 @Module({
     imports: [
@@ -69,6 +70,7 @@ import { WorkAreaService } from "src/user/application/services/workArea.service"
 
         GetProductsQueryQueryHandler,
         GetProductByUuidQueryHandler,
+        DownloadStockReportQueryHandler,
 
         CreateProductCommandHandler,
         DeleteProductCommandHandler,

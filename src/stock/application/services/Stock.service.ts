@@ -53,6 +53,36 @@ export class StockService {
             .getMany();
     }
 
+    getStockByBranchPaginated(uuid_branch: string, size: number, offset: number) {
+        return this.stockRepository
+            .createQueryBuilder('stock')
+            .leftJoinAndSelect(
+                'stock.category',
+                'category',
+                'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.product',
+                'product',
+                'product.deletedAt IS NOT NULL OR product.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.branch',
+                'branch',
+                'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.workArea',
+                'workArea',
+                'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .where('stock.uuid_branch = :uuid_branch', { uuid_branch })
+            .andWhere('product.deletedAt IS NULL')
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();;
+    }
+
     getStockByUuid(uuid: string) {
         return this.stockRepository
             .createQueryBuilder('stock')
@@ -108,8 +138,8 @@ export class StockService {
             .getMany();
     }
 
-    getStocksPaginated(size:number, offset:number) {
-          return this.stockRepository
+    getStocksPaginated(size: number, offset: number) {
+        return this.stockRepository
             .createQueryBuilder('stock')
             .leftJoinAndSelect(
                 'stock.category',
@@ -125,6 +155,11 @@ export class StockService {
                 'stock.branch',
                 'branch',
                 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'stock.workArea',
+                'workArea',
+                'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
             .andWhere('product.deletedAt IS NULL')
             .take(size)

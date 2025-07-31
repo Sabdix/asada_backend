@@ -45,6 +45,7 @@ import { GetAllWorkAreaQueryHandler } from "./application/queries/GetAllWorkArea
 import { WorkAreaService } from "./application/services/workArea.service";
 import { AssignWorkAreaCommandHandler } from "./application/commands/AssignWorkArea/AssignWorkArea.command.handler";
 import { UnassignManagerCommandHandler } from "./application/commands/UnassignManager/UnassignManager.command.handler";
+import { ChangeStockEmpoweredStatusCommandHandler } from "./application/commands/ChangeStockEmpoweredStatus/ChangeStockEmpowered.command.handler";
 
 @Module({
     imports: [
@@ -87,7 +88,8 @@ import { UnassignManagerCommandHandler } from "./application/commands/UnassignMa
         ChangeEmpoweredStatusCommandHandler,
         GetAllWorkAreaQueryHandler,
         AssignWorkAreaCommandHandler,
-        UnassignManagerCommandHandler
+        UnassignManagerCommandHandler,
+        ChangeStockEmpoweredStatusCommandHandler
     ],
     exports: [
         UserService,

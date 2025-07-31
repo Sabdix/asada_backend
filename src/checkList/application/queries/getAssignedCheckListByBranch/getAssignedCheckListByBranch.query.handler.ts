@@ -18,10 +18,10 @@ export class GetAssignedCheckListByBranchQueryHandler implements IQueryHandler<G
         const branch = await this.branchService.getBranchByUuid(query.uuid);
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-        const checkListUser = await this.checkListUserService.getUserCheckListByBranch(branch.uuid);
+        const [checkListUser, total] = await this.checkListUserService.getUserCheckListByBranch(branch.uuid, query.size, query.offset);
 
-        return WsResponse.buildOkResponse(
-            plainToInstance(CheckListUserDto, checkListUser, { excludeExtraneousValues: true }),
+        return WsResponse.buildOkListResponse(
+            plainToInstance(CheckListUserDto, checkListUser, { excludeExtraneousValues: true }),total
         );
     }
 }

@@ -21,7 +21,7 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
       return WsResponse.buildConflictResponse('YA EXISTE UN USUARIO CON ESE CORREO ELECTRONICO', 'USER ALREADY EXISTS');
 
     const role = await this.roleService.getRoleByUuid(command.body.uuid_role)
-    if (!role )
+    if (!role)
       return WsResponse.buildNotFoundResponse('ROLE NOT FOUND');
 
     if (! await this.workAreaService.getWorkAreaByUuid(command.body.uuid_work_area))
@@ -29,13 +29,22 @@ export class CreateUserCommandHandler implements ICommandHandler<CreateUserComma
 
     const user = await this.userService.creteUser(command.body)
 
-    if(Number(role.hierarchy) >= 2){
+    if (Number(role.hierarchy) == 4) {
       const hierarchy = (Number(role.hierarchy) - 1).toString()
-  
-      const superiorRole = await this.roleService.getRoleByHierarchy(hierarchy)
-  
+
+      const superiorRole = await this.roleService.getRoleByHierarchy(hierarchy, role.uuid_work_area)
+
       const manager = await this.userService.GetUserByBranchAndRole(user.uuid_branch, superiorRole?.uuid)
-  
+
+      user.manager = manager
+      await this.userService.UpdateUser(user)
+    } else if (Number(role.hierarchy) == 3) {
+      const hierarchy = (Number(role.hierarchy) - 1).toString()
+
+      const superiorRole = await this.roleService.getRoleByName("Gerente Sucursal")
+
+      const manager = await this.userService.GetUserByBranchAndRole(user.uuid_branch, superiorRole?.uuid)
+
       user.manager = manager
       await this.userService.UpdateUser(user)
     }

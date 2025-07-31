@@ -3,6 +3,7 @@ import { Branch } from 'src/branch/domain/entities/Branch.entity';
 import { BranchReviewRepository } from 'src/branch/infrastructure/repositories/branchReview.repository';
 import { CreateBranchReviewRequestDto } from '../dtos/CreateBranchReviewRequest.dto';
 import { Between, LessThanOrEqual } from 'typeorm';
+import { of } from 'rxjs';
 
 @Injectable()
 export class BranchReviewService {
@@ -74,8 +75,8 @@ export class BranchReviewService {
             )
             .where('br.uuid_branch = :uuid', { uuid })
             .andWhere('br.deletedAt IS NULL')
-            .skip(size)
-            .take(offset)
+            .skip(offset)
+            .take(size)
             .getManyAndCount();
     }
 

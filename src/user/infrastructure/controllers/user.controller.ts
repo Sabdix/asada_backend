@@ -24,6 +24,7 @@ import { GetAllWorkAreaQuery } from "src/user/application/queries/GetAllWorkArea
 import { AssingWorkAreaRequestDto } from "src/user/application/dtos/AssignWorkAreaRequest.dto";
 import { AssignWorkAreaCommand } from "src/user/application/commands/AssignWorkArea/AssignWorkArea.command";
 import { UnassignManagerCommand } from "src/user/application/commands/UnassignManager/UnassignManager.command";
+import { ChangeStockEmpoweredStatusCommand } from "src/user/application/commands/ChangeStockEmpoweredStatus/ChangeStockEmpowered.command";
 
 @Controller('user')
 export class UserController {
@@ -33,7 +34,7 @@ export class UserController {
     ) { }
 
     @Get()
-    async getUsers(@Query('size') size:number, @Query('offset') offset:number) {
+    async getUsers(@Query('size') size: number, @Query('offset') offset: number) {
         return this.queryBus.execute(new GetUsersQuery(size, offset));
     }
 
@@ -88,8 +89,8 @@ export class UserController {
     }
 
     @Get('get-users-by-branch/:uuid')
-    async GetUsersByBranch(@Param('uuid') uuid: string) {
-        return this.queryBus.execute(new GetUsersByBranchQuery(uuid));
+    async GetUsersByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
+        return this.queryBus.execute(new GetUsersByBranchQuery(uuid, size, offset));
     }
 
     @Post('assign-schedule/:uuid')
@@ -115,5 +116,10 @@ export class UserController {
     @Post('unassign-manager/:uuid')
     async UnassignManagerToUser(@Param('uuid') uuid: string) {
         return this.commandBus.execute(new UnassignManagerCommand(uuid));
+    }
+
+    @Post('change-stock-empowered-status/:uuid')
+    async stockEmpowerUser(@Param('uuid') uuid: string) {
+        return this.commandBus.execute(new ChangeStockEmpoweredStatusCommand(uuid));
     }
 }

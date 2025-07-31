@@ -297,4 +297,24 @@ export class CheckListHistoryService {
             .skip(offset)
             .getManyAndCount();
     }
+
+     getCheckListHistoryByUuidWithRelations(uuid: string) {
+        // return this.chekListHistoryRepository.find({ where: { uuid_user: uuid }, relations: ["check_list_user", 'check_list_user.checkList'], withDeleted: true });
+
+        return this.chekListHistoryRepository
+            .createQueryBuilder('clh')
+            .leftJoinAndSelect(
+                'clh.check_list_user',
+                'clu',
+                'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .where('clh.uuid = :uuid', { uuid })
+            .andWhere('clh.deletedAt IS NULL')
+            .getOne();
+    }
 }

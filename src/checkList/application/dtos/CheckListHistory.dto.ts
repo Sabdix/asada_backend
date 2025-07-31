@@ -22,6 +22,6 @@ export class CheckListHistoryDto {
 
     @Expose()
     @Type(() => UserDto)
-    user: UserDto;
+    user?: UserDto;
 
 }
