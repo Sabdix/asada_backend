@@ -27,4 +27,33 @@ export class StockHistoryService {
         )
     }
 
+    getBranchStockHistoryByRangeTime(initialDate: Date, endDate: Date, uuid_branch: string) {
+
+        return this.stockHistoryRepository
+            .createQueryBuilder('sh')
+            .leftJoinAndSelect(
+                'sh.stock',
+                's',
+                's.deletedAt IS NOT NULL OR s.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                's.branch',
+                'b',
+                'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'sh.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                's.product',
+                'p',
+                'p.deletedAt IS NOT NULL OR p.deletedAt IS NULL'
+            )
+            .where('sh.date BETWEEN :initialDate AND :endDate', { initialDate, endDate })
+            .andWhere('sh.deletedAt IS NULL')
+            .andWhere('s.uuid_branch = :uuid_branch', { uuid_branch })
+            .getMany();
+    }
 }

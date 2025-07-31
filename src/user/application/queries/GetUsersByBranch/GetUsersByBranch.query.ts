@@ -4,7 +4,9 @@ import { RoleDto } from '../../dtos/Role.dto';
 import { UserDto } from '../../dtos/User.dto';
 
 export class GetUsersByBranchQuery extends Query<WsResponse<UserDto[] | string>> {
-  constructor(public readonly uuid: string) {
+  constructor(public readonly uuid: string,
+    public readonly size: number,
+    public readonly offset: number) {
     super();
   }
 }

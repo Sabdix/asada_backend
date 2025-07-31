@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from "@nestjs/common";
+import { Response } from "express";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { CreateProductCommand } from "src/stock/application/commands/CreateProduct/CreateProduct.command";
 import { CreateProductCategoryCommand } from "src/stock/application/commands/CreateProductCategory/CreateProductCategory.command";
@@ -24,6 +25,7 @@ import { GetProductsQuery } from "src/stock/application/queries/GetProducts/GetP
 import { GetStockByBranchQuery } from "src/stock/application/queries/GetStockByBranch/GetStockByBranch.query";
 import { GetStockByUuidQuery } from "src/stock/application/queries/GetStockByUuid/GetStockByUuid.query";
 import { GetStocksQuery } from "src/stock/application/queries/GetStocks/GetStocks.query";
+import { DownloadStockReportQuery } from "src/stock/application/queries/DownloadStockReport/DownloadStockReport.query";
 
 
 
@@ -70,7 +72,7 @@ export class stockController {
     }
 
     @Get('/product')
-    async getProducts(@Query('size') size:number, @Query('offset') offset:number) {
+    async getProducts(@Query('size') size: number, @Query('offset') offset: number) {
         return this.queryBus.execute(new GetProductsQuery(size, offset));
     }
 
@@ -90,13 +92,13 @@ export class stockController {
     }
 
     @Get()
-    async getStocks(@Query('size') size:number, @Query('offset') offset:number) {
+    async getStocks(@Query('size') size: number, @Query('offset') offset: number) {
         return this.queryBus.execute(new GetStocksQuery(size, offset));
     }
 
     @Get('by-branch/:uuid')
-    async getStockByBranch(@Param('uuid') uuid: string) {
-        return this.queryBus.execute(new GetStockByBranchQuery(uuid));
+    async getStockByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
+        return this.queryBus.execute(new GetStockByBranchQuery(uuid, size, offset));
     }
 
     @Get('by-uuid/:uuid')
@@ -117,5 +119,23 @@ export class stockController {
     @Post('validation')
     async validateStock(@Body() validateStockRequestDto: ValidateStockRequestDto) {
         return this.commandBus.execute(new ValidateStockCommand(validateStockRequestDto));
+    }
+
+    @Get('report/download')
+    async downloadStockHistoryReport(@Query('initialDate') initialDate: Date, @Query('endDate') endDate: Date, @Query('branchId') branchId: string, @Res() res: Response) {
+        try {
+
+            const excelBuffer = await this.queryBus.execute(new DownloadStockReportQuery(initialDate, endDate, branchId));
+
+            // Configurar los encabezados de la respuesta
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=reporte.xlsx');
+
+            // Enviar el buffer como respuesta
+            res.status(HttpStatus.OK).send(excelBuffer);
+        } catch (error) {
+            console.error('Error al generar el Excel:', error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Error al generar el reporte.');
+        }
     }
 }

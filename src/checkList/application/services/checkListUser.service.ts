@@ -90,7 +90,7 @@ export class CheckListUserService {
             });
     }
 
-    getUserCheckListByBranch(uuid_branch: string) {
+    getUserCheckListByBranch(uuid_branch: string, size:number, offset:number) {
 
         return this.chekListUserRepository
             .createQueryBuilder('clu')
@@ -106,6 +106,8 @@ export class CheckListUserService {
             )
             .where('clu.deletedAt IS NULL')
             .andWhere('u.uuid_branch = :uuid_branch', { uuid_branch })
-            .getMany();
+            .take(size)
+            .skip(offset)
+            .getManyAndCount();
     }
 }

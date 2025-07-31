@@ -37,6 +37,26 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
             return WsResponse.buildNotFoundResponse('ROLE NOT FOUND');
 
         user.role = role;
+
+        if (Number(role.hierarchy) == 4) {
+            const hierarchy = (Number(role.hierarchy) - 1).toString()
+
+            const superiorRole = await this.roleService.getRoleByHierarchy(hierarchy, role.uuid_work_area)
+
+            const manager = await this.userService.GetUserByBranchAndRole(user.uuid_branch, superiorRole?.uuid)
+
+            user.manager = manager
+            await this.userService.UpdateUser(user)
+        } else if (Number(role.hierarchy) == 3) {
+
+            const superiorRole = await this.roleService.getRoleByName("Gerente Sucursal")
+
+            const manager = await this.userService.GetUserByBranchAndRole(user.uuid_branch, superiorRole?.uuid)
+
+            user.manager = manager
+            await this.userService.UpdateUser(user)
+        }
+
         const branch = await this.branchService.getBranchByUuid(user.uuid_branch);
         if (!branch)
             return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
@@ -47,7 +67,7 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
             if (!workArea)
                 return WsResponse.buildNotFoundResponse('WORK_AREA NOT FOUND');
             user.workArea = workArea;
-        }else{
+        } else {
             user.workArea = null
         }
 

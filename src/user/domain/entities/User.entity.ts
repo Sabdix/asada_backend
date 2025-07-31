@@ -52,6 +52,9 @@ export class User extends EntityBase {
   @Column({ default: false })
   empowered: boolean;
 
+  @Column({ default: false })
+  stock_empowered: boolean;
+
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'uuid_role' })
   role: Role;

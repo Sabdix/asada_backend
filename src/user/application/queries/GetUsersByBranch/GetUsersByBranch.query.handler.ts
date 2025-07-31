@@ -18,10 +18,14 @@ export class GetUsersByBranchQueryHandler implements IQueryHandler<GetUsersByBra
         const branch = await this.brancService.getBranchByUuid(query.uuid);
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-        const users = await this.userService.getUsersByBranch(branch.uuid);
+        const [users, total] = await this.userService.getUsersByBranchPaginated(branch.uuid, query.size, query.offset);
+        //const users = await this.userService.getUsersByBranch(branch.uuid);
 
-        return WsResponse.buildOkResponse(
-            plainToInstance(UserDto, users, { excludeExtraneousValues: true }),
+        /*return WsResponse.buildOkResponse(
+            plainToInstance(UserDto, users, { excludeExtraneousValues: true }), total
+        );*/
+        return WsResponse.buildOkListResponse(
+            plainToInstance(UserDto, users, { excludeExtraneousValues: true }), total
         );
     }
 }

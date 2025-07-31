@@ -43,6 +43,7 @@ import { GetCheckListHistoryQuery } from "src/checkList/application/queries/getC
 import { getCheckListHistoryAnswersByHistoryQuery } from "src/checkList/application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query";
 import { GetCheckListHistoryByBranchQuery } from "src/checkList/application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query";
 import { GetCheckListHistoryByUserQuery } from "src/checkList/application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query";
+import { GetCheckListHistoryByUuidQuery } from "src/checkList/application/queries/getCheckListHistoryByUuid/getChckListHistoryByUuid.query";
 import { GetCheckListItemsByCheckListQuery } from "src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query";
 import { GetCheckListQrByUuidQuery } from "src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query";
 import { GetCriteriaAnswerByCriteriaQuery } from "src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query";
@@ -210,14 +211,14 @@ export class CheckListController {
   }
 
   @Get('assigned/by-branch/:uuid')
-  async getAssignedCheckListByBranch(@Param('uuid') uuid: string) {
-    return this.queryBus.execute(new GetAssignedCheckListByBranchQuery(uuid));
+  async getAssignedCheckListByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
+    return this.queryBus.execute(new GetAssignedCheckListByBranchQuery(uuid, size, offset));
   }
 
   @Get('history/by-branch/:uuid')
   async getCheckListHistoryByBranch(
-    @Param('uuid') uuid: string, 
-    @Query('size') size: number, 
+    @Param('uuid') uuid: string,
+    @Query('size') size: number,
     @Query('offset') offset: number) {
     return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid, size, offset));
   }
@@ -229,6 +230,11 @@ export class CheckListController {
 
   @Post('review/:uuid')
   async reviewCheckListHistory(@Param('uuid') uuid: string, @Body() reviewCheckListHistoryDto: ReviewCheckListHistoryDto) {
-    return this.commandBus.execute(new ReviewCheckListHistoryCommand(uuid,reviewCheckListHistoryDto));
+    return this.commandBus.execute(new ReviewCheckListHistoryCommand(uuid, reviewCheckListHistoryDto));
+  }
+
+  @Get('history/by-uuid/:uuid')
+  async getCheckListHistoryByUuid(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetCheckListHistoryByUuidQuery(uuid));
   }
 }

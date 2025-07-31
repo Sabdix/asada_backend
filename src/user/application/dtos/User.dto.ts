@@ -26,6 +26,9 @@ export class UserDto {
 
     @Expose()
     empowered: boolean;
+
+    @Expose()
+    stock_empowered: boolean;
   
     @Expose()
     @Type(() => RoleDto)

@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksService } from './Task.Service';
 import { RecipeModule } from './recipe/Recipe.module';
 import { StockModule } from './stock/Stock.module';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { StockModule } from './stock/Stock.module';
     UserModule,
     AuthModule,
     RecipeModule,
-    StockModule
+    StockModule,
+    NotificationModule
   ],
   controllers: [],
   providers: [TasksService],

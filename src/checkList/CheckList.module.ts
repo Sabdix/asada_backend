@@ -59,6 +59,7 @@ import { BranchModule } from "src/branch/Branch.module";
 import { GetCheckListHistoryByBranchQueryHandler } from "./application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query.handler";
 import { DuplicateCheckListCommandHandler } from "./application/commands/DuplicateCheckList/DuplicateCheckList.command.handler";
 import { ReviewCheckListHistoryCommandHandler } from "./application/commands/ReviewCheckListHistory/ReviewCheckListHistory.command.handler";
+import { GetCheckListHistoryByUuidQueryHandler } from "./application/queries/getCheckListHistoryByUuid/getCheckListHistoryByUuid.query.handler";
 
 @Module({
     imports: [
@@ -115,6 +116,7 @@ import { ReviewCheckListHistoryCommandHandler } from "./application/commands/Rev
         GetAssignedCheckListByBranchQueryHandler,
         GetCheckListHistoryByBranchQueryHandler,
         ReviewCheckListHistoryCommandHandler,
+        GetCheckListHistoryByUuidQueryHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,
