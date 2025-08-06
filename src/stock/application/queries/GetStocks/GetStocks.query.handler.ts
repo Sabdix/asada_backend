@@ -7,10 +7,10 @@ import { StockService } from '../../services/Stock.service';
 
 @QueryHandler(GetStocksQuery)
 export class GetStocksQueryHandler implements IQueryHandler<GetStocksQuery> {
-  constructor(private  stockService: StockService) {}
+  constructor(private stockService: StockService) { }
 
   async execute(query: GetStocksQuery) {
-    const [stocks, total] = await this.stockService.getStocksPaginated(query.size, query.offset);
+    const [stocks, total] = await this.stockService.getStocksPaginated(query.size, query.offset, query.category, query.product, query.branch, query.workArea);
 
     return WsResponse.buildOkListResponse(
       plainToInstance(StockDto, stocks, { excludeExtraneousValues: true }), total

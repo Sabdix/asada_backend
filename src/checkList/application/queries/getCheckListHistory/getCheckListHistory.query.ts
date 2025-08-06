@@ -5,7 +5,12 @@ import { CheckListHistoryDto } from '../../dtos/CheckListHistory.dto';
 export class GetCheckListHistoryQuery extends Query<WsResponse<CheckListHistoryDto[] | string>> {
   constructor(
     public readonly size: number,
-    public readonly offset: number
+    public readonly offset: number,
+    public readonly name: string,
+    public readonly lastName: string,
+    public readonly secondLastName: string,
+    public readonly checkList: string,
+    public readonly branch: string
   ) {
     super();
   }

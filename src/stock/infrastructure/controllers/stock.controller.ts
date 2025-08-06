@@ -72,8 +72,8 @@ export class stockController {
     }
 
     @Get('/product')
-    async getProducts(@Query('size') size: number, @Query('offset') offset: number) {
-        return this.queryBus.execute(new GetProductsQuery(size, offset));
+    async getProducts(@Query('size') size: number, @Query('offset') offset: number, @Query('name') name: string, @Query('category') category: string) {
+        return this.queryBus.execute(new GetProductsQuery(size, offset, name, category));
     }
 
     @Delete('product/:uuid')
@@ -92,13 +92,13 @@ export class stockController {
     }
 
     @Get()
-    async getStocks(@Query('size') size: number, @Query('offset') offset: number) {
-        return this.queryBus.execute(new GetStocksQuery(size, offset));
+    async getStocks(@Query('size') size: number, @Query('offset') offset: number, @Query('category') category: string, @Query('product') product: string, @Query('branch') branch: string, @Query('workArea') workArea: string) {
+        return this.queryBus.execute(new GetStocksQuery(size, offset, category, product, branch, workArea));
     }
 
     @Get('by-branch/:uuid')
-    async getStockByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
-        return this.queryBus.execute(new GetStockByBranchQuery(uuid, size, offset));
+    async getStockByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number, @Query('category') category: string, @Query('product') product: string, @Query('branch') branch: string, @Query('workArea') workArea: string) {
+        return this.queryBus.execute(new GetStockByBranchQuery(uuid, size, offset, category, product, branch, workArea));
     }
 
     @Get('by-uuid/:uuid')

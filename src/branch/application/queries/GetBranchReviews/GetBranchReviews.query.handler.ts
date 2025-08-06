@@ -10,7 +10,7 @@ export class GetBranchReviewsQueryHandler implements IQueryHandler<GetBranchRevi
     constructor(private branchReviewService: BranchReviewService) { }
 
     async execute(query: GetBranchReviewsQuery): Promise<WsResponse<BranchReviewDto[]>> {
-        const [branchReviews, total] = await this.branchReviewService.getBranchReviewsPaginated(query.size, query.offset);
+        const [branchReviews, total] = await this.branchReviewService.getBranchReviewsPaginated(query.size, query.offset, query.branch, query.rate);
 
         return WsResponse.buildOkListResponse(
             plainToInstance(BranchReviewDto, branchReviews, { excludeExtraneousValues: true }), total

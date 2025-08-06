@@ -5,7 +5,12 @@ import { CheckListUserDto } from '../../dtos/CheckListUser.dto';
 export class GetAssignedCheckListByBranchQuery extends Query<WsResponse<CheckListUserDto[] | string>> {
     constructor(public readonly uuid: string,
         public readonly size: number,
-        public readonly offset: number
+        public readonly offset: number,
+        public readonly name: string,
+        public readonly lastName: string,
+        public readonly secondLastName: string,
+        public readonly checkList: string,
+        public readonly weekday: string
     ) {
         super();
     }

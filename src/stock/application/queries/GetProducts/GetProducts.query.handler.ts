@@ -10,7 +10,7 @@ export class GetProductsQueryQueryHandler implements IQueryHandler<GetProductsQu
   constructor(private  productService: ProductService) {}
 
   async execute(query: GetProductsQuery) {
-    const [products, total] = await this.productService.getProductsPaginated(query.size, query.offset);
+    const [products, total] = await this.productService.getProductsPaginated(query.size, query.offset, query.name, query.category);
 
     return WsResponse.buildOkListResponse(
       plainToInstance(ProductDto, products, { excludeExtraneousValues: true }), total

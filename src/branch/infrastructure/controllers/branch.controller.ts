@@ -60,13 +60,13 @@ export class branchController {
   }
 
   @Get('review/all')
-  async getBranchReviews(@Query('size') size: number, @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetBranchReviewsQuery(size, offset));
+  async getBranchReviews(@Query('size') size: number, @Query('offset') offset: number, @Query('branch') branch: string, @Query('rate') rate: string) {
+    return this.queryBus.execute(new GetBranchReviewsQuery(size, offset, branch, rate));
   }
 
   @Get('review/:uuid')
-  async getBranchReviewsByUuid(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetBranchReviewsByUuidQuery(uuid, size, offset));
+  async getBranchReviewsByUuid(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number, @Query('branch') branch: string, @Query('rate') rate: string) {
+    return this.queryBus.execute(new GetBranchReviewsByUuidQuery(uuid, size, offset, branch, rate));
   }
 
   @Get('review/report/download')

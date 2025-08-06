@@ -34,8 +34,8 @@ export class UserController {
     ) { }
 
     @Get()
-    async getUsers(@Query('size') size: number, @Query('offset') offset: number) {
-        return this.queryBus.execute(new GetUsersQuery(size, offset));
+    async getUsers(@Query('size') size: number, @Query('offset') offset: number, @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('role') role: string, @Query('branch') branch: string) {
+        return this.queryBus.execute(new GetUsersQuery(size, offset, name, lastName, secondLastName, role, branch));
     }
 
     @Post('create')
@@ -89,8 +89,8 @@ export class UserController {
     }
 
     @Get('get-users-by-branch/:uuid')
-    async GetUsersByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
-        return this.queryBus.execute(new GetUsersByBranchQuery(uuid, size, offset));
+    async GetUsersByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number,  @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('role') role: string) {
+        return this.queryBus.execute(new GetUsersByBranchQuery(uuid, size, offset, name, lastName, secondLastName, role));
     }
 
     @Post('assign-schedule/:uuid')

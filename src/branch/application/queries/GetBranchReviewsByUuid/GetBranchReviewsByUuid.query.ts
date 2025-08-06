@@ -6,7 +6,9 @@ export class GetBranchReviewsByUuidQuery extends Query<WsResponse<BranchReviewDt
   constructor(
     public readonly uuid: string, 
     public readonly size: number,
-    public readonly offset: number
+    public readonly offset: number,
+    public readonly branch: string,
+    public readonly rate: string
   ) {
     super();
   }

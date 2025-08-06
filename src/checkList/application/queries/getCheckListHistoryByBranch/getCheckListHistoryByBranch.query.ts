@@ -6,7 +6,12 @@ export class GetCheckListHistoryByBranchQuery extends Query<WsResponse<CheckList
   constructor( 
     public readonly uuid: string,
     public readonly size: number,
-    public readonly offset: number
+    public readonly offset: number,
+    public readonly name: string,
+    public readonly lastName: string,
+    public readonly secondLastName: string,
+    public readonly checkList: string,
+    public readonly branch: string
     
   ) {
     super();

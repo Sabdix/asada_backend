@@ -34,10 +34,22 @@ export class BranchReviewService {
             .getMany();
     }
 
-    getBranchReviewsPaginated(size: number, offset: number) {
+    getBranchReviewsPaginated(size: number, offset: number, branch: string, rate: string) {
         //return this.branchReviewRepository.find({ relations: ['branch'], withDeleted: true });
 
-        return this.branchReviewRepository
+        // return this.branchReviewRepository
+        //     .createQueryBuilder('br')
+        //     .leftJoinAndSelect(
+        //         'br.branch',
+        //         'b',
+        //         'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+        //     )
+        //     .where('br.deletedAt IS NULL')
+        //     .skip(offset)
+        //     .take(size)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.branchReviewRepository
             .createQueryBuilder('br')
             .leftJoinAndSelect(
                 'br.branch',
@@ -45,9 +57,18 @@ export class BranchReviewService {
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
             )
             .where('br.deletedAt IS NULL')
-            .skip(offset)
-            .take(size)
-            .getManyAndCount();
+
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(b.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+        if (rate) {
+            queryBuilder.andWhere(`LOWER(br.rate) LIKE LOWER(:rate)`, { rate: `%${rate}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
+
     }
 
     getBranchReviewsByUuid(uuid: string) {
@@ -64,9 +85,22 @@ export class BranchReviewService {
             .getMany();
     }
 
-    getBranchReviewsByUuidPaginated(uuid: string, size: number, offset: number) {
+    getBranchReviewsByUuidPaginated(uuid: string, size: number, offset: number, branch: string, rate: string) {
         // return this.branchReviewRepository.find({ where: { uuid_branch: uuid }, relations: ['branch'], withDeleted: true });
-        return this.branchReviewRepository
+        // return this.branchReviewRepository
+        //     .createQueryBuilder('br')
+        //     .leftJoinAndSelect(
+        //         'br.branch',
+        //         'b',
+        //         'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+        //     )
+        //     .where('br.uuid_branch = :uuid', { uuid })
+        //     .andWhere('br.deletedAt IS NULL')
+        //     .skip(offset)
+        //     .take(size)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.branchReviewRepository
             .createQueryBuilder('br')
             .leftJoinAndSelect(
                 'br.branch',
@@ -75,9 +109,17 @@ export class BranchReviewService {
             )
             .where('br.uuid_branch = :uuid', { uuid })
             .andWhere('br.deletedAt IS NULL')
-            .skip(offset)
-            .take(size)
-            .getManyAndCount();
+
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(b.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+        if (rate) {
+            queryBuilder.andWhere(`LOWER(br.rate) LIKE LOWER(:rate)`, { rate: `%${rate}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     getAllReviewsByRangeTime(initialDate: Date, endDate: Date) {

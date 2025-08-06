@@ -4,7 +4,7 @@ import { CheckListHistoryRepository } from 'src/checkList/infrastructure/reposit
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
-import { Between } from 'typeorm';
+import { Between, QueryBuilder } from 'typeorm';
 import { format, subMinutes } from 'date-fns';
 
 @Injectable()
@@ -62,10 +62,42 @@ export class CheckListHistoryService {
             .getMany();
     }
 
-    getAllCheckListHistoryPaginated(size: number, offset: number) {
+    getAllCheckListHistoryPaginated(size: number, offset: number, name: string, lastName: string, secondLastName: string, checkList: string, branch: string) {
         // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
 
-        return this.chekListHistoryRepository
+        // return this.chekListHistoryRepository
+        //     .createQueryBuilder('clh')
+        //     .leftJoinAndSelect(
+        //         'clh.check_list_user',
+        //         'clu',
+        //         'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clu.checkList',
+        //         'cl',
+        //         'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clh.user',
+        //         'u',
+        //         'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'u.branch',
+        //         'b', // Alias para Branch
+        //         'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'u.manager',
+        //         'm', // Alias para Manager
+        //         'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
+        //     )
+        //     .where('clh.deletedAt IS NULL')
+        //     .skip(offset)
+        //     .take(size)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
                 'clh.check_list_user',
@@ -93,9 +125,27 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .skip(offset)
-            .take(size)
-            .getManyAndCount();
+            .andWhere('clh.date = :today', {today: format(new Date(), 'yyyy-MM-dd')})
+            
+        if (name) {
+            queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (lastName) {
+            queryBuilder.andWhere(`LOWER(u.last_name) LIKE LOWER(:lastName)`, { lastName: `%${lastName}%` });
+        }
+        if (secondLastName) {
+            queryBuilder.andWhere(`LOWER(u.second_last_name) LIKE LOWER(:secondLastName)`, { secondLastName: `%${secondLastName}%` });
+        }
+        if (checkList) {
+            queryBuilder.andWhere(`LOWER(cl.name) LIKE LOWER(:checkList)`, { checkList: `%${checkList}%` });
+        }
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(b.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     getCheckListHistoryByUser(uuid_user: string) {
@@ -255,16 +305,49 @@ export class CheckListHistoryService {
                 'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .andWhere('clh.status = :status', { status: 0})
+            .andWhere('clh.status = :status', { status: 0 })
             .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
-            .andWhere('clu.endHour =:endHour', {endHour: format(subMinutes(new Date(),30), 'HH:mm')})
+            .andWhere('clu.endHour =:endHour', { endHour: format(subMinutes(new Date(), 30), 'HH:mm') })
             .getMany();
     }
 
-    getCheckListHistoryByBranchPaginated(uuid_branch: string, size: number, offset:number) {
+    getCheckListHistoryByBranchPaginated(uuid_branch: string, size: number, offset: number, name: string, lastName: string, secondLastName: string, checkList: string, branch: string) {
         // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
 
-        return this.chekListHistoryRepository
+        // return this.chekListHistoryRepository
+        //     .createQueryBuilder('clh')
+        //     .leftJoinAndSelect(
+        //         'clh.check_list_user',
+        //         'clu',
+        //         'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clu.checkList',
+        //         'cl',
+        //         'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clh.user',
+        //         'u',
+        //         'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'u.branch',
+        //         'b',
+        //         'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'u.manager',
+        //         'm',
+        //         'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
+        //     )
+        //     .where('clh.deletedAt IS NULL')
+        //     .andWhere('b.uuid = :uuid_branch', { uuid_branch })
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
                 'clh.check_list_user',
@@ -293,12 +376,29 @@ export class CheckListHistoryService {
             )
             .where('clh.deletedAt IS NULL')
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (lastName) {
+            queryBuilder.andWhere(`LOWER(u.last_name) LIKE LOWER(:lastName)`, { lastName: `%${lastName}%` });
+        }
+        if (secondLastName) {
+            queryBuilder.andWhere(`LOWER(u.second_last_name) LIKE LOWER(:secondLastName)`, { secondLastName: `%${secondLastName}%` });
+        }
+        if (checkList) {
+            queryBuilder.andWhere(`LOWER(cl.name) LIKE LOWER(:checkList)`, { checkList: `%${checkList}%` });
+        }
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(b.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
-     getCheckListHistoryByUuidWithRelations(uuid: string) {
+    getCheckListHistoryByUuidWithRelations(uuid: string) {
         // return this.chekListHistoryRepository.find({ where: { uuid_user: uuid }, relations: ["check_list_user", 'check_list_user.checkList'], withDeleted: true });
 
         return this.chekListHistoryRepository

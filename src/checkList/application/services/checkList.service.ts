@@ -23,18 +23,30 @@ export class CheckListService {
     getCheckListByUuid(uuid: string) {
         return this.chekListRepository.findOneBy({ uuid: uuid });
     }
-    
+
 
     getCheckList() {
-        return this.chekListRepository.find({order:{name: 'ASC'}});
+        return this.chekListRepository.find({ order: { name: 'ASC' } });
     }
 
-    getCheckListPaginated(size: number, offset:number) {
-        return this.chekListRepository.findAndCount({order:{name: 'ASC'}, skip: offset, take: size});
+    getCheckListPaginated(size: number, offset: number, name: string) {
+        // return this.chekListRepository.findAndCount({order:{name: 'ASC'}, skip: offset, take: size});
+       
+        const queryBuilder = this.chekListRepository
+            .createQueryBuilder('checkList')
+           .orderBy('name','ASC')
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(checkList.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     deleteCheckList(uuid: string) {
-        return this.chekListRepository.softDelete({uuid: uuid});
+        return this.chekListRepository.softDelete({ uuid: uuid });
     }
 
     updateCheckList(checkList: CheckList) {

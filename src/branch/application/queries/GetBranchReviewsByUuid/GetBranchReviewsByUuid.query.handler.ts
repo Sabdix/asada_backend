@@ -18,7 +18,7 @@ export class GetBranchReviewsByUuidQueryHandler implements IQueryHandler<GetBran
 
     if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-    const [branchReviews, total] = await this.branchReviewService.getBranchReviewsByUuidPaginated(branch.uuid, query.size, query.offset)
+    const [branchReviews, total] = await this.branchReviewService.getBranchReviewsByUuidPaginated(branch.uuid, query.size, query.offset, query.branch, query.rate)
 
     return WsResponse.buildOkListResponse(
       plainToInstance(BranchReviewDto, branchReviews, { excludeExtraneousValues: true }), total

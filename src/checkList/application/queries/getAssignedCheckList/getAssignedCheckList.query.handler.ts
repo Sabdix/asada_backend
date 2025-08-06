@@ -12,8 +12,8 @@ export class GetAssignedCheckListQueryHandler implements IQueryHandler<GetAssign
     ) { }
 
     async execute(query: GetAssignedCheckListQuery) {
-        const [checkListUser, total] = await this.checkListUserService.getAllUserCheckListPaginated(query.size, query.offset);
-       
+        const [checkListUser, total] = await this.checkListUserService.getAllUserCheckListPaginated(query.size, query.offset, query.name, query.lastName, query.secondLastName, query.checkList, query.weekday);
+
         return WsResponse.buildOkListResponse(
             plainToInstance(CheckListUserDto, checkListUser, { excludeExtraneousValues: true }), total
         );
