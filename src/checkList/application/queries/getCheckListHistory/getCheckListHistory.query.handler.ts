@@ -12,7 +12,7 @@ export class GetCheckListHistoryQueryHandler implements IQueryHandler<GetCheckLi
     ) { }
 
     async execute(query: GetCheckListHistoryQuery) {
-        const [checkListHistory, total] = await this.checkListHistoryService.getAllCheckListHistoryPaginated(query.size, query.offset);
+        const [checkListHistory, total] = await this.checkListHistoryService.getAllCheckListHistoryPaginated(query.size, query.offset, query.name, query.lastName, query.secondLastName, query.checkList, query.branch);
 
         return WsResponse.buildOkListResponse(
             plainToInstance(CheckListHistoryDto, checkListHistory, { excludeExtraneousValues: true }), total

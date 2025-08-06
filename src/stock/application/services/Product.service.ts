@@ -24,10 +24,10 @@ export class ProductService {
 
     getProductByUuid(uuid: string) {
         return this.productRepository
-            .createQueryBuilder('product') 
+            .createQueryBuilder('product')
             .leftJoinAndSelect(
                 'product.category',
-                'category', 
+                'category',
                 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
             )
             .where('product.uuid = :uuid', { uuid })
@@ -37,28 +37,49 @@ export class ProductService {
 
     getProducts() {
         return this.productRepository
-            .createQueryBuilder('product') 
+            .createQueryBuilder('product')
             .leftJoinAndSelect(
                 'product.category',
-                'category', 
+                'category',
                 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
             )
             .andWhere('product.deletedAt IS NULL')
             .getMany();
     }
 
-     getProductsPaginated(size: number, offset:number) {
-        return this.productRepository
-            .createQueryBuilder('product') 
+    getProductsPaginated(size: number, offset: number, name: string, category: string) {
+        // return this.productRepository
+        //     .createQueryBuilder('product')
+        //     .leftJoinAndSelect(
+        //         'product.category',
+        //         'category',
+        //         'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+        //     )
+        //     .andWhere('product.deletedAt IS NULL')
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+
+        const queryBuilder = this.productRepository
+            .createQueryBuilder('product')
             .leftJoinAndSelect(
                 'product.category',
-                'category', 
+                'category',
                 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
             )
             .andWhere('product.deletedAt IS NULL')
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(product.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (category) {
+            queryBuilder.andWhere(`LOWER(category.name) LIKE LOWER(:category)`, { category: `%${category}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     deleteProduct(uuid: string) {

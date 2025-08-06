@@ -10,7 +10,7 @@ export class GetRecipesQueryHandler implements IQueryHandler<GetRecipesQuery> {
   constructor(private  recipeService: RecipeService) {}
 
   async execute(query: GetRecipesQuery) {
-    const [recipes, total] = await this.recipeService.getRecipesPaginated(query.size, query.offset);
+    const [recipes, total] = await this.recipeService.getRecipesPaginated(query.size, query.offset, query.name, query.category);
 
     return WsResponse.buildOkListResponse(
       plainToInstance(RecipeDto, recipes, { excludeExtraneousValues: true }), total

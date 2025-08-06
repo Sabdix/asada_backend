@@ -53,8 +53,35 @@ export class StockService {
             .getMany();
     }
 
-    getStockByBranchPaginated(uuid_branch: string, size: number, offset: number) {
-        return this.stockRepository
+    getStockByBranchPaginated(uuid_branch: string, size: number, offset: number, category: string, product: string, branch: string, workArea: string) {
+        // return this.stockRepository
+        //     .createQueryBuilder('stock')
+        //     .leftJoinAndSelect(
+        //         'stock.category',
+        //         'category',
+        //         'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.product',
+        //         'product',
+        //         'product.deletedAt IS NOT NULL OR product.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.branch',
+        //         'branch',
+        //         'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.workArea',
+        //         'workArea',
+        //         'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+        //     )
+        //     .where('stock.uuid_branch = :uuid_branch', { uuid_branch })
+        //     .andWhere('product.deletedAt IS NULL')
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();;
+        const queryBuilder = this.stockRepository
             .createQueryBuilder('stock')
             .leftJoinAndSelect(
                 'stock.category',
@@ -78,9 +105,23 @@ export class StockService {
             )
             .where('stock.uuid_branch = :uuid_branch', { uuid_branch })
             .andWhere('product.deletedAt IS NULL')
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();;
+
+        if (category) {
+            queryBuilder.andWhere(`LOWER(category.name) LIKE LOWER(:category)`, { category: `%${category}%` });
+        }
+        if (product) {
+            queryBuilder.andWhere(`LOWER(product.name) LIKE LOWER(:product)`, { product: `%${product}%` });
+        }
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(branch.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+        if (workArea) {
+            queryBuilder.andWhere(`LOWER(workArea.name) LIKE LOWER(:workArea)`, { workArea: `%${workArea}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     getStockByUuid(uuid: string) {
@@ -138,8 +179,35 @@ export class StockService {
             .getMany();
     }
 
-    getStocksPaginated(size: number, offset: number) {
-        return this.stockRepository
+    getStocksPaginated(size: number, offset: number, category: string, product: string, branch: string, workArea: string) {
+        // return this.stockRepository
+        //     .createQueryBuilder('stock')
+        //     .leftJoinAndSelect(
+        //         'stock.category',
+        //         'category',
+        //         'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.product',
+        //         'product',
+        //         'product.deletedAt IS NOT NULL OR product.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.branch',
+        //         'branch',
+        //         'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'stock.workArea',
+        //         'workArea',
+        //         'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
+        //     )
+        //     .andWhere('product.deletedAt IS NULL')
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.stockRepository
             .createQueryBuilder('stock')
             .leftJoinAndSelect(
                 'stock.category',
@@ -162,9 +230,24 @@ export class StockService {
                 'workArea.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
             .andWhere('product.deletedAt IS NULL')
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (category) {
+            queryBuilder.andWhere(`LOWER(category.name) LIKE LOWER(:category)`, { category: `%${category}%` });
+        }
+        if (product) {
+            queryBuilder.andWhere(`LOWER(product.name) LIKE LOWER(:product)`, { product: `%${product}%` });
+        }
+        if (branch) {
+            queryBuilder.andWhere(`LOWER(branch.name) LIKE LOWER(:branch)`, { branch: `%${branch}%` });
+        }
+        if (workArea) {
+            queryBuilder.andWhere(`LOWER(workArea.name) LIKE LOWER(:workArea)`, { workArea: `%${workArea}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
+
     }
 
     deleteStock(uuid: string) {

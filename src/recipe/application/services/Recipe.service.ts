@@ -50,15 +50,31 @@ export class RecipeService {
             .getMany();
     }
 
-    getRecipesPaginated(size: number, offset:number) {
+    getRecipesPaginated(size: number, offset: number, name: string, category: string) {
         //return this.recipeRepository.find({ relations: ['category'], withDeleted: true });
-        return this.recipeRepository
+        // return this.recipeRepository
+        //     .createQueryBuilder('recipe')
+        //     .leftJoinAndSelect('recipe.category', 'category', 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL')
+        //     .where('recipe.deletedAt IS NULL')
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.recipeRepository
             .createQueryBuilder('recipe')
             .leftJoinAndSelect('recipe.category', 'category', 'category.deletedAt IS NOT NULL OR category.deletedAt IS NULL')
             .where('recipe.deletedAt IS NULL')
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(recipe.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (category) {
+            queryBuilder.andWhere(`LOWER(category.name) LIKE LOWER(:category)`, { category: `%${category}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     deleteRecipe(uuid: string) {

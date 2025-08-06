@@ -145,16 +145,17 @@ export class recipeController {
         }),
     )
     async createRecipe(@Body() createRecipeRequestDto: CreateRecipeRequestDto, @UploadedFile() pdfFile: Express.Multer.File) {
-        if (!pdfFile) {
+        /*if (!pdfFile) {
             return WsResponse.buildBadRequestResponse('pdfFile is requiered');
-        }
+        }*/
+        const filename = pdfFile ? pdfFile.filename : "";
 
-        return this.commandBus.execute(new CreateRecipeCommand(createRecipeRequestDto, pdfFile.filename));
+        return this.commandBus.execute(new CreateRecipeCommand(createRecipeRequestDto, filename /*pdfFile.filename*/));
     }
 
     @Get()
-    async getRecipes(@Query('size')size:number, @Query('offset') offset:number) {
-        return this.queryBus.execute(new GetRecipesQuery(size, offset));
+    async getRecipes(@Query('size') size: number, @Query('offset') offset: number,  @Query('name') name: string,  @Query('category') category: string) {
+        return this.queryBus.execute(new GetRecipesQuery(size, offset, name, category));
     }
 
     @Get('by-uuid/:uuid')

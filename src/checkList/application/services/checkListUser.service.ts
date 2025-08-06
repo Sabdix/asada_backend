@@ -61,10 +61,28 @@ export class CheckListUserService {
             .getMany();
     }
 
-     getAllUserCheckListPaginated(size:number, offset:number) {
+    getAllUserCheckListPaginated(size: number, offset: number, name: string, lastName: string, secondLastName: string, checkList: string, weekday: string) {
         // return this.chekListUserRepository.find({relations: ['checkList','user'], withDeleted: true });
 
-        return this.chekListUserRepository
+        // return this.chekListUserRepository
+        //     .createQueryBuilder('clu')
+        //     .leftJoinAndSelect(
+        //         'clu.checkList',
+        //         'cl',
+        //         'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clu.user',
+        //         'u',
+        //         'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+        //     )
+        //     .where('clu.deletedAt IS NULL')
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+
+        const queryBuilder = this.chekListUserRepository
             .createQueryBuilder('clu')
             .leftJoinAndSelect(
                 'clu.checkList',
@@ -77,22 +95,57 @@ export class CheckListUserService {
                 'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
             )
             .where('clu.deletedAt IS NULL')
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (lastName) {
+            queryBuilder.andWhere(`LOWER(u.last_name) LIKE LOWER(:lastName)`, { lastName: `%${lastName}%` });
+        }
+        if (secondLastName) {
+            queryBuilder.andWhere(`LOWER(u.second_last_name) LIKE LOWER(:secondLastName)`, { secondLastName: `%${secondLastName}%` });
+        }
+        if (checkList) {
+            queryBuilder.andWhere(`LOWER(cl.name) LIKE LOWER(:checkList)`, { checkList: `%${checkList}%` });
+        }
+        if (weekday) {
+            queryBuilder.andWhere(`LOWER(clu.weekday) LIKE LOWER(:weekday)`, { weekday: `%${weekday}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 
     getCheckListByWeekDay(weekDay: number, eventDate: Date) {
         return this.chekListUserRepository.find(
             {
                 where: [{ weekDay: weekDay, specialEvent: false },
-                { eventDate: eventDate, specialEvent: true }] 
+                { eventDate: eventDate, specialEvent: true }]
             });
     }
 
-    getUserCheckListByBranch(uuid_branch: string, size:number, offset:number) {
+    getUserCheckListByBranch(uuid_branch: string, size: number, offset: number, name: string, lastName: string, secondLastName: string, checkList: string, weekday: string) {
 
-        return this.chekListUserRepository
+        // return this.chekListUserRepository
+        //     .createQueryBuilder('clu')
+        //     .leftJoinAndSelect(
+        //         'clu.checkList',
+        //         'cl',
+        //         'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+        //     )
+        //     .leftJoinAndSelect(
+        //         'clu.user',
+        //         'u',
+        //         'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+        //     )
+        //     .where('clu.deletedAt IS NULL')
+        //     .andWhere('u.uuid_branch = :uuid_branch', { uuid_branch })
+        //     .take(size)
+        //     .skip(offset)
+        //     .getManyAndCount();
+
+        const queryBuilder = this.chekListUserRepository
             .createQueryBuilder('clu')
             .leftJoinAndSelect(
                 'clu.checkList',
@@ -106,8 +159,25 @@ export class CheckListUserService {
             )
             .where('clu.deletedAt IS NULL')
             .andWhere('u.uuid_branch = :uuid_branch', { uuid_branch })
-            .take(size)
-            .skip(offset)
-            .getManyAndCount();
+
+        if (name) {
+            queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
+        }
+        if (lastName) {
+            queryBuilder.andWhere(`LOWER(u.last_name) LIKE LOWER(:lastName)`, { lastName: `%${lastName}%` });
+        }
+        if (secondLastName) {
+            queryBuilder.andWhere(`LOWER(u.second_last_name) LIKE LOWER(:secondLastName)`, { secondLastName: `%${secondLastName}%` });
+        }
+        if (checkList) {
+            queryBuilder.andWhere(`LOWER(cl.name) LIKE LOWER(:checkList)`, { checkList: `%${checkList}%` });
+        }
+        if (weekday) {
+            queryBuilder.andWhere(`LOWER(clu.weekday) LIKE LOWER(:weekday)`, { weekday: `%${weekday}%` });
+        }
+
+        queryBuilder.take(size).skip(offset);
+
+        return queryBuilder.getManyAndCount();
     }
 }

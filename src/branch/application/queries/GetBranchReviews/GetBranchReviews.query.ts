@@ -5,7 +5,9 @@ import { BranchReviewDto } from '../../dtos/BranchReview.dto';
 export class GetBranchReviewsQuery extends Query<WsResponse<BranchReviewDto[] | string>> {
   constructor(
     public readonly size: number,
-    public readonly offset: number
+    public readonly offset: number,
+    public readonly branch: string,
+    public readonly rate: string
   ) {
     super();
   }

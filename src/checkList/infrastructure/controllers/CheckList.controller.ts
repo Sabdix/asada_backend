@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Query, Res } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { Response } from "express";
+import { last } from "rxjs";
 import { AnswerCheckListCommand } from "src/checkList/application/commands/AnswerCheckList/AnswerCheckList.command";
 import { CreateCheckListCommand } from "src/checkList/application/commands/CreateCheckList/CreateCheckList.command";
 import { CreateCheckListItemCommand } from "src/checkList/application/commands/CreateCheckListItem/CreateCheckListItem.command";
@@ -68,8 +69,8 @@ export class CheckListController {
   }
 
   @Get()
-  async getCheckList(@Query('size') size: number, @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetCheckListQuery(size, offset));
+  async getCheckList(@Query('size') size: number, @Query('offset') offset: number, @Query('name') name: string) {
+    return this.queryBus.execute(new GetCheckListQuery(size, offset, name));
   }
 
   @Delete('/:uuid')
@@ -158,8 +159,8 @@ export class CheckListController {
   }
 
   @Get('assigned/all-users')
-  async getAssignedCheckList(@Query('size') size: number, @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetAssignedCheckListQuery(size, offset));
+  async getAssignedCheckList(@Query('size') size: number, @Query('offset') offset: number, @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('checkList') checkList: string, @Query('weekday') weekday: string) {
+    return this.queryBus.execute(new GetAssignedCheckListQuery(size, offset, name, lastName, secondLastName, checkList, weekday));
   }
 
   @Post('user/:uuid/answer')
@@ -168,8 +169,8 @@ export class CheckListController {
   }
 
   @Get('history/all')
-  async getAllCheckListHistory(@Query('size') size: number, @Query('offset') offset) {
-    return this.queryBus.execute(new GetCheckListHistoryQuery(size, offset));
+  async getAllCheckListHistory(@Query('size') size: number, @Query('offset') offset, @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('checkList') checkList: string, @Query('branch') branch: string) {
+    return this.queryBus.execute(new GetCheckListHistoryQuery(size, offset, name, lastName, secondLastName, checkList, branch));
   }
 
   @Get('user/:uuid/history/')
@@ -211,16 +212,16 @@ export class CheckListController {
   }
 
   @Get('assigned/by-branch/:uuid')
-  async getAssignedCheckListByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetAssignedCheckListByBranchQuery(uuid, size, offset));
+  async getAssignedCheckListByBranch(@Param('uuid') uuid: string, @Query('size') size: number, @Query('offset') offset: number, @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('checkList') checkList: string, @Query('weekday') weekday: string) {
+    return this.queryBus.execute(new GetAssignedCheckListByBranchQuery(uuid, size, offset, name, lastName, secondLastName, checkList, weekday));
   }
 
   @Get('history/by-branch/:uuid')
   async getCheckListHistoryByBranch(
     @Param('uuid') uuid: string,
     @Query('size') size: number,
-    @Query('offset') offset: number) {
-    return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid, size, offset));
+    @Query('offset') offset: number, @Query('name') name: string, @Query('lastName') lastName: string, @Query('secondLastName') secondLastName: string, @Query('checkList') checkList: string, @Query('branch') branch: string) {
+    return this.queryBus.execute(new GetCheckListHistoryByBranchQuery(uuid, size, offset, name, lastName, secondLastName, checkList, branch));
   }
 
   @Post('duplicate')

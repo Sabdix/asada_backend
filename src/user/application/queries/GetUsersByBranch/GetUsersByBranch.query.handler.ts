@@ -18,7 +18,7 @@ export class GetUsersByBranchQueryHandler implements IQueryHandler<GetUsersByBra
         const branch = await this.brancService.getBranchByUuid(query.uuid);
         if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-        const [users, total] = await this.userService.getUsersByBranchPaginated(branch.uuid, query.size, query.offset);
+        const [users, total] = await this.userService.getUsersByBranchPaginated(branch.uuid, query.size, query.offset, query.name, query.lastName, query.secondLastName, query.role);
         //const users = await this.userService.getUsersByBranch(branch.uuid);
 
         /*return WsResponse.buildOkResponse(

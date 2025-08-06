@@ -5,7 +5,9 @@ import { RecipeDto } from '../../dtos/Recipe.dto';
 export class GetRecipesQuery extends Query<WsResponse<RecipeDto[] | string>> {
   constructor(
     public readonly size:number,
-    public readonly offset: number
+    public readonly offset: number,
+    public readonly name: string,
+    public readonly category: string
   ) {
     super();
   }

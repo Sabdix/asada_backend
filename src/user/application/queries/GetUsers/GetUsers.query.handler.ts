@@ -10,7 +10,7 @@ export class GetUsersQueryHandler implements IQueryHandler<GetUsersQuery> {
   constructor(private  userService: UserService) {}
 
   async execute(query: GetUsersQuery): Promise<WsResponse<UserDto[]>> {
-    const [users, total] = await this.userService.getUsersPaginated(query.size, query.offset);
+    const [users, total] = await this.userService.getUsersPaginated(query.size, query.offset, query.name, query.lastName, query.secondLastName, query.role, query.branch);
 
     return WsResponse.buildOkListResponse(
       plainToInstance(UserDto, users, { excludeExtraneousValues: true }), total
