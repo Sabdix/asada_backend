@@ -125,7 +125,8 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-
+            .andWhere('clh.date = :today', {today: format(new Date(), 'yyyy-MM-dd')})
+            
         if (name) {
             queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
         }
