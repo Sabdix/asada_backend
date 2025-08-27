@@ -25,5 +25,8 @@ export class CheckListUserDto {
   @Expose()
   @Type(() => SimpleUserDto)
   user: SimpleUserDto;
+
+  @Expose()
+  weekDays: string;
 }
 
