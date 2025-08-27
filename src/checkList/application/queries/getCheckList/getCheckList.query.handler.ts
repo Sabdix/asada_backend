@@ -10,14 +10,12 @@ import { CheckListItemService } from '../../services/checkListItem.service';
 export class GetCheckListQueryHandler implements IQueryHandler<GetCheckListQuery> {
   constructor(
     private checkService: CheckListService,
-    private checkListItemService: CheckListItemService
   ) { }
 
   async execute(query: GetCheckListQuery): Promise<WsResponse<CheckListDto[]>> {
-    const [checkList, total] = await this.checkService.getCheckListPaginated(query.size, query.offset, query.name);
-
-    return WsResponse.buildOkListResponse(
-      plainToInstance(CheckListDto, checkList, { excludeExtraneousValues: true }), total
-    );
+    const checkList = await this.checkService.getCheckListPaginated(query.name);
+    const checkListDto = plainToInstance(CheckListDto, checkList, { excludeExtraneousValues: true });
+    
+    return WsResponse.buildOkResponse(checkListDto);
   }
 }

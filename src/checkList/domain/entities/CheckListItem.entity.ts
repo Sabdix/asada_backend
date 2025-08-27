@@ -9,7 +9,7 @@ export class CheckListItem extends EntityBase {
   @Column()
   uuid_check_list
 
-  @ManyToOne(() => CheckList)
+  @ManyToOne(() => CheckList, (checkList) => checkList.checkListItems)
   @JoinColumn({ name: 'uuid_check_list' })
   check_list: CheckList
 }

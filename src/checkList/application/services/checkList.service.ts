@@ -29,20 +29,24 @@ export class CheckListService {
         return this.chekListRepository.find({ order: { name: 'ASC' } });
     }
 
-    getCheckListPaginated(size: number, offset: number, name: string) {
-        // return this.chekListRepository.findAndCount({order:{name: 'ASC'}, skip: offset, take: size});
-       
+    async getCheckListPaginated(name: string) {
         const queryBuilder = this.chekListRepository
             .createQueryBuilder('checkList')
-           .orderBy('name','ASC')
+            .leftJoin('check_list_item', 'checkListItem', 'checkListItem.uuid_check_list = checkList.uuid')
+            .addSelect('COUNT(checkListItem.uuid)', 'itemCount')
+            .groupBy('checkList.uuid')
+            .orderBy('checkList.name', 'ASC')
 
         if (name) {
             queryBuilder.andWhere(`LOWER(checkList.name) LIKE LOWER(:name)`, { name: `%${name}%` });
         }
 
-        queryBuilder.take(size).skip(offset);
-
-        return queryBuilder.getManyAndCount();
+        const { entities, raw } = await queryBuilder.getRawAndEntities();
+        
+        return entities.map((entity, index) => ({
+            ...entity,
+            checkListItemCount: parseInt(raw[index].itemCount)
+        }));
     }
 
     deleteCheckList(uuid: string) {

@@ -1,8 +1,12 @@
 import { EntityBase } from 'src/common/entities/EntityBase';
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { CheckListItem } from './CheckListItem.entity';
 
 @Entity()
 export class CheckList extends EntityBase {
   @Column()
   name: string;
+
+  @OneToMany(() => CheckListItem, (checkListItem) => checkListItem.check_list)
+  checkListItems: CheckListItem[]
 }

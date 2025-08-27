@@ -11,4 +11,7 @@ export class CheckListDto {
     @Expose()
     @Type(() => CheckListItemDto)
     checkListItem?: CheckListItemDto[];
+
+    @Expose()
+    checkListItemCount?: number
 }
