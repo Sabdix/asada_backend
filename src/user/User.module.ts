@@ -46,6 +46,7 @@ import { WorkAreaService } from "./application/services/workArea.service";
 import { AssignWorkAreaCommandHandler } from "./application/commands/AssignWorkArea/AssignWorkArea.command.handler";
 import { UnassignManagerCommandHandler } from "./application/commands/UnassignManager/UnassignManager.command.handler";
 import { ChangeStockEmpoweredStatusCommandHandler } from "./application/commands/ChangeStockEmpoweredStatus/ChangeStockEmpowered.command.handler";
+import { DeleteUserAssignamentChecklistCommandHandler } from "./application/commands/DeleteUserAssignamentChecklist/DeleteUserAssignamentChecklist.command.handler";
 
 @Module({
     imports: [
@@ -89,7 +90,8 @@ import { ChangeStockEmpoweredStatusCommandHandler } from "./application/commands
         GetAllWorkAreaQueryHandler,
         AssignWorkAreaCommandHandler,
         UnassignManagerCommandHandler,
-        ChangeStockEmpoweredStatusCommandHandler
+        ChangeStockEmpoweredStatusCommandHandler,
+        DeleteUserAssignamentChecklistCommandHandler,
     ],
     exports: [
         UserService,

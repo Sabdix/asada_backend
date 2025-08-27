@@ -149,6 +149,10 @@ export class CheckListUserService {
             });
     }
 
+    deleteCheckListAssignedUser(uuid:string, uuid_check_list) {
+        return this.chekListUserRepository.softDelete({ uuid_user: uuid, uuid_check_list: uuid_check_list });
+    }
+
     getUserCheckListByBranch(uuid_branch: string, size: number, offset: number, name: string, lastName: string, secondLastName: string, checkList: string, weekday: string) {
 
         // return this.chekListUserRepository

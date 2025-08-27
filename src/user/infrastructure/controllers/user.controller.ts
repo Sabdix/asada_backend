@@ -25,6 +25,7 @@ import { AssingWorkAreaRequestDto } from "src/user/application/dtos/AssignWorkAr
 import { AssignWorkAreaCommand } from "src/user/application/commands/AssignWorkArea/AssignWorkArea.command";
 import { UnassignManagerCommand } from "src/user/application/commands/UnassignManager/UnassignManager.command";
 import { ChangeStockEmpoweredStatusCommand } from "src/user/application/commands/ChangeStockEmpoweredStatus/ChangeStockEmpowered.command";
+import { DeleteUserAssignamentChecklistCommand } from "src/user/application/commands/DeleteUserAssignamentChecklist/DeleteUserAssignamentChecklist.command";
 
 @Controller('user')
 export class UserController {
@@ -70,6 +71,12 @@ export class UserController {
 
     @Post('assign-checklist/:uuid')
     async AssignCheckListToUser(@Param('uuid') uuid: string, @Body() request: AssingCheckListRequestDto) {
+        return this.commandBus.execute(new AssignCheckListCommand(request, uuid));
+    }
+
+    @Put('assign-checklist/:uuid')
+    async EditAssignCheckListUser(@Param('uuid') uuid: string, @Body() request: AssingCheckListRequestDto) {
+        await this.commandBus.execute(new DeleteUserAssignamentChecklistCommand(uuid, request.uuid_check_list));
         return this.commandBus.execute(new AssignCheckListCommand(request, uuid));
     }
 

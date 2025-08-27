@@ -5,22 +5,21 @@ import { CheckListUserService } from 'src/checkList/application/services/checkLi
 
 @CommandHandler(DeleteUserAssignamentCommand)
 export class DeleteUserAssignamentCommandHandler
-    implements ICommandHandler<DeleteUserAssignamentCommand> {
-    constructor(private readonly checkListUserService: CheckListUserService) { }
+  implements ICommandHandler<DeleteUserAssignamentCommand>
+{
+  constructor(private readonly checkListUserService: CheckListUserService) {}
 
-    async execute(
-        command: DeleteUserAssignamentCommand,
-    ): Promise<WsResponse<null | string>> {
-        
-        const userAssignament = await this.checkListUserService.getUserCheckListByUuid(
-            command.uuid,
-        );
+  async execute(
+    command: DeleteUserAssignamentCommand,
+  ): Promise<WsResponse<null | string>> {
+    const userAssignament =
+      await this.checkListUserService.getUserCheckListByUuid(command.uuid);
 
-        if (!userAssignament)
-            return WsResponse.buildNotFoundResponse('CHECKLIST_USER NOT FOUND');
+    if (!userAssignament)
+      return WsResponse.buildNotFoundResponse('CHECKLIST_USER NOT FOUND');
 
-        await this.checkListUserService.deleteCheckListUser(command.uuid);
+    await this.checkListUserService.deleteCheckListUser(command.uuid);
 
-        return WsResponse.buildOkResponse(null);
-    }
+    return WsResponse.buildOkResponse(null);
+  }
 }
