@@ -16,19 +16,8 @@ export class GetCheckListQueryHandler implements IQueryHandler<GetCheckListQuery
   async execute(query: GetCheckListQuery): Promise<WsResponse<CheckListDto[]>> {
     const [checkList, total] = await this.checkService.getCheckListPaginated(query.size, query.offset, query.name);
 
-    const response = new Array<CheckListDto>
-
-    for (const element of checkList) {
-      const checkListWithItems = new CheckListDto
-      
-      checkListWithItems.name = element.name
-      checkListWithItems.uuid = element.uuid    
-      checkListWithItems.checkListItem = await this.checkListItemService.getCheckListItemByCheckList(element.uuid)
-      response.push(checkListWithItems)
-    }
-
     return WsResponse.buildOkListResponse(
-      plainToInstance(CheckListDto, response, { excludeExtraneousValues: true }), total
+      plainToInstance(CheckListDto, checkList, { excludeExtraneousValues: true }), total
     );
   }
 }
