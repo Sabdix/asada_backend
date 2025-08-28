@@ -4,7 +4,6 @@ export class GetAssignedGroupedCheckListQuery {
         public readonly offset: number,
         public readonly name: string,
         public readonly checkList: string,
-        public readonly weekday: string,
-        public readonly specialEvent: boolean
+        public readonly weekday: string
     ) {}
 }

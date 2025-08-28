@@ -66,8 +66,8 @@ export class CheckListUserService {
         offset: number, 
         name: string, 
         checkList: string, 
-        weekday: string, 
-        specialEvent: boolean) {
+        weekday: string
+    ) {
         const queryBuilder = this.chekListUserRepository
         .createQueryBuilder('clu')
         .select([
@@ -79,6 +79,7 @@ export class CheckListUserService {
             'u.second_last_name as userSecondLastName',
             'clu.initHour',
             'clu.endHour',
+            'clu.specialEvent',
             'GROUP_CONCAT(clu.weekDay ORDER BY clu.weekDay) as weekDays'
         ])
         .innerJoin('clu.checkList', 'cl')
@@ -86,8 +87,7 @@ export class CheckListUserService {
         .where('clu.deletedAt IS NULL')
         .andWhere('cl.deletedAt IS NULL')
         .andWhere('u.deletedAt IS NULL')
-        .andWhere('clu.specialEvent = :specialEvent', { specialEvent: specialEvent })
-        .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour')
+        .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour, clu.specialEvent')
 
         if (name) {
             queryBuilder.andWhere(`(LOWER(u.name) LIKE LOWER(:name) OR LOWER(u.last_name) LIKE LOWER(:name) OR LOWER(u.second_last_name) LIKE LOWER(:name))`, { name: `%${name}%` });

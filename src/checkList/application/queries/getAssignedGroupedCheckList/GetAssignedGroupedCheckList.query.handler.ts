@@ -18,8 +18,7 @@ export class GetAssignedGroupedCheckListQueryHandler
         query.offset,
         query.name,
         query.checkList,
-        query.weekday,
-        query.specialEvent
+        query.weekday
       );
     const checkListUserDtos = data.map(e => {
         const checkListUserDto = new CheckListUserDto();
@@ -38,6 +37,7 @@ export class GetAssignedGroupedCheckListQueryHandler
             second_last_name: e.userSecondLastName,
         };
         checkListUserDto.weekDays = e.weekDays
+        checkListUserDto.specialEvent = e.clu_specialEvent
         return checkListUserDto;
     })
     return WsResponse.buildOkListResponse(
