@@ -249,6 +249,7 @@ export class CheckListController {
     @Query('name') name: string,
     @Query('checkList') checkList: string,
     @Query('weekday') weekday: string,
+    @Query('specialEvent') specialEvent: boolean,
   ) {
     return this.queryBus.execute(
       new GetAssignedGroupedCheckListQuery(
@@ -256,7 +257,8 @@ export class CheckListController {
         offset,
         name,
         checkList,
-        weekday
+        weekday,
+        specialEvent
       ),
     );
   }

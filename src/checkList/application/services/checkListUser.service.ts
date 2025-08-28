@@ -61,7 +61,13 @@ export class CheckListUserService {
             .getMany();
     }
 
-    async getAllUserCheckListGroupedPaginated(size: number, offset: number, name: string, checkList: string, weekday: string) {
+    async getAllUserCheckListGroupedPaginated(
+        size: number, 
+        offset: number, 
+        name: string, 
+        checkList: string, 
+        weekday: string, 
+        specialEvent: boolean) {
         const queryBuilder = this.chekListUserRepository
         .createQueryBuilder('clu')
         .select([
@@ -80,6 +86,7 @@ export class CheckListUserService {
         .where('clu.deletedAt IS NULL')
         .andWhere('cl.deletedAt IS NULL')
         .andWhere('u.deletedAt IS NULL')
+        .andWhere('clu.specialEvent = :specialEvent', { specialEvent: specialEvent })
         .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour')
 
         if (name) {
