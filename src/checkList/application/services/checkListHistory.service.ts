@@ -5,7 +5,7 @@ import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistory
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
 import { Between, QueryBuilder } from 'typeorm';
-import { format, subMinutes } from 'date-fns';
+import { format, startOfDay, subMinutes } from 'date-fns';
 
 @Injectable()
 export class CheckListHistoryService {
@@ -125,8 +125,8 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .andWhere('clh.date = :today', {today: format(new Date(), 'yyyy-MM-dd')})
-            
+            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+
         if (name) {
             queryBuilder.andWhere(`LOWER(u.name) LIKE LOWER(:name)`, { name: `%${name}%` });
         }
@@ -164,6 +164,7 @@ export class CheckListHistoryService {
                 'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
             )
             .where('clh.uuid_user = :uuid_user', { uuid_user })
+            .andWhere('clh.date = :today', { today: startOfDay(new Date())})
             .andWhere('clh.deletedAt IS NULL')
             .getMany();
     }
