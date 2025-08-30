@@ -18,7 +18,8 @@ export class GetAssignedGroupedCheckListQueryHandler
         query.offset,
         query.name,
         query.checkList,
-        query.weekday
+        query.weekday,
+        query.uuid_branch,
       );
     const checkListUserDtos = data.map(e => {
         const checkListUserDto = new CheckListUserDto();

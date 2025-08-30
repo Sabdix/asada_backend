@@ -66,7 +66,8 @@ export class CheckListUserService {
         offset: number, 
         name: string, 
         checkList: string, 
-        weekday: string
+        weekday: string,
+        uuid_branch: string
     ) {
         const queryBuilder = this.chekListUserRepository
         .createQueryBuilder('clu')
@@ -97,6 +98,9 @@ export class CheckListUserService {
         }
         if (weekday) {
             queryBuilder.andWhere(`clu.weekDay = :weekday`, { weekday });
+        }
+        if (uuid_branch) {
+            queryBuilder.andWhere(`u.uuid_branch = :uuid_branch`, { uuid_branch });
         }
 
         const totalQuery = queryBuilder.clone();

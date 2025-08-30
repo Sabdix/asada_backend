@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Response } from 'express';
-import { last } from 'rxjs';
 import { AnswerCheckListCommand } from 'src/checkList/application/commands/AnswerCheckList/AnswerCheckList.command';
 import { CreateCheckListCommand } from 'src/checkList/application/commands/CreateCheckList/CreateCheckList.command';
 import { CreateCheckListItemCommand } from 'src/checkList/application/commands/CreateCheckListItem/CreateCheckListItem.command';
@@ -249,6 +248,7 @@ export class CheckListController {
     @Query('name') name: string,
     @Query('checkList') checkList: string,
     @Query('weekday') weekday: string
+    @Query('uuid_branch') uuid_branch: string
   ) {
     return this.queryBus.execute(
       new GetAssignedGroupedCheckListQuery(
@@ -256,7 +256,8 @@ export class CheckListController {
         offset,
         name,
         checkList,
-        weekday
+        weekday,
+        uuid_branch
       ),
     );
   }
