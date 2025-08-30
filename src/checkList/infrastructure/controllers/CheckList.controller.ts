@@ -247,7 +247,7 @@ export class CheckListController {
     @Query('offset') offset: number,
     @Query('name') name: string,
     @Query('checkList') checkList: string,
-    @Query('weekday') weekday: string
+    @Query('weekday') weekday: string,
     @Query('uuid_branch') uuid_branch: string
   ) {
     return this.queryBus.execute(
