@@ -17,6 +17,10 @@ export class StockHistoryReportDto {
     @Expose()
     CantidadPrevia: string;
     @Expose()
+    ASolicitar: string;
+    @Expose()
+    ASolicitarFestivo: string;
+    @Expose()
     Revisor: string;
     @Expose()
     Tipo: string;
