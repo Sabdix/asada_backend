@@ -45,6 +45,8 @@ export class DownloadStockReportQueryHandler implements IQueryHandler<DownloadSt
                 stockHistoryReport.Revisor = stockHistory.user?.name + " " + stockHistory.user?.last_name + " " + stockHistory.user?.second_last_name;
                 stockHistoryReport.UnidadMedida = stockHistory.stock.product.measurementUnit;
                 stockHistoryReport.Tipo = stockHistory.type;
+                stockHistoryReport.ASolicitar = stockHistory.type == "cierre" ? (stockHistory.stock.requiredStock - stockHistory.quantity).toString() : "0";
+                stockHistoryReport.ASolicitarFestivo = stockHistory.type == "cierre" ? (stockHistory.stock.holidayRequiredStock - stockHistory.quantity).toString() : "0";
 
                 data.push(stockHistoryReport);
             }
@@ -59,6 +61,8 @@ export class DownloadStockReportQueryHandler implements IQueryHandler<DownloadSt
                 { header: 'Cantidad Requerida Festivo', key: 'CantidadRequeridaFestivo', width: 25 },
                 { header: 'Cantidad Actual', key: 'CantidadActual', width: 15 },
                 { header: 'Cantidad Previa', key: 'CantidadPrevia', width: 15 },
+                { header: '"A solicitar', key: 'ASolicitar', width: 15 },
+                { header: '"A solicitar Festivo', key: 'ASolicitarFestivo', width: 15 },
                 { header: 'Fecha', key: 'Fecha', width: 15 },
                 { header: 'Revisor', key: 'Revisor', width: 30 },
                 { header: 'Tipo', key: 'Tipo', width: 15 }
