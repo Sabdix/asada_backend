@@ -28,5 +28,7 @@ export class CheckListUserDto {
 
   @Expose()
   weekDays: string;
+  @Expose()
+  ids?: Array<string>;
 }
 
