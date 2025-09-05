@@ -81,7 +81,9 @@ export class CheckListUserService {
             'clu.initHour',
             'clu.endHour',
             'clu.specialEvent',
-            'GROUP_CONCAT(clu.weekDay ORDER BY clu.weekDay) as weekDays'
+            'clu.uuid',
+            'GROUP_CONCAT(clu.weekDay ORDER BY clu.weekDay) as weekDays',
+            'GROUP_CONCAT(clu.uuid ORDER BY clu.weekDay) as ids'
         ])
         .innerJoin('clu.checkList', 'cl')
         .innerJoin('clu.user', 'u')
