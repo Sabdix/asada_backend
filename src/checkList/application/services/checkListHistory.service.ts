@@ -376,6 +376,7 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
+            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })
 
         if (name) {
