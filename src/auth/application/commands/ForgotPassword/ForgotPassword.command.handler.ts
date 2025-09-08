@@ -15,7 +15,7 @@ export class ForgotPasswordCommandHandler implements ICommandHandler<ForgotPassw
   async execute(command: ForgotPasswordCommand): Promise<WsResponse<null | string>> {
 
     const user = await this.userService.getUserByMailAndPhone(command.body)
-    if (!user) return WsResponse.buildBadPasswordResponse('USER NOT FOUND');
+    if (!user) return WsResponse.buildNotFoundResponse('USER NOT FOUND');
 
     var defaultPassword = this.configService.get<string>('DEFAULT_PASSWORD') ?? "T12345678w"
 
