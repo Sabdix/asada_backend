@@ -28,7 +28,8 @@ export class CheckListHistoryService {
 
     getAllCheckListHistory() {
         // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
-
+        const now = new Date();
+        const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
         return this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
@@ -57,7 +58,7 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .andWhere('clh.date = :today', { today: format(mexicoCityTime, 'yyyy-MM-dd') })
             .getMany();
     }
 
@@ -154,7 +155,8 @@ export class CheckListHistoryService {
 
     getCheckListHistoryByUser(uuid_user: string) {
         // return this.chekListHistoryRepository.find({ where: { uuid_user: uuid }, relations: ["check_list_user", 'check_list_user.checkList'], withDeleted: true });
-
+        const now = new Date();
+        const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
         return this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
@@ -168,7 +170,7 @@ export class CheckListHistoryService {
                 'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
             )
             .where('clh.uuid_user = :uuid_user', { uuid_user })
-            .andWhere('clh.date = :today', { today: startOfDay(new Date()) })
+            .andWhere('clh.date = :today', { today: startOfDay(mexicoCityTime) })
             .andWhere('clh.deletedAt IS NULL')
             .getMany();
     }
@@ -250,7 +252,8 @@ export class CheckListHistoryService {
 
     getCheckListHistoryByBranch(uuid_branch: string) {
         // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
-
+        const now = new Date();
+        const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
         return this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
@@ -280,13 +283,14 @@ export class CheckListHistoryService {
             )
             .where('clh.deletedAt IS NULL')
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })
-            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .andWhere('clh.date = :today', { today: format(mexicoCityTime, 'yyyy-MM-dd') })
             .getMany();
     }
 
     getCheckListHistoryToNotify() {
         // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
-
+        const now = new Date();
+        const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
         return this.chekListHistoryRepository
             .createQueryBuilder('clh')
             .leftJoinAndSelect(
@@ -311,7 +315,7 @@ export class CheckListHistoryService {
             )
             .where('clh.deletedAt IS NULL')
             .andWhere('clh.status = :status', { status: 0 })
-            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .andWhere('clh.date = :today', { today: format(mexicoCityTime, 'yyyy-MM-dd') })
             .andWhere('clu.endHour =:endHour', { endHour: format(subMinutes(new Date(), 30), 'HH:mm') })
             .getMany();
     }
@@ -351,6 +355,8 @@ export class CheckListHistoryService {
         //     .take(size)
         //     .skip(offset)
         //     .getManyAndCount();
+        const now = new Date();
+        const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
 
         const queryBuilder = this.chekListHistoryRepository
             .createQueryBuilder('clh')
@@ -380,7 +386,7 @@ export class CheckListHistoryService {
                 'm.deletedAt IS NOT NULL OR m.deletedAt IS NULL'
             )
             .where('clh.deletedAt IS NULL')
-            .andWhere('clh.date = :today', { today: format(new Date(), 'yyyy-MM-dd') })
+            .andWhere('clh.date = :today', { today: format(mexicoCityTime, 'yyyy-MM-dd') })
             .andWhere('b.uuid = :uuid_branch', { uuid_branch })
 
         if (name) {
