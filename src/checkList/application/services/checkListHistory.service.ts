@@ -98,6 +98,8 @@ export class CheckListHistoryService {
         const now = new Date();
         const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
 
+        console.log(mexicoCityTime)
+        console.log(format(mexicoCityTime, 'yyyy-MM-dd'))
 
         const queryBuilder = this.chekListHistoryRepository
             .createQueryBuilder('clh')
