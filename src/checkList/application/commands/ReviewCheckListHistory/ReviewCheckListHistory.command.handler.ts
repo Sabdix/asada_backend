@@ -33,13 +33,13 @@ export class ReviewCheckListHistoryCommandHandler implements ICommandHandler<Rev
         await this.checkListHistoryService.UpdateCheckListHistoryByUuid(checkListHistory)
 
         // TODO: Personalize the mail
-        if (!command.request.approved && checkListHistory.user.manager)
+        if (!command.request.approved && user.manager)
             await this.commandBus.execute(new SendMailNotificationCommand({
                 cc: "",
                 dynamicTemplateData: {},
                 subject: "Test Subject",
                 templateId: mailJetTemplateIds.CHECKLIST_DENIED,
-                to: checkListHistory.user.manager.mail,
+                to: user.manager.mail,
             }));
 
         return WsResponse.buildOkResponse(
