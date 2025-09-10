@@ -7,7 +7,7 @@ import { CreateCheckListUserAnswerRequest } from '../../dtos/CreateCheckListUser
 
 
 export class AnswerCheckListCommand extends Command<WsResponse< object | string>> {
-  constructor(public body: CreateCheckListUserAnswerRequest, public uuid_user: string) {
+  constructor(public body: CreateCheckListUserAnswerRequest[], public uuid_user: string) {
     super();
   }
 }

@@ -4,6 +4,7 @@ import { ValidateStockCommand } from './ValidateStock.command';
 import { StockService } from '../../services/Stock.service';
 import { UserService } from 'src/user/application/services/user.service';
 import { StockHistoryService } from '../../services/StockHistory.service';
+import { toZonedTime } from 'date-fns-tz';
 ;
 
 @CommandHandler(ValidateStockCommand)
@@ -21,7 +22,8 @@ export class ValidateStockCommandHandler implements ICommandHandler<ValidateStoc
             return WsResponse.buildNotFoundResponse('USER NOT FOUND');
 
         const today = new Date();
-        const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const mexicoCityTime = toZonedTime(today, 'America/Mexico_City');
+        const dateOnly = new Date(mexicoCityTime.getFullYear(), mexicoCityTime.getMonth(), mexicoCityTime.getDate());
 
         for (const item of command.body.stocks) {
             const stock = await this.stockService.getStockByUuid(item.uuid_stock);
