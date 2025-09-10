@@ -12,12 +12,12 @@ export class CreateScheduleCommandHandler implements ICommandHandler<CreateSched
   constructor(
     private scheduleService: ScheduleService,
     private scheduleCalendarService: ScheduleCalendarService,
-  ) {}
+  ) { }
 
   async execute(command: CreateScheduleCommand): Promise<WsResponse<ScheduleDto | string>> {
 
     if (await this.scheduleService.getScheduleByName(command.body.name))
-        return WsResponse.buildConflictResponse('YA EXISTE UN HORARIO CON ESE NOMBRE','SCHEDULE ALREADY EXISTS');
+      return WsResponse.buildConflictResponse('YA EXISTE UN HORARIO CON ESE NOMBRE', 'SCHEDULE ALREADY EXISTS');
 
     const schedule = await this.scheduleService.creteSchedule(command.body)
     const response = new ScheduleDto
@@ -26,7 +26,7 @@ export class CreateScheduleCommandHandler implements ICommandHandler<CreateSched
     response.uuid = schedule.uuid
     response.cheduleCalendar = new Array<CalendarDto>
 
-    for(const calendar of command.body.calendars ){
+    for (const calendar of command.body.calendars) {
       const scheduleCalendar = await this.scheduleCalendarService.creteSingleScheduleCalendar(calendar, schedule.uuid)
       const calendarDto = new CalendarDto
 

@@ -5,6 +5,7 @@ import { CheckListUserAnswersService } from '../../services/checkListUserAnswers
 import { UserService } from 'src/user/application/services/user.service';
 import { CheckListHistoryService } from '../../services/checkListHistory.service';
 import { CheckListItemCriteriaAnswerService } from '../../services/checkListItemCriteriaAnswer.service';
+import { AnswerDto } from '../../dtos/Answer.dto';
 
 @CommandHandler(AnswerCheckListCommand)
 export class AnswerCheckListCommandHandler implements ICommandHandler<AnswerCheckListCommand> {
@@ -19,17 +20,21 @@ export class AnswerCheckListCommandHandler implements ICommandHandler<AnswerChec
 
         const user = await this.userService.getUserByUuid(command.uuid_user)
         if (!user) return WsResponse.buildNotFoundResponse('USER NOT FOUND');
+        var response
+        for (const answer of command.body) {
 
-        const checkListHistory = await this.checkListHistoryService.getCheckListHistoyByUuidAndUser(command.body.uuid_check_list_history, command.uuid_user)
-        if (!checkListHistory) return WsResponse.buildNotFoundResponse('CHEKLIST_USER_HISTORY NOT FOUND');
-
-        const checkListCriteriaAnswer = await this.checkListItemCriteriaAnswerService.getCheckListItemCriteriaAnswerByUuid(command.body.uuid_check_list_item_criteria_answer)
-        if (!checkListCriteriaAnswer) return WsResponse.buildNotFoundResponse('CHEKLIST_ITEM_CRITERIA_ANSWER NOT FOUND');
-
-        if (await this.checkListUserAnswerService.getCheckListUserAnswerByHistoryAndAnswer(command.body.uuid_check_list_history, command.body.uuid_check_list_item_criteria_answer))
-            return WsResponse.buildConflictResponse('YA EXISTE UNA RESPUESTA REGISTRADA', 'CHECKLIST_USER_ANSWER ALREADY EXISTS');
-
-        const response = await this.checkListUserAnswerService.creteCheckListHistory(command.body)
+            const checkListHistory = await this.checkListHistoryService.getCheckListHistoyByUuidAndUser(answer.uuid_check_list_history, command.uuid_user)
+            if (!checkListHistory) return WsResponse.buildNotFoundResponse('CHEKLIST_USER_HISTORY NOT FOUND');
+            
+            const checkListCriteriaAnswer = await this.checkListItemCriteriaAnswerService.getCheckListItemCriteriaAnswerByUuid(answer.uuid_check_list_item_criteria_answer)
+            if (!checkListCriteriaAnswer) return WsResponse.buildNotFoundResponse('CHEKLIST_ITEM_CRITERIA_ANSWER NOT FOUND');
+            
+            if (await this.checkListUserAnswerService.getCheckListUserAnswerByHistoryAndAnswer(answer.uuid_check_list_history, answer.uuid_check_list_item_criteria_answer))
+                return WsResponse.buildConflictResponse('YA EXISTE UNA RESPUESTA REGISTRADA', 'CHECKLIST_USER_ANSWER ALREADY EXISTS');
+            
+            response = await this.checkListUserAnswerService.creteCheckListHistory(answer)
+            
+        }
 
         return WsResponse.buildOkResponse(response);
         /*return WsResponse.buildOkResponse(

@@ -265,7 +265,7 @@ export class CheckListController {
   @Post('user/:uuid/answer')
   async answerCheckList(
     @Param('uuid') uuid: string,
-    @Body() CreateCheckListUserAnswerRequest: CreateCheckListUserAnswerRequest,
+    @Body() CreateCheckListUserAnswerRequest: CreateCheckListUserAnswerRequest[],
   ) {
     return this.commandBus.execute(
       new AnswerCheckListCommand(CreateCheckListUserAnswerRequest, uuid),
