@@ -91,6 +91,7 @@ export class CheckListUserService {
         .andWhere('cl.deletedAt IS NULL')
         .andWhere('u.deletedAt IS NULL')
         .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour, clu.specialEvent')
+        .orderBy('u.name')
 
         if (name) {
             queryBuilder.andWhere(`(LOWER(u.name) LIKE LOWER(:name) OR LOWER(u.last_name) LIKE LOWER(:name) OR LOWER(u.second_last_name) LIKE LOWER(:name))`, { name: `%${name}%` });
