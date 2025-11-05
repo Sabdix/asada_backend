@@ -15,6 +15,12 @@ export class CheckListHistoryDto {
     approved: boolean;
     @Expose()
     revised: boolean;
+    @Expose()
+    managerComment: string;
+    @Expose()
+    managerApproved: boolean;
+    @Expose()
+    managerRevised: boolean;
 
     @Expose()
     @Type(() => CheckListUserDto)

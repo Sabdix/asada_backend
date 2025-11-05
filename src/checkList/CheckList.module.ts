@@ -61,6 +61,7 @@ import { DuplicateCheckListCommandHandler } from "./application/commands/Duplica
 import { ReviewCheckListHistoryCommandHandler } from "./application/commands/ReviewCheckListHistory/ReviewCheckListHistory.command.handler";
 import { GetCheckListHistoryByUuidQueryHandler } from "./application/queries/getCheckListHistoryByUuid/getCheckListHistoryByUuid.query.handler";
 import { GetAssignedGroupedCheckListQueryHandler } from "./application/queries/getAssignedGroupedCheckList/GetAssignedGroupedCheckList.query.handler";
+import { ManagerReviewCheckListHistoryCommandHandler } from "./application/commands/ManagerReviewCheckListHistory/ManagerReviewCheckList.command.handler";
 
 @Module({
     imports: [
@@ -118,6 +119,7 @@ import { GetAssignedGroupedCheckListQueryHandler } from "./application/queries/g
         GetCheckListHistoryByBranchQueryHandler,
         ReviewCheckListHistoryCommandHandler,
         GetCheckListHistoryByUuidQueryHandler,
+        ManagerReviewCheckListHistoryCommandHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,
