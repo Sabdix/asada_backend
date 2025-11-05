@@ -24,7 +24,7 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
             if (query.branchId) {
 
                 const branch = await this.branchService.getBranchByUuid(query.branchId)
-                 if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
+                if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
                 histories = await this.checkListHistoryService.getBranchCheckListHistoryByRangeTime(
                     new Date(query.initialDate),
@@ -41,14 +41,14 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
             if (histories.length == 0) return WsResponse.buildNotFoundResponse('REVIEWS NOT FOUND');
 
             const data: CheckListHistoryReportDto[] = [];
-            
+
             for (const history of histories) {
-                
+
                 const historyReport = new CheckListHistoryReportDto();
                 historyReport.Lista = history.check_list_user.checkList.name;
-                const user = await  this.userService.getUserByUuid(history.uuid_user)
+                const user = await this.userService.getUserByUuid(history.uuid_user)
                 historyReport.Empleado = user?.name + " " + user?.last_name + " " + user?.second_last_name;
-                historyReport.Sucursal = user?.branch?.name ? user?.branch.name :"";
+                historyReport.Sucursal = user?.branch?.name ? user?.branch.name : "";
                 let dayName = "";
                 switch (history.check_list_user.weekDay) {
                     case 0:
@@ -84,8 +84,8 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 historyReport.Evaluador = user?.manager?.name + " " + user?.manager?.last_name + " " + user?.manager?.second_last_name;
                 historyReport.Evaluacion = history.approved ? "Aprobada" : "No Aprobada"
                 historyReport.Comentarios = history.comment
-                historyReport.EvaluacionGerente = history.ManaggerApproved ? "Aprobada" : "No Aprobada"
-                historyReport.ComentariosGerente = history.ManaggerComment
+                historyReport.EvaluacionGerente = history.managerApproved ? "Aprobada" : "No Aprobada"
+                historyReport.ComentariosGerente = history.managerComment
 
                 data.push(historyReport);
             }
@@ -105,8 +105,8 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 { header: 'Evaluador', key: 'Evaluador', width: 30 },
                 { header: 'Evaluacion', key: 'Evaluacion', width: 15 },
                 { header: 'Comentarios', key: 'Comentarios', width: 50 },
-                { header: 'Evaluacion Gerente', key: 'EvaluacionGerente', width: 15 },
-                { header: 'Comentarios Gerente', key: 'ComentariosGerente', width: 50 },
+                { header: 'EvaluacionGerente', key: 'EvaluacionGerente', width: 15 },
+                { header: 'ComentariosGerente', key: 'ComentariosGerente', width: 50 },
             ];
 
             data.forEach((item) => {
