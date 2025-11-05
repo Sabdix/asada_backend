@@ -23,6 +23,7 @@ import { DeleteCheckListItemCriteriaCommand } from 'src/checkList/application/co
 import { DeleteCheckListItemCriteriaAnswerCommand } from 'src/checkList/application/commands/DeleteCheckListItemCriteriaAnswer/DeleteCheckListItemCriteriaAnswer.command';
 import { DuplicateCheckListCommand } from 'src/checkList/application/commands/DuplicateCheckList/DuplicateCheckList.command';
 import { DuplicateItemCommand } from 'src/checkList/application/commands/DuplicateItem/DuplicateItem.command';
+import { ManagerReviewCheckListHistoryCommand } from 'src/checkList/application/commands/ManagerReviewCheckListHistory/ManagerReviewCheckList.command';
 import { ReassignHistoryCommand } from 'src/checkList/application/commands/ResassingHistory/ReassignHistory.command';
 import { ReviewCheckListHistoryCommand } from 'src/checkList/application/commands/ReviewCheckListHistory/ReviewCheckListHistory.command';
 import { UpdateCheckListCommand } from 'src/checkList/application/commands/UpdateCheckList/UpdateCheckList.command';
@@ -37,6 +38,7 @@ import { CreateCheckListItemRequestDto } from 'src/checkList/application/dtos/Cr
 import { CreateCheckListUserAnswerRequest } from 'src/checkList/application/dtos/CreateCheckListUserAnswerRequest.dto';
 import { DuplicateCheckListRequestDto } from 'src/checkList/application/dtos/DuplicateCheckListRequest.dto';
 import { DuplicateItemRequestDto } from 'src/checkList/application/dtos/DuplicateItemRequest.dto';
+import { ManagerReviewCheckListHistoryDto } from 'src/checkList/application/dtos/ManagerReviewCheckListHistoryDto';
 import { ReassignHistoryRequestDto } from 'src/checkList/application/dtos/ReassignHistoryRequest.dto';
 import { ReviewCheckListHistoryDto } from 'src/checkList/application/dtos/ReviewCheckListHistory.dto';
 import { UpdateCheckListItemCriteriaAnswerRequestDto } from 'src/checkList/application/dtos/UpdateCheckListItemCriteriaAnswerRequest.dto';
@@ -428,5 +430,15 @@ export class CheckListController {
   @Get('history/by-uuid/:uuid')
   async getCheckListHistoryByUuid(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new GetCheckListHistoryByUuidQuery(uuid));
+  }
+
+  @Post('manager-review/:uuid')
+  async managerReviewCheckListHistory(
+    @Param('uuid') uuid: string,
+    @Body() managerReviewCheckListHistoryDto: ManagerReviewCheckListHistoryDto,
+  ) {
+    return this.commandBus.execute(
+      new ManagerReviewCheckListHistoryCommand(uuid, managerReviewCheckListHistoryDto),
+    );
   }
 }
