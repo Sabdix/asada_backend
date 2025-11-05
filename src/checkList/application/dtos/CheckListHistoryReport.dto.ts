@@ -24,4 +24,8 @@ export class CheckListHistoryReportDto {
     Evaluacion: string;
     @Expose()
     Comentarios: string;
+    @Expose()
+    EvaluacionGerente: string;
+    @Expose()
+    ComentariosGerente: string;
 }
