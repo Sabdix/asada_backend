@@ -84,7 +84,9 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 historyReport.Evaluador = user?.manager?.name + " " + user?.manager?.last_name + " " + user?.manager?.second_last_name;
                 historyReport.Evaluacion = history.approved ? "Aprobada" : "No Aprobada"
                 historyReport.Comentarios = history.comment
-                
+                historyReport.EvaluacionGerente = history.ManaggerApproved ? "Aprobada" : "No Aprobada"
+                historyReport.ComentariosGerente = history.ManaggerComment
+
                 data.push(historyReport);
             }
 
@@ -103,6 +105,8 @@ export class DownloadCheckListHistoryReportQueryHandler implements IQueryHandler
                 { header: 'Evaluador', key: 'Evaluador', width: 30 },
                 { header: 'Evaluacion', key: 'Evaluacion', width: 15 },
                 { header: 'Comentarios', key: 'Comentarios', width: 50 },
+                { header: 'Evaluacion Gerente', key: 'EvaluacionGerente', width: 15 },
+                { header: 'Comentarios Gerente', key: 'ComentariosGerente', width: 50 },
             ];
 
             data.forEach((item) => {
