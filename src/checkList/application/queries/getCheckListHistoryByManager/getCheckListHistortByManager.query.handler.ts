@@ -17,8 +17,6 @@ export class GetCheckListHistoryByManagerQueryHandler implements IQueryHandler<G
     async execute(query: GetCheckListHistoryByManagerQuery) {
 
         const manager = await this.userService.getUserByUuid(query.uuidManager);
-        console.log(query.uuidManager)
-        console.log(manager)
         if (!manager) return WsResponse.buildNotFoundResponse('Manager NOT FOUND');
 
         const history = await this.checkListHistoryService.getCheckListHistoyByCheckListAndManager(query.uuidCheckList, manager.uuid_branch)
