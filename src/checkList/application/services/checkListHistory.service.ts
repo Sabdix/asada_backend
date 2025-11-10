@@ -5,6 +5,7 @@ import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entit
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
 import { format, startOfDay, subMinutes } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { User } from 'src/user/domain/entities/User.entity';
 
 @Injectable()
 export class CheckListHistoryService {
@@ -424,6 +425,31 @@ export class CheckListHistoryService {
             )
             .where('clh.uuid = :uuid', { uuid })
             .andWhere('clh.deletedAt IS NULL')
+            .getOne();
+    }
+
+    getCheckListHistoyByCheckListAndManager(uuidCheckList: string, uuidBranch: string) {
+        return this.chekListHistoryRepository
+            .createQueryBuilder('clh')
+            .leftJoinAndSelect(
+                'clh.check_list_user',
+                'clu',
+                'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.checkList',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clu.user',
+                'u',
+                'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL'
+            )
+            .where('clh.uuid_check_list = :uuid', { uuid: uuidCheckList })
+            .andWhere('clh.deletedAt IS NULL')
+            .andWhere('u.uuid_branch = :uuidBranch',{uuidBranch})
+            .andWhere('clh.date = :today',{today: startOfDay(new Date)})
             .getOne();
     }
 }

@@ -56,12 +56,14 @@ import { GetCheckListByUuidQuery } from 'src/checkList/application/queries/getCh
 import { GetCheckListHistoryQuery } from 'src/checkList/application/queries/getCheckListHistory/getCheckListHistory.query';
 import { getCheckListHistoryAnswersByHistoryQuery } from 'src/checkList/application/queries/getCheckListHistoryAnswersByHistory/getCheckListHistoryAnswersByHistory.query';
 import { GetCheckListHistoryByBranchQuery } from 'src/checkList/application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query';
+import { GetCheckListHistoryByManagerQuery } from 'src/checkList/application/queries/getCheckListHistoryByManager/getCheckListHistoryByManager.query';
 import { GetCheckListHistoryByUserQuery } from 'src/checkList/application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query';
 import { GetCheckListHistoryByUuidQuery } from 'src/checkList/application/queries/getCheckListHistoryByUuid/getChckListHistoryByUuid.query';
 import { GetCheckListItemsByCheckListQuery } from 'src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query';
 import { GetCheckListQrByUuidQuery } from 'src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query';
 import { GetCriteriaAnswerByCriteriaQuery } from 'src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query';
 import { GetItemCriteriaByItemQuery } from 'src/checkList/application/queries/getItemCriteriaByItem/getItemCriteriaByItem.query';
+
 
 @Controller('checklist')
 export class CheckListController {
@@ -439,6 +441,19 @@ export class CheckListController {
   ) {
     return this.commandBus.execute(
       new ManagerReviewCheckListHistoryCommand(uuid, managerReviewCheckListHistoryDto),
+    );
+  }
+
+  @Get(':uuid_checklist/history/by-manager/:uuid_manager')
+  async getCheckListHistoryByManager(
+    @Param('uuid_checklist') uuidCheckList: string,
+    @Param('uuid_manager') uuidManager: string
+  ) {
+    return this.queryBus.execute(
+      new GetCheckListHistoryByManagerQuery(
+        uuidCheckList,
+        uuidManager
+      ),
     );
   }
 }
