@@ -63,13 +63,15 @@ import { GetCheckListHistoryByUuidQueryHandler } from "./application/queries/get
 import { GetAssignedGroupedCheckListQueryHandler } from "./application/queries/getAssignedGroupedCheckList/GetAssignedGroupedCheckList.query.handler";
 import { ManagerReviewCheckListHistoryCommandHandler } from "./application/commands/ManagerReviewCheckListHistory/ManagerReviewCheckList.command.handler";
 import { GetCheckListHistoryByManagerQueryHandler } from "./application/queries/getCheckListHistoryByManager/getCheckListHistortByManager.query.handler";
+import { StockModule } from "src/stock/Stock.module";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
         TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers, Branch]),
         forwardRef(() => UserModule),
-        BranchModule
+        BranchModule,
+        StockModule
     ],
     providers: [
         CheckListService,

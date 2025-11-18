@@ -8,6 +8,7 @@ import { Stock } from 'src/stock/domain/entities/Stock.entity';
 import { StockHistoryRepository } from 'src/stock/infrastructure/repositories/StockHistory.repository';
 import { ValidateStockRequestDto } from '../dtos/ValidateStockRequest.dto';
 import { StockHistoryType } from 'src/stock/domain/enums/StockHistoryType.enum';
+import { startOfDay } from 'date-fns';
 
 
 @Injectable()
@@ -54,6 +55,26 @@ export class StockHistoryService {
             .where('sh.date BETWEEN :initialDate AND :endDate', { initialDate, endDate })
             .andWhere('sh.deletedAt IS NULL')
             .andWhere('s.uuid_branch = :uuid_branch', { uuid_branch })
+            .getMany();
+    }
+
+    getTodayStockHistoryByUser(uuid_user: string) {
+
+        return this.stockHistoryRepository
+            .createQueryBuilder('sh')
+            .leftJoinAndSelect(
+                'sh.stock',
+                's',
+                's.deletedAt IS NOT NULL OR s.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                's.product',
+                'p',
+                'p.deletedAt IS NOT NULL OR p.deletedAt IS NULL'
+            )
+            .andWhere('sh.deletedAt IS NULL')
+            .andWhere('sh.uuid_user = :uuid_user', { uuid_user })
+            .andWhere('sh.date = :today',{today: startOfDay(new Date)})
             .getMany();
     }
 }
