@@ -3,6 +3,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { GetComplianceGroupedBranchQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranch/GetComplianceGroupedBranch.query';
 import { GetComplianceGroupedBranchAndChecklistQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranchAndChecklist/GetComplianceGroupedBranchAndChecklist.query';
 import { GetComplianceQuerySummary } from 'src/dashboard/application/queries/GetComplianceSummary/GetComplianceSummary.query';
+import { GetComplianceTrendQuery } from 'src/dashboard/application/queries/GetComplianceTrend/GetComplianceTrend.query';
 
 @Controller('dashboard')
 export class DashboardController {
@@ -37,6 +38,16 @@ export class DashboardController {
   ) {
     return this.queryBus.execute(
       new GetComplianceGroupedBranchAndChecklistQuery(dateInit, dateEnd, uuidBranch),
+    );
+  }
+
+  @Get('compliance/trend')
+  async getComplianceTrend(
+    @Query('dateInit') dateInit: string,
+    @Query('dateEnd') dateEnd: string,
+  ) {
+    return this.queryBus.execute(
+      new GetComplianceTrendQuery(dateInit, dateEnd),
     );
   }
 }

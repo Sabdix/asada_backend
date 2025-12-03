@@ -493,7 +493,7 @@ export class CheckListHistoryService {
   async getChecklistComplianceSummary(
     dateInit: string,
     dateEnd: string,
-    uuidBranch: string,
+    uuidBranch: string | null,
     uuidChecklist: string | null,
   ) {
     /**
