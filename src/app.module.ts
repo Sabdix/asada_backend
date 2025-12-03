@@ -12,6 +12,7 @@ import { TasksService } from './Task.Service';
 import { RecipeModule } from './recipe/Recipe.module';
 import { StockModule } from './stock/Stock.module';
 import { NotificationModule } from './notification/notification.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { NotificationModule } from './notification/notification.module';
     AuthModule,
     RecipeModule,
     StockModule,
-    NotificationModule
+    NotificationModule,
+    DashboardModule
   ],
   controllers: [],
   providers: [TasksService],
