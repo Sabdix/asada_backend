@@ -29,29 +29,38 @@ export class GetComplianceTrendQueryHandler
     }
 
     const results: Array<any> = [];
-    const currentDate = new Date(dateInit);
+    const currentDate = new Date(dateInit.getFullYear(), dateInit.getMonth(), 1);
 
-    // Iterate from dateInit to dateEnd
+    // Iterate each month from dateInit to dateEnd
     while (currentDate <= dateEnd) {
-      // Convert date to string format (YYYY-MM-DD)
-      const dateString = currentDate.toISOString().split('T')[0];
+      // Get first day of the month
+      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+      
+      // Get last day of the month
+      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+      
+      // Convert to string format (YYYY-MM-DD)
+      const firstDayString = firstDayOfMonth.toISOString().split('T')[0];
+      const lastDayString = lastDayOfMonth.toISOString().split('T')[0];
 
-      // Process each day
+      // Process each month
       const compliance =
         await this.checklistHistoryService.getChecklistComplianceSummary(
-          dateString,
-          dateString,
+          firstDayString,
+          lastDayString,
           null,
           null,
         );
 
       results.push({
-        date: dateString,
+        month: `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`,
+        firstDay: firstDayString,
+        lastDay: lastDayString,
         compliance: compliance,
       });
 
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
+      // Move to next month
+      currentDate.setMonth(currentDate.getMonth() + 1);
     }
 
     return WsResponse.buildOkResponse(results);
