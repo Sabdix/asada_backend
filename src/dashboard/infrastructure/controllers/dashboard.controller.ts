@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
+import { GetChecklistsPendingQuery } from 'src/dashboard/application/queries/GetChecklistsPending/GetChecklistsPending.query';
 import { GetComplianceGroupedBranchQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranch/GetComplianceGroupedBranch.query';
 import { GetComplianceGroupedBranchAndChecklistQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranchAndChecklist/GetComplianceGroupedBranchAndChecklist.query';
 import { GetComplianceQuerySummary } from 'src/dashboard/application/queries/GetComplianceSummary/GetComplianceSummary.query';
@@ -48,6 +49,15 @@ export class DashboardController {
   ) {
     return this.queryBus.execute(
       new GetComplianceTrendQuery(dateInit, dateEnd),
+    );
+  }
+
+  @Get('checklist/pending')
+  async getChecklistsPending(
+    @Query('uuidBranch') uuidBranch: string,
+  ) {
+    return this.queryBus.execute(
+      new GetChecklistsPendingQuery(uuidBranch),
     );
   }
 }

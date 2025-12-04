@@ -7,9 +7,7 @@ import { CheckListHistoryService } from 'src/checkList/application/services/chec
 export class GetComplianceQueryHandler
   implements IQueryHandler<GetComplianceQuerySummary>
 {
-  constructor(
-    private checklistHistoryService: CheckListHistoryService,
-  ) {}
+  constructor(private checklistHistoryService: CheckListHistoryService) {}
 
   async execute(query: GetComplianceQuerySummary): Promise<WsResponse<any>> {
     if (query.dateInit == null) {
@@ -31,33 +29,41 @@ export class GetComplianceQueryHandler
       return WsResponse.buildBadRequestResponse('dateEnd is not a valid date');
     }
 
-    const compliance = await this.checklistHistoryService.getChecklistComplianceSummary(
-      query.dateInit,
-      query.dateEnd,
-      query.uuidBranch,
-      null
-    );
-    const completed = await this.checklistHistoryService.getTotalChecklistCompleted(
-      query.dateInit,
-      query.dateEnd,
-      query.uuidBranch,
-      null
-    );
+    const compliance =
+      await this.checklistHistoryService.getChecklistComplianceSummary(
+        query.dateInit,
+        query.dateEnd,
+        query.uuidBranch,
+        null,
+      );
+    const completed =
+      await this.checklistHistoryService.getTotalChecklistCompleted(
+        query.dateInit,
+        query.dateEnd,
+        query.uuidBranch,
+        null,
+      );
 
     const total = await this.checklistHistoryService.getTotalChecklists(
       query.dateInit,
       query.dateEnd,
       query.uuidBranch,
-      null
+      null,
     );
 
-    const incidents = total - completed;
+    let incidents =
+      await this.checklistHistoryService.getTtotalChecklistsNotAnsweredAndRejected(
+        query.dateInit,
+        query.dateEnd,
+        query.uuidBranch,
+        null,
+      );
 
     return WsResponse.buildOkResponse({
       compliance: compliance,
       completed: completed,
       total: total,
-      incidents: incidents
+      incidents: incidents,
     });
   }
 }

@@ -7,6 +7,7 @@ import { GetComplianceGroupedBranchQueryHandler } from './application/queries/Ge
 import { BranchModule } from 'src/branch/Branch.module';
 import { GetComplianceGroupedBranchAndChecklistQueryHandler } from './application/queries/GetComplianceGroupedBranchAndChecklist/GetComplianceGroupedBranchAndChecklist.query.handler';
 import { GetComplianceTrendQueryHandler } from './application/queries/GetComplianceTrend/GetComplianceTrend.query.handler';
+import { GetChecklistsPendingQueryHandler } from './application/queries/GetChecklistsPending/GetChecklistsPending.query.handler';
 @Module({
   imports: [ConfigModule.forRoot(), CheckListModule, BranchModule],
   controllers: [DashboardController],
@@ -14,7 +15,8 @@ import { GetComplianceTrendQueryHandler } from './application/queries/GetComplia
     GetComplianceQueryHandler,
     GetComplianceGroupedBranchQueryHandler,
     GetComplianceGroupedBranchAndChecklistQueryHandler,
-    GetComplianceTrendQueryHandler
+    GetComplianceTrendQueryHandler,
+    GetChecklistsPendingQueryHandler
   ],
 })
 export class DashboardModule {}

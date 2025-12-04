@@ -44,24 +44,30 @@ export class GetComplianceGroupedBranchQueryHandler
           query.dateInit,
           query.dateEnd,
           branch.uuid,
-          null
+          null,
         );
       let completed =
         await this.checklistHistoryService.getTotalChecklistCompleted(
           query.dateInit,
           query.dateEnd,
           branch.uuid,
-          null
+          null,
         );
 
       let total = await this.checklistHistoryService.getTotalChecklists(
         query.dateInit,
         query.dateEnd,
         branch.uuid,
-        null
+        null,
       );
 
-      let incidents = total - completed;
+      let incidents =
+        await this.checklistHistoryService.getTtotalChecklistsNotAnsweredAndRejected(
+          query.dateInit,
+          query.dateEnd,
+          branch.uuid,
+          null,
+        );
 
       compliances.push({
         branch: branch,

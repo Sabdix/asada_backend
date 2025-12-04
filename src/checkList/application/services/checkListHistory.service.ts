@@ -3,7 +3,7 @@ import { CheckListHistoryRepository } from 'src/checkList/infrastructure/reposit
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
-import { format, startOfDay, subMinutes } from 'date-fns';
+import { endOfDay, format, startOfDay, subMinutes } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { User } from 'src/user/domain/entities/User.entity';
 
@@ -545,6 +545,96 @@ export class CheckListHistoryService {
           'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL',
         );
       queryBuilder.andWhere(`LOWER(b.uuid) =:uuidBranch`, {
+        uuidBranch: uuidBranch,
+      });
+    }
+
+    if (uuidCheckList) {
+      queryBuilder.andWhere(`clh.uuid_check_list =:uuidCheckList`, {
+        uuidCheckList,
+      });
+    }
+
+    return queryBuilder.getCount();
+  }
+
+  getTodayChecklistsHistoryPendingAndRejected(uuidBranch) {
+    const queryBuilder = this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .where('clh.status = :status', { status: 0 })
+      .andWhere('clh.approved = :approved', { approved: 0 })
+      .andWhere('clh.managerApproved = :managerApproved', {
+        managerApproved: 0,
+      })
+      .andWhere('clh.deletedAt IS NULL')
+      .andWhere('clh.date BETWEEN :todayInit AND :todayEnd', {
+        todayInit: startOfDay(new Date()),
+        todayEnd: endOfDay(new Date()),
+      });
+
+    queryBuilder
+      .leftJoinAndSelect(
+        'clh.user',
+        'u',
+        'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clh.check_list_user',
+        'clu',
+        'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.checkList',
+        'cl',
+        'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'u.branch',
+        'b',
+        'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL',
+      );
+
+    if (uuidBranch) {
+      queryBuilder.andWhere(`b.uuid = :uuidBranch`, {
+        uuidBranch: uuidBranch,
+      });
+    }
+
+    return queryBuilder.getMany();
+  }
+
+  getTtotalChecklistsNotAnsweredAndRejected(
+    dateInit,
+    dateEnd,
+    uuidBranch,
+    uuidCheckList,
+  ) {
+    const queryBuilder = this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .where('clh.status = :status', { status: 0 })
+      .andWhere('clh.approved = :approved', { approved: 0 })
+      .andWhere('clh.managerApproved = :managerApproved', {
+        managerApproved: 0,
+      })
+      .andWhere('clh.deletedAt IS NULL')
+      .andWhere('clh.date BETWEEN :dateInit AND :dateEnd', {
+        dateInit: dateInit,
+        dateEnd: dateEnd,
+      });
+
+    if (uuidBranch) {
+      queryBuilder
+        .leftJoinAndSelect(
+          'clh.user',
+          'u',
+          'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+        )
+        .leftJoinAndSelect(
+          'u.branch',
+          'b',
+          'b.deletedAt IS NOT NULL OR b.deletedAt IS NULL',
+        );
+      queryBuilder.andWhere(`b.uuid = :uuidBranch`, {
         uuidBranch: uuidBranch,
       });
     }
