@@ -34,7 +34,7 @@ export class GetCheckListHistoryByManagerQueryHandler implements IQueryHandler<G
             response.comment = history.comment
             response.managerRevised = history.managerRevised
             response.revised = history.revised
-            response.user = history.user
+            response.user = history.check_list_user.user
             response.managerComment = history.managerComment
             response.uuid = history.uuid
             response.check_list_user = new CheckListUserDto()

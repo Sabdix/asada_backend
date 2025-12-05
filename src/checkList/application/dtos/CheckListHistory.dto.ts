@@ -2,7 +2,6 @@ import { Expose, Type } from 'class-transformer';
 import { CheckListUserDto } from './CheckListUser.dto';
 import { UserDto } from 'src/user/application/dtos/User.dto';
 import { StocHistorykDto } from 'src/stock/application/dtos/StockHistory.dto';
-import { CheckListDto } from './CheckList.dto';
 
 export class CheckListHistoryDto {
     @Expose()
@@ -10,7 +9,7 @@ export class CheckListHistoryDto {
     @Expose()
     date: Date;
     @Expose()
-    status: boolean;
+    status: number;
     @Expose()
     comment: string;
     @Expose()
