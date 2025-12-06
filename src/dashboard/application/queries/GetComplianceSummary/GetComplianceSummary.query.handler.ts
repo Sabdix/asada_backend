@@ -34,21 +34,21 @@ export class GetComplianceQueryHandler
         query.dateInit,
         query.dateEnd,
         query.uuidBranch,
-        null,
+        query.uuidBChecklist,
       );
     const completed =
       await this.checklistHistoryService.getTotalChecklistCompleted(
         query.dateInit,
         query.dateEnd,
         query.uuidBranch,
-        null,
+        query.uuidBChecklist,
       );
 
     const total = await this.checklistHistoryService.getTotalChecklists(
       query.dateInit,
       query.dateEnd,
       query.uuidBranch,
-      null,
+      query.uuidBChecklist,
     );
 
     let incidents =
@@ -56,7 +56,7 @@ export class GetComplianceQueryHandler
         query.dateInit,
         query.dateEnd,
         query.uuidBranch,
-        null,
+        query.uuidBChecklist,
       );
 
     return WsResponse.buildOkResponse({

@@ -14,7 +14,10 @@ export class GetChecklistsPendingQueryHandler
   async execute(query: GetChecklistsPendingQuery): Promise<WsResponse<any>> {
     const checklists =
       await this.checkListHistoryService.getTodayChecklistsHistoryPendingAndRejected(
+        query.dateInit,
+        query.dateEnd,
         query.uuidBranch,
+        query.uuidChecklist,
       );
 
     return WsResponse.buildOkResponse(

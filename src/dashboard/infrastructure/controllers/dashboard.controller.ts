@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
+import { GetComplianceGroupedBranchDto } from 'src/dashboard/application/dtos/GetComplianceGroupedBranch.dto';
 import { GetChecklistsPendingQuery } from 'src/dashboard/application/queries/GetChecklistsPending/GetChecklistsPending.query';
 import { GetComplianceGroupedBranchQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranch/GetComplianceGroupedBranch.query';
 import { GetComplianceGroupedBranchAndChecklistQuery } from 'src/dashboard/application/queries/GetComplianceGroupedBranchAndChecklist/GetComplianceGroupedBranchAndChecklist.query';
@@ -15,19 +16,25 @@ export class DashboardController {
     @Query('dateInit') dateInit: string,
     @Query('dateEnd') dateEnd: string,
     @Query('uuidBranch') uuidBranch: string,
+    @Query('uuidChecklist') uuidChecklist: string,
   ) {
     return this.queryBus.execute(
-      new GetComplianceQuerySummary(dateInit, dateEnd, uuidBranch),
+      new GetComplianceQuerySummary(
+        dateInit,
+        dateEnd,
+        uuidBranch,
+        uuidChecklist,
+      ),
     );
   }
 
   @Get('compliance/branch')
   async getComplianceGroupedByBranch(
-    @Query('dateInit') dateInit: string,
-    @Query('dateEnd') dateEnd: string,
+    @Query(new ValidationPipe({ transform: true }))
+    query: GetComplianceGroupedBranchDto,
   ) {
     return this.queryBus.execute(
-      new GetComplianceGroupedBranchQuery(dateInit, dateEnd),
+      new GetComplianceGroupedBranchQuery(query.dateInit, query.dateEnd, query.uuidChecklist),
     );
   }
 
@@ -38,7 +45,11 @@ export class DashboardController {
     @Query('uuidBranch') uuidBranch: string,
   ) {
     return this.queryBus.execute(
-      new GetComplianceGroupedBranchAndChecklistQuery(dateInit, dateEnd, uuidBranch),
+      new GetComplianceGroupedBranchAndChecklistQuery(
+        dateInit,
+        dateEnd,
+        uuidBranch,
+      ),
     );
   }
 
@@ -46,18 +57,28 @@ export class DashboardController {
   async getComplianceTrend(
     @Query('dateInit') dateInit: string,
     @Query('dateEnd') dateEnd: string,
+    @Query('uuidBranch') uuidBranch: string,
+    @Query('uuidChecklist') uuidChecklist: string,
   ) {
     return this.queryBus.execute(
-      new GetComplianceTrendQuery(dateInit, dateEnd),
+      new GetComplianceTrendQuery(dateInit, dateEnd, uuidBranch, uuidChecklist),
     );
   }
 
   @Get('checklist/pending')
   async getChecklistsPending(
+    @Query('dateInit') dateInit: string,
+    @Query('dateEnd') dateEnd: string,
     @Query('uuidBranch') uuidBranch: string,
+    @Query('uuidChecklist') uuidChecklist: string,
   ) {
     return this.queryBus.execute(
-      new GetChecklistsPendingQuery(uuidBranch),
+      new GetChecklistsPendingQuery(
+        dateInit,
+        dateEnd,
+        uuidBranch,
+        uuidChecklist,
+      ),
     );
   }
 }

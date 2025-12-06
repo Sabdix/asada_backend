@@ -29,16 +29,28 @@ export class GetComplianceTrendQueryHandler
     }
 
     const results: Array<any> = [];
-    const currentDate = new Date(dateInit.getFullYear(), dateInit.getMonth(), 1);
+    const currentDate = new Date(
+      dateInit.getFullYear(),
+      dateInit.getMonth(),
+      1,
+    );
 
     // Iterate each month from dateInit to dateEnd
     while (currentDate <= dateEnd) {
       // Get first day of the month
-      const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-      
+      const firstDayOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1,
+      );
+
       // Get last day of the month
-      const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-      
+      const lastDayOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0,
+      );
+
       // Convert to string format (YYYY-MM-DD)
       const firstDayString = firstDayOfMonth.toISOString().split('T')[0];
       const lastDayString = lastDayOfMonth.toISOString().split('T')[0];
@@ -48,8 +60,8 @@ export class GetComplianceTrendQueryHandler
         await this.checklistHistoryService.getChecklistComplianceSummary(
           firstDayString,
           lastDayString,
-          null,
-          null,
+          query.uuidBranch,
+          query.uuidChecklist,
         );
 
       results.push({

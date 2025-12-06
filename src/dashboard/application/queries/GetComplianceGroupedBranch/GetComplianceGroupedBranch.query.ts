@@ -5,6 +5,7 @@ export class GetComplianceGroupedBranchQuery extends Query<WsResponse<any>> {
   constructor(
     public dateInit: string,
     public dateEnd: string,
+    public uuidChecklist?: string,
   ) {
     super();
   }

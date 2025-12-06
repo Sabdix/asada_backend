@@ -1,6 +1,5 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { GetComplianceGroupedBranchAndChecklistQuery } from './GetComplianceGroupedBranchAndChecklist.query';
-import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import { CheckListHistoryService } from 'src/checkList/application/services/checkListHistory.service';
 import { BranchService } from 'src/branch/application/services/Branch.service';
 import { CheckListService } from 'src/checkList/application/services/checkList.service';
@@ -17,67 +16,62 @@ export class GetComplianceGroupedBranchAndChecklistQueryHandler
 
   async execute(
     query: GetComplianceGroupedBranchAndChecklistQuery,
-  ): Promise<WsResponse<any>> {
-    if (query.dateInit == null) {
-      return WsResponse.buildBadRequestResponse('dateInit is required');
-    }
-    if (query.dateEnd == null) {
-      return WsResponse.buildBadRequestResponse('dateEnd is required');
-    }
+  ): Promise<any> {
+    const [allChecklists, allBranches, complianceData] = await Promise.all([
+      this.checkListService.getCheckList(),
+      this.branchService.getBranches(),
+      this.checklistHistoryService.getComplianceData(
+        query.dateInit,
+        query.dateEnd,
+        query.uuidBranch,
+      ),
+    ]);
 
-    // Validate dateInit is a valid date
-    const dateInit = new Date(query.dateInit);
-    if (isNaN(dateInit.getTime())) {
-      return WsResponse.buildBadRequestResponse('dateInit is not a valid date');
-    }
+    const branches = query.uuidBranch
+      ? allBranches.filter((b) => b.uuid === query.uuidBranch)
+      : allBranches;
 
-    // Validate dateEnd is a valid date
-    const dateEnd = new Date(query.dateEnd);
-    if (isNaN(dateEnd.getTime())) {
-      return WsResponse.buildBadRequestResponse('dateEnd is not a valid date');
-    }
+    // Group data by checklist and branch
+    const complianceByChecklistAndBranch = complianceData.reduce(
+      (acc, item) => {
+        const checklistId = item.clh_uuid_check_list;
+        const branchId = item.u_uuid_branch;
 
-    const checklists = await this.checkListService.getCheckList();
-    const branches = await this.branchService.getBranches();
+        if (!checklistId || !branchId) return acc;
 
-    const responses: Array<any> = [];
-
-    for (const checklist of checklists) {
-      if (query.uuidBranch) {
-        const branch = branches.find((b) => b.uuid === query.uuidBranch);
-        if (!branch) {
-          return WsResponse.buildBadRequestResponse('Branch not found');
+        const key = `${checklistId}-${branchId}`;
+        if (!acc[key]) {
+          acc[key] = { total: 0, completed: 0 };
         }
-        let result = {
-          checklist: checklist.name,
-        };
-        const compliance =
-          await this.checklistHistoryService.getChecklistComplianceSummary(
-            query.dateInit,
-            query.dateEnd,
-            query.uuidBranch,
-            checklist.uuid,
-          );
+
+        acc[key].total++;
+        const isCompleted =
+          item.clh_managerApproved === 1 &&
+          item.clh_managerRevised === 1 &&
+          item.clh_revised === 1 &&
+          item.clh_approved === 1;
+
+        if (isCompleted) {
+          acc[key].completed++;
+        }
+
+        return acc;
+      },
+      {},
+    );
+
+    return allChecklists.map((checklist) => {
+      const result = {
+        checklist: checklist.name,
+      };
+
+      for (const branch of branches) {
+        const key = `${checklist.uuid}-${branch.uuid}`;
+        const data = complianceByChecklistAndBranch[key];
+        const compliance = data && data.total > 0 ? (data.completed / data.total) * 100 : 0;
         result[branch.name] = compliance;
-        responses.push(result);
-      } else {
-        let result = {
-          checklist: checklist.name,
-        };
-        for (const branch of branches) {
-          const compliance =
-            await this.checklistHistoryService.getChecklistComplianceSummary(
-              query.dateInit,
-              query.dateEnd,
-              branch.uuid,
-              checklist.uuid,
-            );
-          result[branch.name] = compliance;
-        }
-        responses.push(result);
       }
-    }
-
-    return WsResponse.buildOkResponse(responses);
+      return result;
+    });
   }
 }

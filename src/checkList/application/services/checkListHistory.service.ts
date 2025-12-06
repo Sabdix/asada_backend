@@ -558,7 +558,12 @@ export class CheckListHistoryService {
     return queryBuilder.getCount();
   }
 
-  getTodayChecklistsHistoryPendingAndRejected(uuidBranch) {
+  getTodayChecklistsHistoryPendingAndRejected(
+    dateInit,
+    dateEnd,
+    uuidBranch,
+    uuidCheckList,
+  ) {
     const queryBuilder = this.chekListHistoryRepository
       .createQueryBuilder('clh')
       .where('clh.status = :status', { status: 0 })
@@ -568,8 +573,8 @@ export class CheckListHistoryService {
       })
       .andWhere('clh.deletedAt IS NULL')
       .andWhere('clh.date BETWEEN :todayInit AND :todayEnd', {
-        todayInit: startOfDay(new Date()),
-        todayEnd: endOfDay(new Date()),
+        todayInit: dateInit,
+        todayEnd: dateEnd,
       });
 
     queryBuilder
@@ -597,6 +602,12 @@ export class CheckListHistoryService {
     if (uuidBranch) {
       queryBuilder.andWhere(`b.uuid = :uuidBranch`, {
         uuidBranch: uuidBranch,
+      });
+    }
+
+    if (uuidCheckList) {
+      queryBuilder.andWhere(`clh.uuid_check_list =:uuidCheckList`, {
+        uuidCheckList,
       });
     }
 
@@ -685,5 +696,69 @@ export class CheckListHistoryService {
     }
 
     return queryBuilder.getCount();
+  }
+
+  getComplianceData(
+    dateInit: string,
+    dateEnd: string,
+    uuidBranch?: string,
+  ) {
+    const queryBuilder = this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .select([
+        'clh.uuid_check_list',
+        'clh.managerApproved',
+        'clh.managerRevised',
+        'clh.revised',
+        'clh.approved',
+        'u.uuid_branch',
+      ])
+      .leftJoin('clh.user', 'u')
+      .where('clh.deletedAt IS NULL')
+      .andWhere('clh.date BETWEEN :dateInit AND :dateEnd', {
+        dateInit,
+        dateEnd,
+      });
+
+    if (uuidBranch) {
+      queryBuilder.andWhere('u.uuid_branch = :uuidBranch', { uuidBranch });
+    }
+
+    return queryBuilder.getRawMany();
+  }
+
+  getBranchComplianceSummary(
+    dateInit: string,
+    dateEnd: string,
+    uuidChecklist?: string,
+  ) {
+    const queryBuilder = this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .innerJoin('clh.user', 'u')
+      .select('u.uuid_branch', 'uuid_branch')
+      .addSelect('COUNT(*)', 'total')
+      .addSelect(
+        `SUM(CASE WHEN clh.managerApproved = 1 AND clh.managerRevised = 1 AND clh.revised = 1 AND clh.approved = 1 THEN 1 ELSE 0 END)`,
+        'completed',
+      )
+      .addSelect(
+        `SUM(CASE WHEN clh.status = 0 AND clh.approved = 0 AND clh.managerApproved = 0 THEN 1 ELSE 0 END)`,
+        'incidents',
+      )
+      .where('clh.deletedAt IS NULL')
+      .andWhere('clh.date BETWEEN :dateInit AND :dateEnd', {
+        dateInit,
+        dateEnd,
+      });
+
+    if (uuidChecklist) {
+      queryBuilder.andWhere('clh.uuid_check_list = :uuidChecklist', {
+        uuidChecklist,
+      });
+    }
+
+    queryBuilder.groupBy('u.uuid_branch');
+
+    return queryBuilder.getRawMany();
   }
 }
