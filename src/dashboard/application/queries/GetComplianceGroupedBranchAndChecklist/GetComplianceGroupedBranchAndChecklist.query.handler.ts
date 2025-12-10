@@ -3,6 +3,7 @@ import { GetComplianceGroupedBranchAndChecklistQuery } from './GetComplianceGrou
 import { CheckListHistoryService } from 'src/checkList/application/services/checkListHistory.service';
 import { BranchService } from 'src/branch/application/services/Branch.service';
 import { CheckListService } from 'src/checkList/application/services/checkList.service';
+import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 
 @QueryHandler(GetComplianceGroupedBranchAndChecklistQuery)
 export class GetComplianceGroupedBranchAndChecklistQueryHandler
@@ -60,18 +61,21 @@ export class GetComplianceGroupedBranchAndChecklistQueryHandler
       {},
     );
 
-    return allChecklists.map((checklist) => {
-      const result = {
-        checklist: checklist.name,
-      };
+    return WsResponse.buildOkResponse(
+      allChecklists.map((checklist) => {
+        const result = {
+          checklist: checklist.name,
+        };
 
-      for (const branch of branches) {
-        const key = `${checklist.uuid}-${branch.uuid}`;
-        const data = complianceByChecklistAndBranch[key];
-        const compliance = data && data.total > 0 ? (data.completed / data.total) * 100 : 0;
-        result[branch.name] = compliance;
-      }
-      return result;
-    });
+        for (const branch of branches) {
+          const key = `${checklist.uuid}-${branch.uuid}`;
+          const data = complianceByChecklistAndBranch[key];
+          const compliance =
+            data && data.total > 0 ? (data.completed / data.total) * 100 : 0;
+          result[branch.name] = compliance;
+        }
+        return result;
+      }),
+    );
   }
 }
