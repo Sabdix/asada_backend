@@ -33,7 +33,19 @@ export class GetCheckListByUuidQueryHandler implements IQueryHandler<GetCheckLis
 
     const items = await this.checkListItemService.getCheckListItemByCheckList(checkList.uuid)
 
-    for (const element of items) {
+    const firstItem = 'Revisar actividades cierre dia anterior';
+
+    const sortedItems = [...items].sort((a, b) => {
+      if (a.name === firstItem) {
+        return -1;
+      }
+      if (b.name === firstItem) {
+        return 1;
+      }
+      return 0;
+    });
+
+    for (const element of sortedItems) {
       const itemsWithCriteria = new CheckListItemDto
 
       itemsWithCriteria.name = element.name
@@ -60,11 +72,13 @@ export class GetCheckListByUuidQueryHandler implements IQueryHandler<GetCheckLis
           answer.requieres_action = element3.requieres_action
           criteriaWithAnswer.checkListItemCriteria.push(answer)
         }
-        
+
         itemsWithCriteria.checkListItemCriteria?.push(criteriaWithAnswer)
       }
       response.checkListItem.push(itemsWithCriteria)
     }
+
+    console.log(response)
     return WsResponse.buildOkResponse(
       plainToInstance(CheckListDto, response, { excludeExtraneousValues: true }),
     );
