@@ -662,10 +662,7 @@ export class CheckListHistoryService {
   getTotalChecklistCompleted(dateInit, dateEnd, uuidBranch, uuidCheckList) {
     const queryBuilder = this.chekListHistoryRepository
       .createQueryBuilder('clh')
-      .where('clh.managerApproved = :managerApproved', { managerApproved: 1 })
-      .andWhere('clh.managerRevised = :managerRevised', { managerRevised: 1 })
-      .andWhere('clh.revised = :revised', { revised: 1 })
-      .andWhere('clh.approved = :approved', { approved: 1 })
+      .where('clh.status = :status', { status: 1 })
       .andWhere('clh.deletedAt IS NULL')
       .andWhere('clh.date BETWEEN :dateInit AND :dateEnd', {
         dateInit: dateInit,
@@ -711,6 +708,7 @@ export class CheckListHistoryService {
         'clh.managerRevised',
         'clh.revised',
         'clh.approved',
+        'clh.status',
         'u.uuid_branch',
       ])
       .leftJoin('clh.user', 'u')
@@ -738,7 +736,7 @@ export class CheckListHistoryService {
       .select('u.uuid_branch', 'uuid_branch')
       .addSelect('COUNT(*)', 'total')
       .addSelect(
-        `SUM(CASE WHEN clh.managerApproved = 1 AND clh.managerRevised = 1 AND clh.revised = 1 AND clh.approved = 1 THEN 1 ELSE 0 END)`,
+        `SUM(CASE WHEN clh.status = 1 THEN 1 ELSE 0 END)`,
         'completed',
       )
       .addSelect(
