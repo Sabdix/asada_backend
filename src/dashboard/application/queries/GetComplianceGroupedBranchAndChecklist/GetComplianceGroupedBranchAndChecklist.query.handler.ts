@@ -46,7 +46,7 @@ export class GetComplianceGroupedBranchAndChecklistQueryHandler
         }
 
         acc[key].total++;
-        const isCompleted = item.clh_status === 1;
+        const isCompleted = item.clh_status === 1 ||  item.clh_status === 2 ;
 
         if (isCompleted) {
           acc[key].completed++;
