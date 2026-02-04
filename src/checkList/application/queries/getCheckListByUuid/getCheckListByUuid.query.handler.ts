@@ -78,7 +78,6 @@ export class GetCheckListByUuidQueryHandler implements IQueryHandler<GetCheckLis
       response.checkListItem.push(itemsWithCriteria)
     }
 
-    console.log(response)
     return WsResponse.buildOkResponse(
       plainToInstance(CheckListDto, response, { excludeExtraneousValues: true }),
     );

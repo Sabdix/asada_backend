@@ -3,7 +3,7 @@ import { CheckListHistoryRepository } from 'src/checkList/infrastructure/reposit
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
-import { endOfDay, format, startOfDay, subMinutes } from 'date-fns';
+import { endOfDay, format, startOfDay, subHours, subMinutes } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { User } from 'src/user/domain/entities/User.entity';
 
@@ -486,7 +486,7 @@ export class CheckListHistoryService {
       .where('clh.uuid_check_list = :uuid', { uuid: uuidCheckList })
       .andWhere('clh.deletedAt IS NULL')
       .andWhere('u.uuid_branch = :uuidBranch', { uuidBranch })
-      .andWhere('clh.date = :today', { today: startOfDay(new Date()) })
+      .andWhere('clh.date = :today', { today: startOfDay(subHours(new Date(),6)) })
       .getOne();
   }
 
