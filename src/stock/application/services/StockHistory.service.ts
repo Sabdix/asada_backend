@@ -75,6 +75,7 @@ export class StockHistoryService {
             .andWhere('sh.deletedAt IS NULL')
             .andWhere('sh.uuid_user = :uuid_user', { uuid_user })
             .andWhere('sh.date = :today',{ today: startOfDay(subHours(new Date(),6)) })
+            .orderBy('sh.updatedAt', "DESC")
             .getMany();
     }
 }
