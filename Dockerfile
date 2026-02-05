@@ -1,18 +1,23 @@
-FROM node:22
-
-# Define build-time argument with a default value
+FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
+# Copy package files
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
 
-RUN npm config set strict-ssl false
+# Install pnpm and dependencies
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
 
-RUN npm cache clean --force
-
-RUN npm install --no-cache
-
+# Copy source code
 COPY . .
 
-RUN npm run build
-CMD ["sh", "-c", "node dist/main.js"]
+# Build application
+RUN pnpm run build
+
+# Expose port
+EXPOSE 3000
+
+# Start application
+CMD ["node", "dist/main.js"]
