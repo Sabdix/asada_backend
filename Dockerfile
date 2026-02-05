@@ -7,14 +7,13 @@ COPY package*.json ./
 COPY pnpm-lock.yaml ./
 
 # Install pnpm and dependencies
-RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile
+RUN npm install
 
 # Copy source code
 COPY . .
 
 # Build application
-RUN pnpm run build
+RUN run build
 
 # Expose port
 EXPOSE 3000
