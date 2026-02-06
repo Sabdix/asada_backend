@@ -154,7 +154,6 @@ export class BranchReviewService {
                 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL'
             )
             .where('branchReview.createdAt BETWEEN :initialDate AND :endDate', { initialDate, endDate })
-            .andWhere('branchReview.rate <= :maxRate', { maxRate: 3 })
             .andWhere('branchReview.deletedAt IS NULL')
             .orderBy('branchReview.rate', 'ASC')
             .getMany();

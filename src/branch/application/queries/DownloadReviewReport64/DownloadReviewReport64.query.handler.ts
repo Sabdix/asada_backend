@@ -39,7 +39,7 @@ export class DownloadReviewReport64QueryHandler implements IQueryHandler<Downloa
             { header: 'Calificación', key: 'Calificacion', width: 15 },
             { header: 'Comentario', key: 'Comentario', width: 30 },
             { header: 'Sucursal', key: 'Sucursal', width: 20 },
-            { header: 'Fecha', key: 'Fecha', width: 20 },
+            { header: 'Fecha', key: 'Fecha', width: 20, style: { numFmt: 'yyyy-mm-dd hh:mm:ss'} },
         ];
 
         data.forEach(item => {
