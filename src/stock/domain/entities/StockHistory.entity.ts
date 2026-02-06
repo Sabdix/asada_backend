@@ -8,10 +8,10 @@ import { User } from 'src/user/domain/entities/User.entity';
 @Entity('stock_history')
 export class StockHistory extends EntityBase {
 
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
     quantity: number;
 
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', precision: 10, scale: 2 })
     previousQuantity: number;
 
     @Column({
