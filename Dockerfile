@@ -4,10 +4,12 @@ WORKDIR /usr/src/app
 
 # Copy package files
 COPY package*.json ./
-COPY pnpm-lock.yaml ./
 
-# Install pnpm and dependencies
-RUN npm install
+RUN npm config set strict-ssl false
+
+RUN npm cache clean --force
+
+RUN npm install --no-cache
 
 # Copy source code
 COPY . .
@@ -15,8 +17,8 @@ COPY . .
 # Build application
 RUN npm run build
 
-# Expose port
-EXPOSE 3000
+# # Expose port
+# EXPOSE 3000
 
 # Start application
 CMD ["node", "dist/main.js"]
