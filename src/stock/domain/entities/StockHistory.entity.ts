@@ -9,10 +9,10 @@ import { CheckList } from 'src/checkList/domain/entities/CheckList.entity';
 @Entity('stock_history')
 export class StockHistory extends EntityBase {
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 3 })
     quantity: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 3 })
     previousQuantity: number;
 
     @Column({

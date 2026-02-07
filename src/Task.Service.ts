@@ -43,7 +43,7 @@ export class TasksService {
       checkListHistory.uuid_check_list = checkList.uuid_check_list
       checkListHistory.uuid_user = checkList.uuid_user
       checkListHistory.date = new Date()
-      this.logger.log('Se asigana la data previo a la insecion para el registro del checklist user: ' + checkList.uuid.toString() + ' del usuario: ' + checkList.uuid_user.toString());
+      this.logger.log('Se asigna la data previo a la insercion para el registro del checklist user: ' + checkList.uuid.toString() + ' del usuario: ' + checkList.uuid_user.toString());
 
       const newHistory = await this.checkListHistoryService.creteCheckListHistory(checkListHistory, checkList)
       this.logger.log('Se inserto con exito el history:  ' + newHistory.uuid.toString() + ' correspondiente al checklist user: ' + checkList.uuid.toString());
