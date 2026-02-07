@@ -19,13 +19,13 @@ export class Stock extends EntityBase {
     @Column()
     uuid_work_area: string;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 3 })
     quantity: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 3 })
     requiredStock: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 2 })
+    @Column({ type: 'decimal', precision: 10, scale: 3 })
     holidayRequiredStock: number;
 
     @ManyToOne(() => ProductCategory)
