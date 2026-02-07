@@ -30,7 +30,7 @@ export class ValidateStockCommandHandler implements ICommandHandler<ValidateStoc
             if (!stock)
                 return WsResponse.buildNotFoundResponse('STOCK NOT FOUND');
 
-            await this.stockHistory.creteStock(stock.uuid, user.uuid, item.quantity, stock.quantity, command.body.type, dateOnly)
+            await this.stockHistory.creteStock(stock.uuid, user.uuid, item.quantity, stock.quantity, command.body.type, dateOnly, command.body.uuid_check_list)
 
             stock.quantity = item.quantity
             await this.stockService.updateStock(stock)

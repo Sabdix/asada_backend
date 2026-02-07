@@ -50,7 +50,7 @@ export class GetCheckListHistoryByBranchQueryHandler implements IQueryHandler<Ge
                 responseElement.check_list_user.checkList = history.check_list_user.checkList
             }
             if (history?.check_list_user.checkList.name.includes("Stock")) {
-                const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user)
+                const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user, history.check_list_user?.checkList?.uuid)
                 responseElement.stockHistory = stockHistory
             }
             response.push(responseElement)
