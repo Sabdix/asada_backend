@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CheckListUserRepository } from 'src/checkList/infrastructure/repositories/CheckListUser.Repository';
 import { AssingCheckListRequestDto } from 'src/user/application/dtos/AssingCheckListRequest.dto';
+import { Brackets, IsNull } from 'typeorm';
 
 @Injectable()
 export class CheckListUserService {
@@ -62,36 +63,36 @@ export class CheckListUserService {
     }
 
     async getAllUserCheckListGroupedPaginated(
-        size: number, 
-        offset: number, 
-        name: string, 
-        checkList: string, 
+        size: number,
+        offset: number,
+        name: string,
+        checkList: string,
         weekday: string,
         uuid_branch: string
     ) {
         const queryBuilder = this.chekListUserRepository
-        .createQueryBuilder('clu')
-        .select([
-            'cl.uuid as checkListUuid',
-            'cl.name as checkListName', 
-            'u.uuid as userUuid',
-            'u.name as userName',
-            'u.last_name as userLastName',
-            'u.second_last_name as userSecondLastName',
-            'clu.initHour',
-            'clu.endHour',
-            'clu.specialEvent',
-            'clu.uuid',
-            'GROUP_CONCAT(clu.weekDay ORDER BY clu.weekDay) as weekDays',
-            'GROUP_CONCAT(clu.uuid ORDER BY clu.weekDay) as ids'
-        ])
-        .innerJoin('clu.checkList', 'cl')
-        .innerJoin('clu.user', 'u')
-        .where('clu.deletedAt IS NULL')
-        .andWhere('cl.deletedAt IS NULL')
-        .andWhere('u.deletedAt IS NULL')
-        .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour, clu.specialEvent')
-        .orderBy('u.name')
+            .createQueryBuilder('clu')
+            .select([
+                'cl.uuid as checkListUuid',
+                'cl.name as checkListName',
+                'u.uuid as userUuid',
+                'u.name as userName',
+                'u.last_name as userLastName',
+                'u.second_last_name as userSecondLastName',
+                'clu.initHour',
+                'clu.endHour',
+                'clu.specialEvent',
+                'clu.uuid',
+                'GROUP_CONCAT(clu.weekDay ORDER BY clu.weekDay) as weekDays',
+                'GROUP_CONCAT(clu.uuid ORDER BY clu.weekDay) as ids'
+            ])
+            .innerJoin('clu.checkList', 'cl')
+            .innerJoin('clu.user', 'u')
+            .where('clu.deletedAt IS NULL')
+            .andWhere('cl.deletedAt IS NULL')
+            .andWhere('u.deletedAt IS NULL')
+            .groupBy('cl.uuid, u.uuid, clu.initHour, clu.endHour, clu.specialEvent')
+            .orderBy('u.name')
 
         if (name) {
             queryBuilder.andWhere(`(LOWER(u.name) LIKE LOWER(:name) OR LOWER(u.last_name) LIKE LOWER(:name) OR LOWER(u.second_last_name) LIKE LOWER(:name))`, { name: `%${name}%` });
@@ -109,7 +110,7 @@ export class CheckListUserService {
         const totalQuery = queryBuilder.clone();
         const totalResult = await totalQuery.getRawMany();
         const total = totalResult.length;
-        
+
         queryBuilder.limit(size).offset(offset);
         const result = await queryBuilder.getRawMany();
 
@@ -155,15 +156,25 @@ export class CheckListUserService {
         return queryBuilder.getManyAndCount();
     }
 
+    // getCheckListByWeekDay(weekDay: number, eventDate: Date) {
+    //     return this.chekListUserRepository.find(
+    //         {
+    //             where: [{ weekDay: weekDay, specialEvent: false, deletedAt: IsNull()},
+    //             { eventDate: eventDate, specialEvent: true, deletedAt: IsNull()  }]
+    //         });
+    // }
+
     getCheckListByWeekDay(weekDay: number, eventDate: Date) {
-        return this.chekListUserRepository.find(
-            {
-                where: [{ weekDay: weekDay, specialEvent: false },
-                { eventDate: eventDate, specialEvent: true }]
-            });
+        return this.chekListUserRepository.createQueryBuilder('checklist')
+            .where('checklist.deletedAt IS NULL')
+            .andWhere(new Brackets((qb) => {
+                qb.where('checklist.weekDay = :weekDay AND checklist.specialEvent = :specialFalse', { weekDay, specialFalse: false })
+                    .orWhere('checklist.eventDate = :eventDate AND checklist.specialEvent = :specialTrue', { eventDate, specialTrue: true });
+            }))
+            .getMany();
     }
 
-    deleteCheckListAssignedUser(uuid:string, uuid_check_list) {
+    deleteCheckListAssignedUser(uuid: string, uuid_check_list) {
         return this.chekListUserRepository.softDelete({ uuid_user: uuid, uuid_check_list: uuid_check_list });
     }
 

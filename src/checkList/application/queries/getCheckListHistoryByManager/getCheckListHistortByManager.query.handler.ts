@@ -42,7 +42,7 @@ export class GetCheckListHistoryByManagerQueryHandler implements IQueryHandler<G
             response.check_list_user.checkList = history.check_list_user.checkList
         }
         if (history?.check_list_user.checkList.name.includes("Stock")){
-            const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user)
+            const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user, query.uuidCheckList)
             response.stockHistory = stockHistory
         }
 

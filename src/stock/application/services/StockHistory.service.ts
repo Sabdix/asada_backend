@@ -1,12 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StockProductRepository } from 'src/stock/infrastructure/repositories/StockProduct.repository';
-import { CreateProductRequestDto } from '../dtos/CreateProductRequest.dto';
-import { StockProduct } from 'src/stock/domain/entities/StockProduct.entity';
-import { StockRepository } from 'src/stock/infrastructure/repositories/Stock.repository';
-import { CreateStockRequestDto } from '../dtos/CreateStock.dto';
-import { Stock } from 'src/stock/domain/entities/Stock.entity';
 import { StockHistoryRepository } from 'src/stock/infrastructure/repositories/StockHistory.repository';
-import { ValidateStockRequestDto } from '../dtos/ValidateStockRequest.dto';
 import { StockHistoryType } from 'src/stock/domain/enums/StockHistoryType.enum';
 import { startOfDay, subHours } from 'date-fns';
 
@@ -15,7 +8,7 @@ import { startOfDay, subHours } from 'date-fns';
 export class StockHistoryService {
     constructor(private readonly stockHistoryRepository: StockHistoryRepository) { }
 
-    creteStock(uuid_stock: string, uuid_user: string, quantity: number, previousQuantity: number, type: StockHistoryType, date: Date) {
+    creteStock(uuid_stock: string, uuid_user: string, quantity: number, previousQuantity: number, type: StockHistoryType, date: Date, uuid_check_list: string) {
         return this.stockHistoryRepository.save(
             this.stockHistoryRepository.create({
                 uuid_stock: uuid_stock,
@@ -23,7 +16,8 @@ export class StockHistoryService {
                 quantity: quantity,
                 previousQuantity: previousQuantity,
                 type: type,
-                date: date
+                date: date,
+                uuid_check_list: uuid_check_list
             })
         )
     }
@@ -52,13 +46,19 @@ export class StockHistoryService {
                 'p',
                 'p.deletedAt IS NOT NULL OR p.deletedAt IS NULL'
             )
+            .leftJoinAndSelect(
+                'sh.checklist',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
             .where('sh.date BETWEEN :initialDate AND :endDate', { initialDate, endDate })
             .andWhere('sh.deletedAt IS NULL')
             .andWhere('s.uuid_branch = :uuid_branch', { uuid_branch })
+            .orderBy('sh.createdAt', "ASC")
             .getMany();
     }
 
-    getTodayStockHistoryByUser(uuid_user: string) {
+    getTodayStockHistoryByUser(uuid_user: string, uuid_check_list: string) {
 
         return this.stockHistoryRepository
             .createQueryBuilder('sh')
@@ -75,6 +75,7 @@ export class StockHistoryService {
             .andWhere('sh.deletedAt IS NULL')
             .andWhere('sh.uuid_user = :uuid_user', { uuid_user })
             .andWhere('sh.date = :today',{ today: startOfDay(subHours(new Date(),6)) })
+            .andWhere('sh.uuid_check_list = :uuid_check_list', { uuid_check_list })
             .orderBy('sh.updatedAt', "DESC")
             .getMany();
     }

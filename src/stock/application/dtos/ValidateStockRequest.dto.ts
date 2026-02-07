@@ -9,5 +9,7 @@ export class ValidateStockRequestDto {
     type: StockHistoryType;
     @IsNotEmpty()
     uuid_user: string;
+    @IsNotEmpty()
+    uuid_check_list: string;
 }
 
