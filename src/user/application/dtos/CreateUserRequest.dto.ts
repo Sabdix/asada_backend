@@ -4,6 +4,8 @@ export class CreateUserRequestDto {
     @IsNotEmpty()
     @IsEmail()
     mail: string;
+    @IsEmail({}, { message: 'El formato del correo electrónico no es válido' })
+    mail_alertas: string;
     @IsNotEmpty()
     password: string;
     @IsNotEmpty()

@@ -28,6 +28,7 @@ export class UpdateUserCommandHandler implements ICommandHandler<UpdateUserComma
         user.last_name = command.body.last_name ?? user.last_name;
         user.second_last_name = command.body.second_last_name ?? user.second_last_name;
         user.phone = command.body.phone ?? user.phone;
+        user.mail_alertas = command.body.mail_alertas ?? user.mail_alertas;
         user.uuid_branch = command.body.uuid_branch ?? user.uuid_branch;
         user.uuid_role = command.body.uuid_role ?? user.uuid_role;
         user.uuid_work_area = command.body.uuid_work_area

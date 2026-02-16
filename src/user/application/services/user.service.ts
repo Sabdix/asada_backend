@@ -111,6 +111,7 @@ export class UserService {
         last_name: request.last_name,
         second_last_name: request.second_last_name,
         mail: request.mail,
+        mail_alertas: request.mail_alertas,
         password: crypto.createHash('sha256').update(request.password).digest('hex'),
         phone: request.phone,
         secret: crypto.randomBytes(64).toString('hex'),

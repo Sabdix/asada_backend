@@ -25,6 +25,9 @@ export class UserDto {
     mail: string;
 
     @Expose()
+    mail_alertas: string;
+
+    @Expose()
     empowered: boolean;
 
     @Expose()
