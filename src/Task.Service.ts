@@ -63,7 +63,7 @@ export class TasksService {
     for(let checkList of checkListToNotify) {
       if (checkList.user.uuid_user == null) continue;
       const managers = await this.getListOfManagers(checkList.user.uuid_user)
-      await this.sendMail(checkList.user.mail, managers.map(manager => manager.mail).join(','));
+      await this.sendMail(checkList.user.mail_alertas, managers.map(manager => manager.mail_alertas).join(','));
     }
     
   }
