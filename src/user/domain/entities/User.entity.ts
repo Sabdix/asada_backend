@@ -55,6 +55,9 @@ export class User extends EntityBase {
   @Column({ default: false })
   stock_empowered: boolean;
 
+  @Column({ nullable: true })
+  mail_alertas: string;
+
   @ManyToOne(() => Role)
   @JoinColumn({ name: 'uuid_role' })
   role: Role;

@@ -10,6 +10,8 @@ export class UpdateUserRequestDto {
     @Optional()
     phone: string;
     @Optional()
+    mail_alertas: string;
+    @Optional()
     uuid_role: string;
     @Optional()
     uuid_branch: string;
