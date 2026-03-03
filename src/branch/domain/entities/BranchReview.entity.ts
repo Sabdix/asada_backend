@@ -1,5 +1,5 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity, ManyToOne, JoinColumn } from 'typeorm';
+import { EntityBase } from '../../../common/entities/EntityBase';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Branch } from './Branch.entity';
 
 @Entity()

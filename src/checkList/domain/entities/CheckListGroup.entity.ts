@@ -2,7 +2,7 @@ import { EntityBase } from '../../../common/entities/EntityBase';
 import { Entity, Column } from 'typeorm';
 
 @Entity()
-export class WorkArea extends EntityBase {
-    @Column()
-    name: string;
+export class CheckListGroup extends EntityBase {
+  @Column()
+  name: string;
 }

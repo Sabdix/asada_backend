@@ -1,7 +1,7 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../../user/domain/entities/User.entity';
 import { CheckList } from './CheckList.entity';
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 
 @Entity()
 export class CheckListUser extends EntityBase {

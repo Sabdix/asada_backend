@@ -1,4 +1,4 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { Entity, Column, JoinColumn, ManyToOne } from 'typeorm';
 import { CheckListHistory } from './CheckListHistory';
 import { CheckListItemCriteriaAnswers } from './CheckListItemCriteriaAnswers.entity';

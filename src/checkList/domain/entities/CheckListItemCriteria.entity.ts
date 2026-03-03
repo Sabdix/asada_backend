@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { CheckListItem } from './CheckListItem.entity';
 
 @Entity()

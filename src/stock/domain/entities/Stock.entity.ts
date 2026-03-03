@@ -1,9 +1,9 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ProductCategory } from './ProductCategory.entity';
-import { Branch } from 'src/branch/domain/entities/Branch.entity';
+import { Branch } from '../../../branch/domain/entities/Branch.entity';
 import { StockProduct } from './StockProduct.entity';
-import { WorkArea } from 'src/user/domain/entities/WorkArea.entity';
+import { WorkArea } from '../../../user/domain/entities/WorkArea.entity';
 
 @Entity('stock')
 export class Stock extends EntityBase {

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { Recipe } from './Recipe.entity';
 
 

@@ -58,6 +58,7 @@ import { getCheckListHistoryAnswersByHistoryQuery } from 'src/checkList/applicat
 import { GetCheckListHistoryByBranchQuery } from 'src/checkList/application/queries/getCheckListHistoryByBranch/getCheckListHistoryByBranch.query';
 import { GetCheckListHistoryByManagerQuery } from 'src/checkList/application/queries/getCheckListHistoryByManager/getCheckListHistoryByManager.query';
 import { GetCheckListHistoryByUserQuery } from 'src/checkList/application/queries/getCheckListHistoryByUser/getCheckListHistoryByUser.query';
+import { GetCheckListHistoryByUserAndGroupQuery } from 'src/checkList/application/queries/getCheckListHistoryByUserAndGroup/getCheckListHistoryByUserAndGroup.query';
 import { GetCheckListHistoryByUuidQuery } from 'src/checkList/application/queries/getCheckListHistoryByUuid/getChckListHistoryByUuid.query';
 import { GetCheckListItemsByCheckListQuery } from 'src/checkList/application/queries/getCheckListItemsByCheckList/getCheckListItemsByCheckList.query';
 import { GetCheckListQrByUuidQuery } from 'src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query';
@@ -302,6 +303,16 @@ export class CheckListController {
   @Get('user/:uuid/history/')
   async getCheckListHistoryByUser(@Param('uuid') uuid: string) {
     return this.queryBus.execute(new GetCheckListHistoryByUserQuery(uuid));
+  }
+
+  @Get('user/:uuidUser/history/group/:uuidGroup')
+  async getCheckListHistoryByUserAndGroup(
+    @Param('uuidUser') uuidUser: string,
+    @Param('uuidGroup') uuidGroup: string,
+  ) {
+    return this.queryBus.execute(
+      new GetCheckListHistoryByUserAndGroupQuery(uuidUser, uuidGroup),
+    );
   }
 
   @Get('history/:uuid/answers')

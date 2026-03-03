@@ -1,6 +1,6 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Schedule } from './Schedule.entity';
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 
 @Entity()
 export class ScheduleCalendar extends EntityBase {

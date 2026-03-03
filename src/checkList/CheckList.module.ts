@@ -2,7 +2,10 @@ import { forwardRef, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CheckList } from "./domain/entities/CheckList.entity";
+import { CheckListGroup } from "./domain/entities/CheckListGroup.entity";
+import { CheckListGroupCheckList } from "./domain/entities/CheckListGroupCheckList.entity";
 import { CheckListController } from "./infrastructure/controllers/CheckList.controller";
+import { CheckListGroupController } from "./infrastructure/controllers/CheckListGroup.controller";
 import { CheckListService } from "./application/services/checkList.service";
 import { CreateCheckListCommandHandler } from "./application/commands/CreateCheckList/CreateCheckList.command.handler";
 import { GetCheckListByUuidQueryHandler } from "./application/queries/getCheckListByUuid/getCheckListByUuid.query.handler";
@@ -63,12 +66,23 @@ import { GetCheckListHistoryByUuidQueryHandler } from "./application/queries/get
 import { GetAssignedGroupedCheckListQueryHandler } from "./application/queries/getAssignedGroupedCheckList/GetAssignedGroupedCheckList.query.handler";
 import { ManagerReviewCheckListHistoryCommandHandler } from "./application/commands/ManagerReviewCheckListHistory/ManagerReviewCheckList.command.handler";
 import { GetCheckListHistoryByManagerQueryHandler } from "./application/queries/getCheckListHistoryByManager/getCheckListHistortByManager.query.handler";
+import { GetCheckListHistoryByUserAndGroupQueryHandler } from "./application/queries/getCheckListHistoryByUserAndGroup/getCheckListHistoryByUserAndGroup.query.handler";
 import { StockModule } from "src/stock/Stock.module";
+import { CheckListGroupService } from "./application/services/checkListGroup.service";
+import { CheckListGroupRepository } from "./infrastructure/repositories/CheckListGroup.Repository";
+import { CheckListGroupCheckListService } from "./application/services/checkListGroupCheckList.service";
+import { CheckListGroupCheckListRepository } from "./infrastructure/repositories/CheckListGroupCheckList.Repository";
+import { CreateCheckListGroupCommandHandler } from "./application/commands/CreateCheckListGroup/CreateCheckListGroup.command.handler";
+import { UpdateCheckListGroupCommandHandler } from "./application/commands/UpdateCheckListGroup/UpdateCheckListGroup.command.handler";
+import { DeleteCheckListGroupCommandHandler } from "./application/commands/DeleteCheckListGroup/DeleteCheckListGroup.command.handler";
+import { GetCheckListGroupsQueryHandler } from "./application/queries/GetCheckListGroups/GetCheckListGroups.query.handler";
+import { GetCheckListGroupByUuidQueryHandler } from "./application/queries/GetCheckListGroupByUuid/GetCheckListGroupByUuid.query.handler";
+import { GetCheckListGroupQrByUuidQueryHandler } from "./application/queries/GetCheckListGroupQrByUuid/GetCheckListGroupQrByUuid.query.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([CheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers, Branch]),
+        TypeOrmModule.forFeature([CheckList, CheckListGroup, CheckListGroupCheckList, CheckListItem, CheckListItemCriteria, CheckListItemCriteriaAnswers, CheckListUser, User, CheckListHistory, CheckListUserAnswers, Branch]),
         forwardRef(() => UserModule),
         BranchModule,
         StockModule
@@ -124,12 +138,24 @@ import { StockModule } from "src/stock/Stock.module";
         GetCheckListHistoryByUuidQueryHandler,
         ManagerReviewCheckListHistoryCommandHandler,
         GetCheckListHistoryByManagerQueryHandler,
+        GetCheckListHistoryByUserAndGroupQueryHandler,
 
         CheckListUserAnswersRepository,
         CheckListUserAnswersService,
         AnswerCheckListCommandHandler,
         getCheckListHistoryAnswersByHistoryQueryHandler,
-        GetAssignedGroupedCheckListQueryHandler
+        GetAssignedGroupedCheckListQueryHandler,
+
+        CheckListGroupService,
+        CheckListGroupRepository,
+        CheckListGroupCheckListService,
+        CheckListGroupCheckListRepository,
+        CreateCheckListGroupCommandHandler,
+        UpdateCheckListGroupCommandHandler,
+        DeleteCheckListGroupCommandHandler,
+        GetCheckListGroupsQueryHandler,
+        GetCheckListGroupByUuidQueryHandler,
+        GetCheckListGroupQrByUuidQueryHandler,
     ],
     exports: [
         CheckListService,
@@ -138,8 +164,10 @@ import { StockModule } from "src/stock/Stock.module";
         CheckListUserService,
         CheckListHistoryService,
         CheckListUserAnswersService,
+        CheckListGroupService,
+        CheckListGroupCheckListService,
     ],
-    controllers: [CheckListController]
+    controllers: [CheckListController, CheckListGroupController]
 
 })
 export class CheckListModule {

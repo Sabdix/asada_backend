@@ -1,4 +1,4 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ProductCategory } from './ProductCategory.entity';
 

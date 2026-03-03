@@ -1,5 +1,5 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, BaseEntity } from 'typeorm';
+import { EntityBase } from '../../../common/entities/EntityBase';
+import { Entity, Column} from 'typeorm';
 
 @Entity()
 export class Schedule extends EntityBase{

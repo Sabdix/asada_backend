@@ -203,6 +203,34 @@ export class CheckListHistoryService {
       .getMany();
   }
 
+  getCheckListHistoryByUserAndGroup(uuid_user: string, uuid_group: string) {
+    const now = new Date();
+    const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
+    return this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .leftJoinAndSelect(
+        'clh.check_list_user',
+        'clu',
+        'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.checkList',
+        'cl',
+        'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL',
+      )
+      .innerJoin(
+        'check_list_group_check_list',
+        'clgcl',
+        'clgcl.uuid_check_list = cl.uuid',
+      )
+      .where('clh.uuid_user = :uuid_user', { uuid_user })
+      .andWhere('clgcl.uuid_check_list_group = :uuid_group', { uuid_group })
+      .andWhere('clh.date = :today', { today: startOfDay(mexicoCityTime) })
+      .andWhere('clh.deletedAt IS NULL')
+      .orderBy('clgcl.priority', 'ASC')
+      .getMany();
+  }
+
   getCheckListHistoryByUuid(uuid: string) {
     return this.chekListHistoryRepository.findOne({ where: { uuid: uuid } });
   }

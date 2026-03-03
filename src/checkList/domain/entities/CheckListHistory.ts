@@ -1,7 +1,7 @@
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { CheckList } from './CheckList.entity';
-import { User } from 'src/user/domain/entities/User.entity';
+import { User } from '../../../user/domain/entities/User.entity';
 import { CheckListUser } from './CheckListUser.entity';
 
 @Entity()

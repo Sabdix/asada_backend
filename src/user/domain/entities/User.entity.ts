@@ -1,8 +1,8 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Role } from './Role.entity';
 import { Schedule } from '../../../schedule/domain/entities/Schedule.entity';
 import { Branch } from '../../../branch/domain/entities/Branch.entity';
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { WorkArea } from './WorkArea.entity';
 
 @Entity()

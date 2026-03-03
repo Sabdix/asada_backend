@@ -3,6 +3,8 @@ import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { Branch } from 'src/branch/domain/entities/Branch.entity';
 import { BranchReview } from 'src/branch/domain/entities/BranchReview.entity';
 import { CheckList } from 'src/checkList/domain/entities/CheckList.entity';
+import { CheckListGroup } from 'src/checkList/domain/entities/CheckListGroup.entity';
+import { CheckListGroupCheckList } from 'src/checkList/domain/entities/CheckListGroupCheckList.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
 import { CheckListItem } from 'src/checkList/domain/entities/CheckListItem.entity';
 import { CheckListItemCriteria } from 'src/checkList/domain/entities/CheckListItemCriteria.entity';
@@ -68,6 +70,8 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       CheckListUser,
       CheckListHistory,
       CheckListUserAnswers,
+      CheckListGroup,
+      CheckListGroupCheckList,
       Recipe,
       RecipeCategory,
       ProductCategory,

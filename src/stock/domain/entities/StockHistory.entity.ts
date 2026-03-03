@@ -1,10 +1,10 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 
-import { EntityBase } from 'src/common/entities/EntityBase';
+import { EntityBase } from '../../../common/entities/EntityBase';
 import { StockHistoryType } from '../enums/StockHistoryType.enum';
 import { Stock } from './Stock.entity';
-import { User } from 'src/user/domain/entities/User.entity';
-import { CheckList } from 'src/checkList/domain/entities/CheckList.entity';
+import { User } from '../../../user/domain/entities/User.entity';
+import { CheckList } from '../../../checkList/domain/entities/CheckList.entity';
 
 @Entity('stock_history')
 export class StockHistory extends EntityBase {
