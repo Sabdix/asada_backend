@@ -57,7 +57,8 @@ export class UserService {
       .leftJoinAndSelect('user.manager', 'manager', 'manager.deletedAt IS NOT NULL OR manager.deletedAt IS NULL')
       .leftJoinAndSelect('user.branch', 'branch', 'branch.deletedAt IS NOT NULL OR branch.deletedAt IS NULL')
       .leftJoinAndSelect('user.schedule', 'schedule', 'schedule.deletedAt IS NOT NULL OR schedule.deletedAt IS NULL')
-      .where('user.deletedAt IS NULL');
+      .where('user.deletedAt IS NULL')
+      .andWhere('branch.deletedAt IS NULL');
 
     if (name) {
       queryBuilder.andWhere(`LOWER(user.name) LIKE LOWER(:name)`, { name: `%${name}%` });
