@@ -28,7 +28,7 @@ export class CheckListService {
     return this.chekListRepository.find({ order: { name: 'ASC' } });
   }
 
-  async getCheckListPaginated(name: string) {
+  async getCheckListPaginated(name: string, uuid: string) {
     const queryBuilder = this.chekListRepository
       .createQueryBuilder('checkList')
       .leftJoin(
@@ -43,6 +43,12 @@ export class CheckListService {
     if (name) {
       queryBuilder.andWhere(`LOWER(checkList.name) LIKE LOWER(:name)`, {
         name: `%${name}%`,
+      });
+    }
+    
+    if (uuid) {
+      queryBuilder.andWhere(`checkList.uuid = :uuid`, {
+        uuid: `${uuid}`,
       });
     }
 
