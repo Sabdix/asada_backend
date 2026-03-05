@@ -25,8 +25,8 @@ export class TasksService {
 
 
 
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
-  //@Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron(CronExpression.EVERY_DAY_AT_7AM)
+  //@Cron("0 48 7 * * *")
   async handleCreateTodayHistory() {
     this.logger.log('Incia ejecucion del cronjob');
     const weekDay = new Date().getDay();
