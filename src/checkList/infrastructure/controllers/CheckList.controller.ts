@@ -91,8 +91,9 @@ export class CheckListController {
     @Query('size') size: number,
     @Query('offset') offset: number,
     @Query('name') name: string,
+    @Query('uuid') uuid: string,
   ) {
-    return this.queryBus.execute(new GetCheckListQuery(size, offset, name));
+    return this.queryBus.execute(new GetCheckListQuery(size, offset, name, uuid));
   }
 
   @Delete('/:uuid')

@@ -33,6 +33,13 @@ export class AnswerCheckListCommandHandler implements ICommandHandler<AnswerChec
                 return WsResponse.buildConflictResponse('YA EXISTE UNA RESPUESTA REGISTRADA', 'CHECKLIST_USER_ANSWER ALREADY EXISTS');
             
             response = await this.checkListUserAnswerService.creteCheckListHistory(answer)
+
+            if (checkListHistory.check_list.name.toLowerCase().includes('Encargado'.toLowerCase()))
+            {
+                checkListHistory.approved = true
+                checkListHistory.revised = true
+                await this.checkListHistoryService.UpdateCheckListHistoryByUuid(checkListHistory)
+            }
             
         }
 

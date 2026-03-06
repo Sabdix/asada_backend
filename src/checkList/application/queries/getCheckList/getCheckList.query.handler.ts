@@ -13,7 +13,7 @@ export class GetCheckListQueryHandler implements IQueryHandler<GetCheckListQuery
   ) { }
 
   async execute(query: GetCheckListQuery): Promise<WsResponse<CheckListDto[]>> {
-    const checkList = await this.checkService.getCheckListPaginated(query.name);
+    const checkList = await this.checkService.getCheckListPaginated(query.name, query.uuid);
     const checkListDto = plainToInstance(CheckListDto, checkList, { excludeExtraneousValues: true });
     
     return WsResponse.buildOkResponse(checkListDto);
