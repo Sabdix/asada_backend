@@ -31,6 +31,7 @@ export class CheckListHistoryService {
   getCheckListHistoyByUuidAndUser(uuid: string, uuid_user) {
     return this.chekListHistoryRepository.findOne({
       where: { uuid: uuid, uuid_user: uuid_user },
+      relations: ['check_list']
     });
   }
 
@@ -232,7 +233,7 @@ export class CheckListHistoryService {
   }
 
   getCheckListHistoryByUuid(uuid: string) {
-    return this.chekListHistoryRepository.findOne({ where: { uuid: uuid } });
+    return this.chekListHistoryRepository.findOne({ where: { uuid: uuid }, relations: ['check_list'] });
   }
 
   UpdateCheckListHistoryByUuid(history: CheckListHistory) {
@@ -510,6 +511,16 @@ export class CheckListHistoryService {
         'clu.user',
         'u',
         'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'u.manager',
+        'm',
+        'm.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'u.branch',
+        'b',
+        'b.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
       )
       .where('clh.uuid_check_list = :uuid', { uuid: uuidCheckList })
       .andWhere('clh.deletedAt IS NULL')
