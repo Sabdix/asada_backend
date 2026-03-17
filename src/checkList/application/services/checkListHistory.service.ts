@@ -31,7 +31,7 @@ export class CheckListHistoryService {
   getCheckListHistoyByUuidAndUser(uuid: string, uuid_user) {
     return this.chekListHistoryRepository.findOne({
       where: { uuid: uuid, uuid_user: uuid_user },
-      relations: ['check_list']
+      relations: ['check_list'],
     });
   }
 
@@ -232,8 +232,80 @@ export class CheckListHistoryService {
       .getMany();
   }
 
+  getCheckListHistoryByUserManagerAndGroup(
+    uuid_user: string,
+    uuid_group: string,
+  ) {
+    const now = new Date();
+    const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
+    return this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .leftJoinAndSelect(
+        'clh.check_list_user',
+        'clu',
+        'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.user',
+        'u',
+        'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.checkList',
+        'cl',
+        'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL',
+      )
+      .innerJoin(
+        'check_list_group_check_list',
+        'clgcl',
+        'clgcl.uuid_check_list = cl.uuid',
+      )
+      .where('u.uuid_user = :uuid_user', { uuid_user })
+      .andWhere('clgcl.uuid_check_list_group = :uuid_group', { uuid_group })
+      .andWhere('clh.date = :today', { today: startOfDay(mexicoCityTime) })
+      .andWhere('clh.deletedAt IS NULL')
+      .orderBy('clgcl.priority', 'ASC')
+      .getMany();
+  }
+
+  getCheckListHistoryByBranchAndGroup(uuid_branch: string, uuid_group: string) {
+    const now = new Date();
+    const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
+    return this.chekListHistoryRepository
+      .createQueryBuilder('clh')
+      .leftJoinAndSelect(
+        'clh.check_list_user',
+        'clu',
+        'clu.deletedAt IS NOT NULL OR clu.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.user',
+        'u',
+        'u.deletedAt IS NOT NULL OR u.deletedAt IS NULL',
+      )
+      .leftJoinAndSelect(
+        'clu.checkList',
+        'cl',
+        'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL',
+      )
+      .innerJoin(
+        'check_list_group_check_list',
+        'clgcl',
+        'clgcl.uuid_check_list = cl.uuid',
+      )
+      .where('u.uuid_branch = :uuid_branch', { uuid_branch })
+      .andWhere('clgcl.uuid_check_list_group = :uuid_group', { uuid_group })
+      .andWhere('clh.date = :today', { today: startOfDay(mexicoCityTime) })
+      .andWhere('clh.deletedAt IS NULL')
+      .orderBy('clgcl.priority', 'ASC')
+      .getMany();
+  }
+
   getCheckListHistoryByUuid(uuid: string) {
-    return this.chekListHistoryRepository.findOne({ where: { uuid: uuid }, relations: ['check_list'] });
+    return this.chekListHistoryRepository.findOne({
+      where: { uuid: uuid },
+      relations: ['check_list'],
+    });
   }
 
   UpdateCheckListHistoryByUuid(history: CheckListHistory) {
@@ -525,7 +597,9 @@ export class CheckListHistoryService {
       .where('clh.uuid_check_list = :uuid', { uuid: uuidCheckList })
       .andWhere('clh.deletedAt IS NULL')
       .andWhere('u.uuid_branch = :uuidBranch', { uuidBranch })
-      .andWhere('clh.date = :today', { today: startOfDay(subHours(new Date(),6)) })
+      .andWhere('clh.date = :today', {
+        today: startOfDay(subHours(new Date(), 6)),
+      })
       .getOne();
   }
 
@@ -734,11 +808,7 @@ export class CheckListHistoryService {
     return queryBuilder.getCount();
   }
 
-  getComplianceData(
-    dateInit: string,
-    dateEnd: string,
-    uuidBranch?: string,
-  ) {
+  getComplianceData(dateInit: string, dateEnd: string, uuidBranch?: string) {
     const queryBuilder = this.chekListHistoryRepository
       .createQueryBuilder('clh')
       .select([
@@ -774,10 +844,7 @@ export class CheckListHistoryService {
       .innerJoin('clh.user', 'u')
       .select('u.uuid_branch', 'uuid_branch')
       .addSelect('COUNT(*)', 'total')
-      .addSelect(
-        `SUM(CASE WHEN clh.status = 1 THEN 1 ELSE 0 END)`,
-        'completed',
-      )
+      .addSelect(`SUM(CASE WHEN clh.status = 1 THEN 1 ELSE 0 END)`, 'completed')
       .addSelect(
         `SUM(CASE WHEN clh.status = 0 AND clh.approved = 0 AND clh.managerApproved = 0 THEN 1 ELSE 0 END)`,
         'incidents',

@@ -32,10 +32,48 @@ export class GetCheckListHistoryByUserAndGroupQueryHandler
         query.uuidGroup,
       );
 
-    return WsResponse.buildOkResponse(
-      plainToInstance(CheckListHistoryDto, checkListHistory, {
+    const checkListHistoryFromSubbordinates =
+      await this.checkListHistoryService.getCheckListHistoryByUserManagerAndGroup(
+        query.uuidUser,
+        query.uuidGroup,
+      );
+    if (user.role.name == 'Gerente Sucursal') {
+      const checkListHistoryFromAllTheBranch =
+        await this.checkListHistoryService.getCheckListHistoryByBranchAndGroup(
+          user.uuid_branch,
+          query.uuidGroup,
+        );
+      return WsResponse.buildOkResponse({
+        personal: plainToInstance(CheckListHistoryDto, checkListHistory, {
+          excludeExtraneousValues: true,
+        }),
+        subbordinates: plainToInstance(
+          CheckListHistoryDto,
+          checkListHistoryFromSubbordinates,
+          {
+            excludeExtraneousValues: true,
+          },
+        ),
+        allBranch: plainToInstance(
+          CheckListHistoryDto,
+          checkListHistoryFromAllTheBranch,
+          {
+            excludeExtraneousValues: true,
+          },
+        ),
+      });
+    }
+    return WsResponse.buildOkResponse({
+      personal: plainToInstance(CheckListHistoryDto, checkListHistory, {
         excludeExtraneousValues: true,
       }),
-    );
+      subbordinates: plainToInstance(
+        CheckListHistoryDto,
+        checkListHistoryFromSubbordinates,
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    });
   }
 }
