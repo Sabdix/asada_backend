@@ -13,17 +13,15 @@ import { mailJetTemplateIds } from './notification/domain/enums/templateIds';
 
 @Injectable()
 export class TasksService {
-  private readonly logger = new Logger(TasksService.name)
+  private readonly logger = new Logger(TasksService.name);
   constructor(
     private checkListUserService: CheckListUserService,
     private checkListHistoryService: CheckListHistoryService,
-    private userService: UserService
+    private userService: UserService,
   ) {
-    this.checkListUserService = checkListUserService,
-      this.checkListHistoryService = checkListHistoryService
+    ((this.checkListUserService = checkListUserService),
+      (this.checkListHistoryService = checkListHistoryService));
   }
-
-
 
   @Cron(CronExpression.EVERY_DAY_AT_7AM)
   //@Cron("0 48 7 * * *")
@@ -32,64 +30,152 @@ export class TasksService {
     const weekDay = new Date().getDay();
     this.logger.log('Se obtiene el weekday actual: ' + weekDay.toString());
 
-    const today = new Date()
+    const today = new Date();
 
-    const checkListOfTheDay = await this.checkListUserService.getCheckListByWeekDay(weekDay, startOfDay(today))
-    this.logger.log('Se obtienen todos los checklist a los que se les generará un registro en el historial');
+    const checkListOfTheDay =
+      await this.checkListUserService.getCheckListByWeekDay(
+        weekDay,
+        startOfDay(today),
+      );
+    this.logger.log(
+      'Se obtienen todos los checklist a los que se les generará un registro en el historial',
+    );
 
     for (const checkList of checkListOfTheDay) {
-      const checkListHistory = new CreateCheckListHistoryRequestDto
-      checkListHistory.status = 0
-      checkListHistory.uuid_check_list = checkList.uuid_check_list
-      checkListHistory.uuid_user = checkList.uuid_user
-      checkListHistory.date = new Date()
-      this.logger.log('Se asigna la data previo a la insercion para el registro del checklist user: ' + checkList.uuid.toString() + ' del usuario: ' + checkList.uuid_user.toString());
+      const checkListHistory = new CreateCheckListHistoryRequestDto();
+      checkListHistory.status = 0;
+      checkListHistory.uuid_check_list = checkList.uuid_check_list;
+      checkListHistory.uuid_user = checkList.uuid_user;
+      checkListHistory.date = new Date();
+      this.logger.log(
+        'Se asigna la data previo a la insercion para el registro del checklist user: ' +
+          checkList.uuid.toString() +
+          ' del usuario: ' +
+          checkList.uuid_user.toString(),
+      );
 
-      const newHistory = await this.checkListHistoryService.creteCheckListHistory(checkListHistory, checkList)
-      this.logger.log('Se inserto con exito el history:  ' + newHistory.uuid.toString() + ' correspondiente al checklist user: ' + checkList.uuid.toString());
+      const newHistory =
+        await this.checkListHistoryService.creteCheckListHistory(
+          checkListHistory,
+          checkList,
+        );
+      this.logger.log(
+        'Se inserto con exito el history:  ' +
+          newHistory.uuid.toString() +
+          ' correspondiente al checklist user: ' +
+          checkList.uuid.toString(),
+      );
     }
-
   }
 
-  @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_5_SECONDS)
   //@Cron(CronExpression.EVERY_30_SECONDS)
   async handleNotifyUnsolvedCheckList() {
-    this.logger.log('Incia ejecucion del cronjob de alertamiento de checklists');
+    this.logger.log(
+      'Inicia ejecucion del cronjob de alertamiento de checklists',
+    );
 
-    console.log(format(new Date(), 'HH:mm'))
-    console.log( format(subMinutes(new Date(),30), 'HH:mm'))
-    const checkListToNotify = await this.checkListHistoryService.getCheckListHistoryToNotify()
+    const checkListToNotify =
+      await this.checkListHistoryService.getCheckListHistoryToNotify();
 
-    for(let checkList of checkListToNotify) {
-      if (checkList.user.uuid_user == null) continue;
-      const managers = await this.getListOfManagers(checkList.user.uuid_user)
-      await this.sendMail(checkList.user.mail_alertas, managers.map(manager => manager.mail_alertas).join(','));
+    // Group unsolved checklists by branch uuid
+    const branchMap = new Map<
+      string,
+      {
+        branchName: string;
+        checklists: {
+          checkListName: string;
+          userName: string;
+          endHour: string;
+        }[];
+        managerUuids: Set<string>;
+      }
+    >();
+
+    for (const history of checkListToNotify) {
+      const branchUuid = history.user?.branch?.uuid;
+      if (!branchUuid) continue;
+
+      if (!branchMap.has(branchUuid)) {
+        branchMap.set(branchUuid, {
+          branchName: history.user.branch.name,
+          checklists: [],
+          managerUuids: new Set<string>(),
+        });
+      }
+
+      const entry = branchMap.get(branchUuid)!;
+      entry.checklists.push({
+        checkListName: history.check_list_user?.checkList?.name ?? 'N/A',
+        userName: history.user?.name ?? 'N/A',
+        endHour: history.check_list_user?.endHour ?? '',
+      });
+
+      if (history.user.uuid_user) {
+        entry.managerUuids.add(history.user.uuid_user);
+      }
     }
-    
+
+    // Send one notification per branch to all its managers
+    for (const [, branchData] of branchMap) {
+      const allManagers: User[] = [];
+      for (const managerUuid of branchData.managerUuids) {
+        const chain = await this.getListOfManagers(managerUuid);
+        for (const mgr of chain) {
+          if (!allManagers.some((m) => m.uuid === mgr.uuid)) {
+            allManagers.push(mgr);
+          }
+        }
+      }
+
+      if (allManagers.length === 0) continue;
+
+      const primaryManager = allManagers[0];
+      const ccManagers = allManagers
+        .slice(1)
+        .map((m) => m.mail_alertas)
+        .filter(Boolean)
+        .join(',');
+
+      await this.sendBranchSummaryMail(
+        primaryManager.mail_alertas,
+        ccManagers,
+        branchData.branchName,
+        branchData.checklists,
+      );
+    }
   }
 
   private async getListOfManagers(uuidUser: string, managers: User[] = []) {
-    const manager = await this.userService.getUserByUuid(uuidUser)
+    const manager = await this.userService.getUserByUuid(uuidUser);
     if (!manager) return managers;
-    
-    managers.push(manager)
+
+    managers.push(manager);
 
     if (manager.uuid_user)
-      await this.getListOfManagers(manager.uuid_user, managers)
-    return managers
+      await this.getListOfManagers(manager.uuid_user, managers);
+    return managers;
   }
 
-  private async sendMail(to: string, cc: string) {
+  private async sendBranchSummaryMail(
+    to: string,
+    cc: string,
+    branchName: string,
+    checklists: { checkListName: string; userName: string; endHour: string }[],
+  ) {
     const notificationService: INotificationService =
-        new MailNotificationFactory().createNotificationService();
-  
-    // TODO: Personalize the mail content 
-    const notificationDto : MailNotificationDto = {
+      new MailNotificationFactory().createNotificationService();
+
+    const notificationDto: MailNotificationDto = {
       cc: cc,
-      dynamicTemplateData: {},
-      subject: "Test Subject",
+      dynamicTemplateData: {
+        branchName,
+        checklists,
+        totalPending: checklists.length,
+      },
+      subject: `Checklists pendientes - Sucursal ${branchName}`,
       templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
-      to: to
+      to: to,
     };
     await notificationService.sendNotification(notificationDto);
     return true;
