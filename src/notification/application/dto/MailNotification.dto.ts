@@ -1,5 +1,5 @@
 export class MailNotificationDto implements INotificationDto {
-  templateId: string;
+  templateId: number;
   to: string;
   cc: string
   subject: string;
