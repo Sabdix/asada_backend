@@ -107,7 +107,7 @@ export class TasksService {
       const entry = branchMap.get(branchUuid)!;
       entry.checklists.push({
         checkListName: history.check_list_user?.checkList?.name ?? 'N/A',
-        userName: history.user?.name ?? 'N/A',
+        userName: history.user?.mail ?? 'N/A',
         endHour: history.check_list_user?.endHour ?? '',
       });
 
