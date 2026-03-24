@@ -69,7 +69,7 @@ export class TasksService {
   }
 
   @Cron(CronExpression.EVERY_30_MINUTES)
-  //@Cron(CronExpression.EVERY_30_SECONDS)
+  // @Cron(CronExpression.EVERY_30_SECONDS)
   async handleNotifyUnsolvedCheckList() {
     this.logger.log(
       'Inicia ejecucion del cronjob de alertamiento de checklists',
@@ -167,7 +167,7 @@ export class TasksService {
       new MailNotificationFactory().createNotificationService();
 
     const notificationDto: MailNotificationDto = {
-      cc: cc,
+      cc: 'oficinaxiliar@hotmail.com,adrcoria@gmail.com,spantoja@cinepolis.com',
       dynamicTemplateData: {
         branchName,
         checklists,
@@ -175,7 +175,7 @@ export class TasksService {
       },
       subject: `Checklists pendientes - Sucursal ${branchName}`,
       templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
-      to: to,
+      to: 'operaxiliar@gmail.com',
     };
     await notificationService.sendNotification(notificationDto);
     return true;

@@ -6,12 +6,15 @@ export class EmailNotificationService implements INotificationService {
   async sendNotification(notification: MailNotificationDto) {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
-      const cc = notification.cc.replace(';', ',').split(',').map((cc) => {
-        return {
-          Email: cc,
-          Name: 'Manager',
-        };
-      });
+      const cc = notification.cc
+        .replace(';', ',')
+        .split(',')
+        .map((cc) => {
+          return {
+            Email: cc,
+            Name: 'Manager',
+          };
+        });
 
       return await mailjet.post('send', { version: 'v3.1' }).request({
         Messages: [
@@ -29,7 +32,7 @@ export class EmailNotificationService implements INotificationService {
             Cc: cc,
             Subject: notification.subject,
             TemplateID: notification.templateId,
-            TemplateLanguage: false,
+            TemplateLanguage: true,
             Variables: notification.dynamicTemplateData,
           },
         ],

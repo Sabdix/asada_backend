@@ -3,7 +3,14 @@ import { CheckListHistoryRepository } from 'src/checkList/infrastructure/reposit
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
 import { CheckListHistory } from 'src/checkList/domain/entities/CheckListHistory';
-import { endOfDay, format, startOfDay, subHours, subMinutes } from 'date-fns';
+import {
+  endOfDay,
+  format,
+  startOfDay,
+  subDays,
+  subHours,
+  subMinutes,
+} from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import { User } from 'src/user/domain/entities/User.entity';
 
