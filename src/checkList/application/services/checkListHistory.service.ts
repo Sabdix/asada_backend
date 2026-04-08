@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CheckListHistoryRepository } from 'src/checkList/infrastructure/repositories/CheckListHistory.Repository';
 import { CreateCheckListHistoryRequestDto } from '../dtos/CreateCheckListHistoryRequest.dto';
 import { CheckListUser } from 'src/checkList/domain/entities/CheckListUser.entity';
@@ -16,6 +16,7 @@ import { User } from 'src/user/domain/entities/User.entity';
 
 @Injectable()
 export class CheckListHistoryService {
+  private readonly logger = new Logger(CheckListHistoryService.name);
   constructor(
     private readonly chekListHistoryRepository: CheckListHistoryRepository,
   ) {}
@@ -435,11 +436,18 @@ export class CheckListHistoryService {
       .getMany();
   }
 
-  getCheckListHistoryToNotify() {
-    // return this.chekListHistoryRepository.find({ relations: ["check_list_user", 'check_list_user.checkList', 'user', 'user.branch'], withDeleted: true });
+  async getCheckListHistoryToNotify() {
     const now = new Date();
     const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
-    return this.chekListHistoryRepository
+    const todayFormatted = format(mexicoCityTime, 'yyyy-MM-dd');
+    const endHourFormatted = format(subMinutes(mexicoCityTime, 30), 'HH:mm');
+
+    this.logger.log(`now (UTC): ${now.toISOString()}`);
+    this.logger.log(`mexicoCityTime: ${mexicoCityTime.toISOString()}`);
+    this.logger.log(`today (date filter): ${todayFormatted}`);
+    this.logger.log(`endHour (subMinutes -30): ${endHourFormatted}`);
+
+    const results = await this.chekListHistoryRepository
       .createQueryBuilder('clh')
       .leftJoinAndSelect(
         'clh.check_list_user',
@@ -463,13 +471,12 @@ export class CheckListHistoryService {
       )
       .where('clh.deletedAt IS NULL')
       .andWhere('clh.status = :status', { status: 0 })
-      .andWhere('clh.date = :today', {
-        today: format(mexicoCityTime, 'yyyy-MM-dd'),
-      })
-      .andWhere('clu.endHour =:endHour', {
-        endHour: format(subMinutes(new Date(), 30), 'HH:mm'),
-      })
+      .andWhere('clh.date = :today', { today: todayFormatted })
+      .andWhere('clu.endHour =:endHour', { endHour: endHourFormatted })
       .getMany();
+
+    this.logger.log(`Registros encontrados para notificar: ${results.length}`);
+    return results;
   }
 
   getCheckListHistoryByBranchPaginated(

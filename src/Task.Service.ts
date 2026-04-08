@@ -77,6 +77,9 @@ export class TasksService {
 
     const checkListToNotify =
       await this.checkListHistoryService.getCheckListHistoryToNotify();
+    this.logger.log(
+      `Se encontraron ${checkListToNotify.length} checklists pendientes por notificar`,
+    );
 
     // Group unsolved checklists by branch uuid
     const branchMap = new Map<
@@ -94,9 +97,17 @@ export class TasksService {
 
     for (const history of checkListToNotify) {
       const branchUuid = history.user?.branch?.uuid;
-      if (!branchUuid) continue;
+      if (!branchUuid) {
+        this.logger.warn(
+          `Checklist history ${history.uuid} no tiene sucursal asociada, se omite`,
+        );
+        continue;
+      }
 
       if (!branchMap.has(branchUuid)) {
+        this.logger.log(
+          `Nueva sucursal detectada: ${history.user.branch.name} (${branchUuid})`,
+        );
         branchMap.set(branchUuid, {
           branchName: history.user.branch.name,
           checklists: [],
@@ -110,17 +121,29 @@ export class TasksService {
         userName: history.user?.mail ?? 'N/A',
         endHour: history.check_list_user?.endHour ?? '',
       });
+      this.logger.log(
+        `Checklist "${history.check_list_user?.checkList?.name ?? 'N/A'}" del usuario ${history.user?.mail ?? 'N/A'} agregado a sucursal ${history.user.branch.name}`,
+      );
 
       if (history.user.uuid_user) {
         entry.managerUuids.add(history.user.uuid_user);
       }
     }
 
+    this.logger.log(`Total de sucursales a notificar: ${branchMap.size}`);
+
     // Send one notification per branch to all its managers
-    for (const [, branchData] of branchMap) {
+    for (const [branchUuid, branchData] of branchMap) {
+      this.logger.log(
+        `Procesando sucursal "${branchData.branchName}" (${branchUuid}) con ${branchData.checklists.length} checklists pendientes y ${branchData.managerUuids.size} managers directos`,
+      );
+
       const allManagers: User[] = [];
       for (const managerUuid of branchData.managerUuids) {
         const chain = await this.getListOfManagers(managerUuid);
+        this.logger.log(
+          `Cadena de managers para uuid ${managerUuid}: ${chain.map((m) => m.mail_alertas).join(' -> ')}`,
+        );
         for (const mgr of chain) {
           if (!allManagers.some((m) => m.uuid === mgr.uuid)) {
             allManagers.push(mgr);
@@ -128,7 +151,12 @@ export class TasksService {
         }
       }
 
-      if (allManagers.length === 0) continue;
+      if (allManagers.length === 0) {
+        this.logger.warn(
+          `No se encontraron managers para sucursal "${branchData.branchName}", se omite notificacion`,
+        );
+        continue;
+      }
 
       const primaryManager = allManagers[0];
       const ccManagers = allManagers
@@ -137,13 +165,25 @@ export class TasksService {
         .filter(Boolean)
         .join(',');
 
+      this.logger.log(
+        `Enviando correo para sucursal "${branchData.branchName}" - To: ${primaryManager.mail_alertas}, CC: ${ccManagers || 'ninguno'}, Checklists pendientes: ${branchData.checklists.length}`,
+      );
+
       await this.sendBranchSummaryMail(
         primaryManager.mail_alertas,
         ccManagers,
         branchData.branchName,
         branchData.checklists,
       );
+
+      this.logger.log(
+        `Correo enviado exitosamente para sucursal "${branchData.branchName}"`,
+      );
     }
+
+    this.logger.log(
+      'Finaliza ejecucion del cronjob de alertamiento de checklists',
+    );
   }
 
   private async getListOfManagers(uuidUser: string, managers: User[] = []) {
