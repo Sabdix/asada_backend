@@ -90,6 +90,7 @@ export class TasksService {
           checkListName: string;
           userName: string;
           endHour: string;
+          date: string;
         }[];
         managerUuids: Set<string>;
       }
@@ -120,6 +121,7 @@ export class TasksService {
         checkListName: history.check_list_user?.checkList?.name ?? 'N/A',
         userName: history.user?.mail ?? 'N/A',
         endHour: history.check_list_user?.endHour ?? '',
+        date: format(history.date, 'dd/MM/yyyy'),
       });
       this.logger.log(
         `Checklist "${history.check_list_user?.checkList?.name ?? 'N/A'}" del usuario ${history.user?.mail ?? 'N/A'} agregado a sucursal ${history.user.branch.name}`,
@@ -201,7 +203,12 @@ export class TasksService {
     to: string,
     cc: string,
     branchName: string,
-    checklists: { checkListName: string; userName: string; endHour: string }[],
+    checklists: {
+      checkListName: string;
+      userName: string;
+      endHour: string;
+      date: string;
+    }[],
   ) {
     const notificationService: INotificationService =
       new MailNotificationFactory().createNotificationService();
@@ -214,7 +221,7 @@ export class TasksService {
         totalPending: checklists.length,
       },
       subject: `Checklists pendientes - Sucursal ${branchName}`,
-      templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST,
+      templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST_2,
       to: 'operaxiliar@gmail.com',
     };
     await notificationService.sendNotification(notificationDto);
