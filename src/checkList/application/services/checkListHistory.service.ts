@@ -440,12 +440,13 @@ export class CheckListHistoryService {
     const now = new Date();
     const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
     const todayFormatted = format(mexicoCityTime, 'yyyy-MM-dd');
-    const endHourFormatted = format(subMinutes(mexicoCityTime, 30), 'HH:mm');
+    const endHourFrom = format(subMinutes(mexicoCityTime, 60), 'HH:mm');
+    const endHourTo = format(mexicoCityTime, 'HH:mm');
 
     this.logger.log(`now (UTC): ${now.toISOString()}`);
     this.logger.log(`mexicoCityTime: ${mexicoCityTime.toISOString()}`);
     this.logger.log(`today (date filter): ${todayFormatted}`);
-    this.logger.log(`endHour (subMinutes -30): ${endHourFormatted}`);
+    this.logger.log(`endHour range: ${endHourFrom} - ${endHourTo}`);
 
     const results = await this.chekListHistoryRepository
       .createQueryBuilder('clh')
@@ -472,7 +473,8 @@ export class CheckListHistoryService {
       .where('clh.deletedAt IS NULL')
       .andWhere('clh.status = :status', { status: 0 })
       .andWhere('clh.date = :today', { today: todayFormatted })
-      .andWhere('clu.endHour =:endHour', { endHour: endHourFormatted })
+      .andWhere('clu.endHour >= :endHourFrom', { endHourFrom })
+      .andWhere('clu.endHour <= :endHourTo', { endHourTo })
       .getMany();
 
     this.logger.log(`Registros encontrados para notificar: ${results.length}`);
