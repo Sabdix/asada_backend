@@ -607,7 +607,7 @@ export class CheckListHistoryService {
       .andWhere('clh.date = :today', {
         today: startOfDay(subHours(new Date(), 6)),
       })
-      .getOne();
+      .getMany();
   }
 
   async getChecklistComplianceSummary(

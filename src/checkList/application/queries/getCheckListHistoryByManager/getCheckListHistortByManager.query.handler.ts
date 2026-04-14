@@ -23,29 +23,34 @@ export class GetCheckListHistoryByManagerQueryHandler implements IQueryHandler<G
         const manager = await this.userService.getUserByUuid(query.uuidManager);
         if (!manager) return WsResponse.buildNotFoundResponse('Manager NOT FOUND');
 
-        const history = await this.checkListHistoryService.getCheckListHistoyByCheckListAndManager(query.uuidCheckList, manager.uuid_branch)
+        const histories = await this.checkListHistoryService.getCheckListHistoyByCheckListAndManager(query.uuidCheckList, manager.uuid_branch)
 
-        var response = new CheckListHistoryDto()
-        if (history) {
-            response.approved = history.approved
-            response.comment = history.comment
-            response.date = history.date
-            response.managerApproved = history.managerApproved
-            response.comment = history.comment
-            response.managerRevised = history.managerRevised
-            response.revised = history.revised
-            response.user = history.check_list_user.user
-            response.managerComment = history.managerComment
-            response.uuid = history.uuid
-            response.check_list_user = new CheckListUserDto()
-            response.check_list_user.checkList = new  CheckListDto()
-            response.check_list_user.checkList = history.check_list_user.checkList
-        }
-        if (history?.check_list_user.checkList.name.includes("Stock")){
-            const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user, query.uuidCheckList)
-            response.stockHistory = stockHistory
-        }
-
+        var response = new Array<CheckListHistoryDto>()
+        for (const history of histories ){
+            var historyItem = new CheckListHistoryDto
+            if (history) {
+                historyItem.approved = history.approved
+                historyItem.status = history.status
+                historyItem.comment = history.comment
+                historyItem.date = history.date
+                historyItem.managerApproved = history.managerApproved
+                historyItem.comment = history.comment
+                historyItem.managerRevised = history.managerRevised
+                historyItem.revised = history.revised
+                historyItem.user = history.check_list_user.user
+                historyItem.managerComment = history.managerComment
+                historyItem.uuid = history.uuid
+                historyItem.check_list_user = new CheckListUserDto()
+                historyItem.check_list_user.checkList = new  CheckListDto()
+                historyItem.check_list_user.checkList = history.check_list_user.checkList
+            }
+            if (history?.check_list_user.checkList.name.includes("Stock")){
+                const stockHistory = await this.stockHistory.getTodayStockHistoryByUser(history?.uuid_user, query.uuidCheckList)
+                historyItem.stockHistory = stockHistory
+            }
+            response.push(historyItem)
+        }   
+            
 
         return WsResponse.buildOkResponse(
             plainToInstance(CheckListHistoryDto, response, { excludeExtraneousValues: true })
