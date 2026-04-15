@@ -68,7 +68,7 @@ export class TasksService {
     }
   }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_2_HOURS)
   // @Cron(CronExpression.EVERY_30_SECONDS)
   async handleNotifyUnsolvedCheckList() {
     this.logger.log(
@@ -81,20 +81,25 @@ export class TasksService {
       `Se encontraron ${checkListToNotify.length} checklists pendientes por notificar`,
     );
 
-    // Group unsolved checklists by branch uuid
-    const branchMap = new Map<
-      string,
-      {
+    if (checkListToNotify.length === 0) {
+      this.logger.log('No hay checklists pendientes, se omite envio de correo');
+      return;
+    }
+
+    // Group unsolved checklists by branch
+    const branches: {
+      branchName: string;
+      checklists: {
+        checkListName: string;
         branchName: string;
-        checklists: {
-          checkListName: string;
-          userName: string;
-          endHour: string;
-          date: string;
-        }[];
-        managerUuids: Set<string>;
-      }
-    >();
+        userName: string;
+        endHour: string;
+        date: string;
+      }[];
+    }[] = [];
+
+    const branchMap = new Map<string, number>(); // branchUuid -> index in branches array
+    const allManagerUuids = new Set<string>();
 
     for (const history of checkListToNotify) {
       const branchUuid = history.user?.branch?.uuid;
@@ -109,16 +114,17 @@ export class TasksService {
         this.logger.log(
           `Nueva sucursal detectada: ${history.user.branch.name} (${branchUuid})`,
         );
-        branchMap.set(branchUuid, {
+        branchMap.set(branchUuid, branches.length);
+        branches.push({
           branchName: history.user.branch.name,
           checklists: [],
-          managerUuids: new Set<string>(),
         });
       }
 
-      const entry = branchMap.get(branchUuid)!;
+      const entry = branches[branchMap.get(branchUuid)!];
       entry.checklists.push({
-        checkListName: history.check_list_user?.checkList?.name ?? 'N/A',
+        checkListName: `${history.user.branch.name ?? 'N/A'} | ${history.check_list_user?.checkList?.name ?? 'N/A'}`,
+        branchName: history.user.branch.name,
         userName: history.user?.mail ?? 'N/A',
         endHour: history.check_list_user?.endHour ?? '',
         date: format(history.date, 'dd/MM/yyyy'),
@@ -128,61 +134,56 @@ export class TasksService {
       );
 
       if (history.user.uuid_user) {
-        entry.managerUuids.add(history.user.uuid_user);
+        allManagerUuids.add(history.user.uuid_user);
       }
     }
 
-    this.logger.log(`Total de sucursales a notificar: ${branchMap.size}`);
+    const totalPending = branches.reduce(
+      (sum, b) => sum + b.checklists.length,
+      0,
+    );
+    this.logger.log(
+      `Total: ${totalPending} checklists pendientes en ${branches.length} sucursales, ${allManagerUuids.size} managers directos`,
+    );
 
-    // Send one notification per branch to all its managers
-    for (const [branchUuid, branchData] of branchMap) {
+    // Collect all unique managers across all branches
+    const allManagers: User[] = [];
+    for (const managerUuid of allManagerUuids) {
+      const chain = await this.getListOfManagers(managerUuid);
       this.logger.log(
-        `Procesando sucursal "${branchData.branchName}" (${branchUuid}) con ${branchData.checklists.length} checklists pendientes y ${branchData.managerUuids.size} managers directos`,
+        `Cadena de managers para uuid ${managerUuid}: ${chain.map((m) => m.mail_alertas).join(' -> ')}`,
       );
-
-      const allManagers: User[] = [];
-      for (const managerUuid of branchData.managerUuids) {
-        const chain = await this.getListOfManagers(managerUuid);
-        this.logger.log(
-          `Cadena de managers para uuid ${managerUuid}: ${chain.map((m) => m.mail_alertas).join(' -> ')}`,
-        );
-        for (const mgr of chain) {
-          if (!allManagers.some((m) => m.uuid === mgr.uuid)) {
-            allManagers.push(mgr);
-          }
+      for (const mgr of chain) {
+        if (!allManagers.some((m) => m.uuid === mgr.uuid)) {
+          allManagers.push(mgr);
         }
       }
-
-      if (allManagers.length === 0) {
-        this.logger.warn(
-          `No se encontraron managers para sucursal "${branchData.branchName}", se omite notificacion`,
-        );
-        continue;
-      }
-
-      const primaryManager = allManagers[0];
-      const ccManagers = allManagers
-        .slice(1)
-        .map((m) => m.mail_alertas)
-        .filter(Boolean)
-        .join(',');
-
-      this.logger.log(
-        `Enviando correo para sucursal "${branchData.branchName}" - To: ${primaryManager.mail_alertas}, CC: ${ccManagers || 'ninguno'}, Checklists pendientes: ${branchData.checklists.length}`,
-      );
-
-      await this.sendBranchSummaryMail(
-        primaryManager.mail_alertas,
-        ccManagers,
-        branchData.branchName,
-        branchData.checklists,
-      );
-
-      this.logger.log(
-        `Correo enviado exitosamente para sucursal "${branchData.branchName}"`,
-      );
     }
 
+    if (allManagers.length === 0) {
+      this.logger.warn('No se encontraron managers, se omite notificacion');
+      return;
+    }
+
+    const primaryManager = allManagers[0];
+    const ccManagers = allManagers
+      .slice(1)
+      .map((m) => m.mail_alertas)
+      .filter(Boolean)
+      .join(',');
+
+    this.logger.log(
+      `Enviando correo unico - To: ${primaryManager.mail_alertas}, CC: ${ccManagers || 'ninguno'}, Total pendientes: ${totalPending}`,
+    );
+
+    await this.sendSummaryMail(
+      primaryManager.mail_alertas,
+      ccManagers,
+      branches,
+      totalPending,
+    );
+
+    this.logger.log('Correo enviado exitosamente');
     this.logger.log(
       'Finaliza ejecucion del cronjob de alertamiento de checklists',
     );
@@ -199,30 +200,33 @@ export class TasksService {
     return managers;
   }
 
-  private async sendBranchSummaryMail(
+  private async sendSummaryMail(
     to: string,
     cc: string,
-    branchName: string,
-    checklists: {
-      checkListName: string;
-      userName: string;
-      endHour: string;
-      date: string;
+    branches: {
+      branchName: string;
+      checklists: {
+        checkListName: string;
+        branchName: string;
+        userName: string;
+        endHour: string;
+        date: string;
+      }[];
     }[],
+    totalPending: number,
   ) {
     const notificationService: INotificationService =
       new MailNotificationFactory().createNotificationService();
 
     const notificationDto: MailNotificationDto = {
-      cc: 'oficinaxiliar@hotmail.com,adrcoria@gmail.com,spantoja@cinepolis.com',
+      cc: cc,
       dynamicTemplateData: {
-        branchName,
-        checklists,
-        totalPending: checklists.length,
+        branches,
+        totalPending,
       },
-      subject: `Checklists pendientes - Sucursal ${branchName}`,
+      subject: `Checklists pendientes - ${totalPending} sin contestar`,
       templateId: mailJetTemplateIds.NOTIFICATION_CHECKLIST_2,
-      to: 'operaxiliar@gmail.com',
+      to: to,
     };
     await notificationService.sendNotification(notificationDto);
     return true;
