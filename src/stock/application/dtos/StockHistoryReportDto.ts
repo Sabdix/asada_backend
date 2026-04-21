@@ -26,4 +26,6 @@ export class StockHistoryReportDto {
     Tipo: string;
     @Expose()
     CheckList: string;
+    @Expose()
+    Entradas: number;
 }
