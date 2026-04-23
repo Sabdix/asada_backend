@@ -17,6 +17,7 @@ import { Schedule } from 'src/schedule/domain/entities/Schedule.entity';
 import { ScheduleCalendar } from 'src/schedule/domain/entities/ScheduleCalendar.entity';
 import { ProductCategory } from 'src/stock/domain/entities/ProductCategory.entity';
 import { Stock } from 'src/stock/domain/entities/Stock.entity';
+import { StockEntrances } from 'src/stock/domain/entities/StockEntrances.entity';
 import { StockHistory } from 'src/stock/domain/entities/StockHistory.entity';
 import { StockProduct } from 'src/stock/domain/entities/StockProduct.entity';
 import { Role } from 'src/user/domain/entities/Role.entity';
@@ -78,6 +79,7 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       StockProduct,
       Stock,
       StockHistory,
+      StockEntrances,
       WorkArea
     ],
     synchronize: false,

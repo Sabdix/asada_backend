@@ -43,11 +43,15 @@ import { WorkArea } from "src/user/domain/entities/WorkArea.entity";
 import { WorkAreaRepository } from "src/user/infrastructure/repositories/workArea.repository";
 import { WorkAreaService } from "src/user/application/services/workArea.service";
 import { DownloadStockReportQueryHandler } from "./application/queries/DownloadStockReport/DownloadStockReport.query.handler";
+import { StockEntrances } from "./domain/entities/StockEntrances.entity";
+import { StockEntrancesRepository } from "./infrastructure/repositories/StockEntrances.repository";
+import { StockEntrancesService } from "./application/services/StockEntrances.service";
+import { CreateStockEntranceCommandHandler } from "./application/commands/CreateStockEntrance/CreateStockEntrance.command.handler";
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch, User, StockHistory, WorkArea]),
+        TypeOrmModule.forFeature([ProductCategory, StockProduct, Stock, Branch, User, StockHistory, WorkArea, StockEntrances]),
         BranchModule,
         UserModule
     ],
@@ -58,6 +62,7 @@ import { DownloadStockReportQueryHandler } from "./application/queries/DownloadS
         BranchRepository,
         UserRepository,
         StockHistoryRepository,
+        StockEntrancesRepository,
         WorkAreaRepository,
 
         ProductService,
@@ -66,6 +71,7 @@ import { DownloadStockReportQueryHandler } from "./application/queries/DownloadS
         BranchService,
         UserService,
         StockHistoryService,
+        StockEntrancesService,
         WorkAreaService,
 
         GetProductsQueryQueryHandler,
@@ -87,6 +93,8 @@ import { DownloadStockReportQueryHandler } from "./application/queries/DownloadS
         GetStockByBranchQueryHandler,
         GetStockByUuidQueryHandler,
 
+        CreateStockEntranceCommandHandler,
+
         CreateStockCommandHandler,
         DeleteStockCommandHandler,
         UpdateStockCommandHandler,
@@ -96,7 +104,8 @@ import { DownloadStockReportQueryHandler } from "./application/queries/DownloadS
         ProductCategoryService,
         ProductService,
         StockService,
-        StockHistoryService
+        StockHistoryService,
+        StockEntrancesService
     ],
     controllers: [stockController]
 })

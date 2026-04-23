@@ -6,13 +6,15 @@ import { DownloadStockReportQuery } from './DownloadStockReport.query';
 import { StockHistoryService } from '../../services/StockHistory.service';
 import { BranchService } from 'src/branch/application/services/Branch.service';
 import { StockHistoryReportDto } from '../../dtos/StockHistoryReportDto';
+import { StockEntrancesService } from '../../services/StockEntrances.service';
 
 
 @QueryHandler(DownloadStockReportQuery)
 export class DownloadStockReportQueryHandler implements IQueryHandler<DownloadStockReportQuery> {
     constructor(
         private stockHistoryService: StockHistoryService,
-        private branchService: BranchService
+        private branchService: BranchService,
+        private stockEntranceService: StockEntrancesService
     ) { }
 
     async execute(query: DownloadStockReportQuery): Promise<WsResponse<string | Buffer>> {
@@ -48,6 +50,8 @@ export class DownloadStockReportQueryHandler implements IQueryHandler<DownloadSt
                 stockHistoryReport.ASolicitar = stockHistory.stock.requiredStock - stockHistory.quantity;
                 stockHistoryReport.ASolicitarFestivo = stockHistory.stock.holidayRequiredStock - stockHistory.quantity;
                 stockHistoryReport.CheckList = stockHistory.checklist?.name ? stockHistory.checklist?.name : "";
+                stockHistoryReport.Entradas = await this.stockEntranceService.getTodayEntrances(stockHistory.stock.branch.uuid, stockHistory.uuid_user, stockHistory.stock.uuid)
+
                 data.push(stockHistoryReport);
             }
 
@@ -66,7 +70,8 @@ export class DownloadStockReportQueryHandler implements IQueryHandler<DownloadSt
                 { header: 'Fecha', key: 'Fecha', width: 15 },
                 { header: 'Revisor', key: 'Revisor', width: 30 },
                 { header: 'Tipo', key: 'Tipo', width: 15 },
-                { header: 'CheckList', key: 'CheckList', width: 30 }
+                { header: 'CheckList', key: 'CheckList', width: 30 },
+                { header: 'Entradas', key: 'Entradas', width: 30 }
             ];
 
             data.forEach((item) => {

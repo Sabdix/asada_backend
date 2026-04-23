@@ -26,6 +26,8 @@ import { GetStockByBranchQuery } from "src/stock/application/queries/GetStockByB
 import { GetStockByUuidQuery } from "src/stock/application/queries/GetStockByUuid/GetStockByUuid.query";
 import { GetStocksQuery } from "src/stock/application/queries/GetStocks/GetStocks.query";
 import { DownloadStockReportQuery } from "src/stock/application/queries/DownloadStockReport/DownloadStockReport.query";
+import { CreateStockEntranceRequestDto } from "src/stock/application/dtos/CreateStockEntranceRequest.dto";
+import { CreateStockEntranceCommand } from "src/stock/application/commands/CreateStockEntrance/CreateStockEntrance.command";
 
 
 
@@ -137,5 +139,10 @@ export class stockController {
             console.error('Error al generar el Excel:', error);
             res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Error al generar el reporte.');
         }
+    }
+
+    @Post('entrance')
+    async createStockEntrance(@Body() createStockEntranceRequestDto: CreateStockEntranceRequestDto) {
+        return this.commandBus.execute(new CreateStockEntranceCommand(createStockEntranceRequestDto));
     }
 }
