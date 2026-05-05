@@ -28,4 +28,6 @@ export class StockHistoryReportDto {
     CheckList: string;
     @Expose()
     Entradas: number;
+    @Expose()
+    Diferencia: string;
 }
