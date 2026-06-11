@@ -5,8 +5,8 @@ import { json, urlencoded } from 'express';
 import { createServer } from 'http';
 
 async function bootstrap() {
-   const server = createServer({
-    maxHeaderSize: 1024 * 1024 * 16 // Ejemplo: 16MB para headers (Node.js default is 8KB)
+  const server = createServer({
+    maxHeaderSize: 1024 * 1024 * 16, // Ejemplo: 16MB para headers (Node.js default is 8KB)
   });
   const app = await NestFactory.create(AppModule);
   app.enableCors({
@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use(json({ limit: '200mb' }));
   app.use(urlencoded({ extended: true, limit: '200mb' }));
   const configService = app.get(ConfigService);
+  app.setGlobalPrefix('api');
   await app.listen(configService.get<number>('PORT') ?? 3000);
 }
 bootstrap();
-  
