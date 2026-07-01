@@ -16,6 +16,7 @@ export class GetStockRequestsQueryHandler
     const [requests, total] = await this.stockRequestService.getAllPaginated(
       query.size,
       query.offset,
+      query.branchId,
     );
     return WsResponse.buildOkListResponse(requests, total);
   }

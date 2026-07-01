@@ -6,6 +6,7 @@ export class GetStockRequestsQuery extends Query<WsResponse<StockRequest[]>> {
   constructor(
     public readonly size: number,
     public readonly offset: number,
+    public readonly branchId?: string,
   ) {
     super();
   }

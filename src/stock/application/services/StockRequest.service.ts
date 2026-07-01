@@ -67,8 +67,15 @@ export class StockRequestService {
   async getAllPaginated(
     size: number,
     offset: number,
+    branchId?: string,
   ): Promise<[StockRequest[], number]> {
+    const where: any = {};
+    if (branchId) {
+      where.uuid_branch = branchId;
+    }
+
     return this.stockRequestRepository.findAndCount({
+      where,
       order: { createdAt: 'DESC' },
       take: size || 10,
       skip: offset || 0,

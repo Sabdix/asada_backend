@@ -11,8 +11,11 @@ export class StockRequestController {
   async getStockRequests(
     @Query('size') size: number,
     @Query('offset') offset: number,
+    @Query('branchId') branchId: string,
   ) {
-    return this.queryBus.execute(new GetStockRequestsQuery(size, offset));
+    return this.queryBus.execute(
+      new GetStockRequestsQuery(size, offset, branchId),
+    );
   }
 
   @Get(':uuid/detail')
