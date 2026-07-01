@@ -10,8 +10,13 @@ export class GetStockRequestsQueryHandler
 {
   constructor(private readonly stockRequestService: StockRequestService) {}
 
-  async execute(): Promise<WsResponse<StockRequest[]>> {
-    const requests = await this.stockRequestService.getAll();
-    return WsResponse.buildOkResponse(requests);
+  async execute(
+    query: GetStockRequestsQuery,
+  ): Promise<WsResponse<StockRequest[]>> {
+    const [requests, total] = await this.stockRequestService.getAllPaginated(
+      query.size,
+      query.offset,
+    );
+    return WsResponse.buildOkListResponse(requests, total);
   }
 }

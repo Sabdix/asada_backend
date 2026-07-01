@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { GetStockRequestsQuery } from 'src/stock/application/queries/GetStockRequests/GetStockRequests.query';
 import { GetStockRequestDetailQuery } from 'src/stock/application/queries/GetStockRequestDetail/GetStockRequestDetail.query';
@@ -8,8 +8,11 @@ export class StockRequestController {
   constructor(private readonly queryBus: QueryBus) {}
 
   @Get()
-  async getStockRequests() {
-    return this.queryBus.execute(new GetStockRequestsQuery());
+  async getStockRequests(
+    @Query('size') size: number,
+    @Query('offset') offset: number,
+  ) {
+    return this.queryBus.execute(new GetStockRequestsQuery(size, offset));
   }
 
   @Get(':uuid/detail')

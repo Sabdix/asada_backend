@@ -64,6 +64,17 @@ export class StockRequestService {
     });
   }
 
+  async getAllPaginated(
+    size: number,
+    offset: number,
+  ): Promise<[StockRequest[], number]> {
+    return this.stockRequestRepository.findAndCount({
+      order: { createdAt: 'DESC' },
+      take: size || 10,
+      skip: offset || 0,
+    });
+  }
+
   async getDetailByRequestUuid(uuid: string) {
     return this.stockRequestDetailRepository.find({
       where: { uuid_stock_request: uuid },
