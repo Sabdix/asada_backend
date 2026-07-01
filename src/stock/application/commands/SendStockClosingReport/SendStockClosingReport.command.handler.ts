@@ -4,15 +4,22 @@ import * as ExcelJS from 'exceljs';
 import { SendStockClosingReportCommand } from './SendStockClosingReport.command';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import { SendMethod } from '../../dtos/SendStockClosingReportRequest.dto';
+import { StockRequestService } from '../../services/StockRequest.service';
 import mailjet from 'src/notification/infrastructure/config/mailjet.config';
 
 @CommandHandler(SendStockClosingReportCommand)
 export class SendStockClosingReportCommandHandler
   implements ICommandHandler<SendStockClosingReportCommand>
 {
-  private readonly logger = new Logger(SendStockClosingReportCommandHandler.name);
+  private readonly logger = new Logger(
+    SendStockClosingReportCommandHandler.name,
+  );
 
-  async execute(command: SendStockClosingReportCommand): Promise<WsResponse<string>> {
+  constructor(private readonly stockRequestService: StockRequestService) {}
+
+  async execute(
+    command: SendStockClosingReportCommand,
+  ): Promise<WsResponse<string>> {
     const { method, to, cc, subject, data } = command.data;
 
     if (method === SendMethod.WHATSAPP) {
@@ -30,13 +37,32 @@ export class SendStockClosingReportCommandHandler
         { header: 'Producto', key: 'Producto', width: 20 },
         { header: 'Unidad Medida', key: 'UnidadMedida', width: 15 },
         { header: 'Stock Requerido', key: 'CantidadRequerida', width: 20 },
-        { header: 'Stock Requerido (Festivo)', key: 'CantidadRequeridaFestivo', width: 25 },
+        {
+          header: 'Stock Requerido (Festivo)',
+          key: 'CantidadRequeridaFestivo',
+          width: 25,
+        },
         { header: 'Cantidad Conteo Previo', key: 'CantidadPrevia', width: 15 },
         { header: 'Conteo en turno', key: 'CantidadActual', width: 15 },
         { header: 'Turno', key: 'Turno', width: 25 },
-        { header: 'Diferencia', key: 'Diferencia', width: 15, style: { numFmt: '0.000' } },
-        { header: 'A solicitar', key: 'ASolicitar', width: 15, style: { numFmt: '0.000' } },
-        { header: 'A solicitar Festivo', key: 'ASolicitarFestivo', width: 15, style: { numFmt: '0.000' } },
+        {
+          header: 'Diferencia',
+          key: 'Diferencia',
+          width: 15,
+          style: { numFmt: '0.000' },
+        },
+        {
+          header: 'A solicitar',
+          key: 'ASolicitar',
+          width: 15,
+          style: { numFmt: '0.000' },
+        },
+        {
+          header: 'A solicitar Festivo',
+          key: 'ASolicitarFestivo',
+          width: 15,
+          style: { numFmt: '0.000' },
+        },
         { header: 'Entradas registradas en turno', key: 'Entradas', width: 30 },
       ];
 
@@ -44,7 +70,9 @@ export class SendStockClosingReportCommandHandler
 
       // Write to buffer
       const buffer = await workbook.xlsx.writeBuffer();
-      const base64Content = Buffer.from(buffer as ArrayBuffer).toString('base64');
+      const base64Content = Buffer.from(buffer as ArrayBuffer).toString(
+        'base64',
+      );
 
       // Build recipients
       const recipients = [{ Email: to, Name: 'Destinatario' }];
@@ -67,7 +95,8 @@ export class SendStockClosingReportCommandHandler
             Cc: ccList,
             Subject: subject || 'Reporte Cierre Vespertino - Bodega',
             TextPart: 'Se adjunta el reporte de cierre vespertino de bodega.',
-            HTMLPart: '<p>Se adjunta el reporte de cierre vespertino de bodega.</p>',
+            HTMLPart:
+              '<p>Se adjunta el reporte de cierre vespertino de bodega.</p>',
             Attachments: [
               {
                 ContentType:
@@ -81,10 +110,25 @@ export class SendStockClosingReportCommandHandler
       });
 
       this.logger.log(`Stock closing report sent via MAIL to ${to}`);
+
+      // Log the request to database
+      await this.stockRequestService.createRequest(
+        to,
+        cc || '',
+        subject || '',
+        method,
+        null,
+        data,
+      );
+
       return WsResponse.buildOkResponse('Report sent successfully');
     } catch (error) {
       this.logger.error('Error sending stock closing report', error);
-      return WsResponse.buildErrorResponse(1, 'Error sending report via email', error?.message ?? error);
+      return WsResponse.buildErrorResponse(
+        1,
+        'Error sending report via email',
+        error?.message ?? error,
+      );
     }
   }
 }
