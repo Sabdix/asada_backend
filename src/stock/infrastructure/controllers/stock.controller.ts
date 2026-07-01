@@ -43,6 +43,8 @@ import {
 } from 'src/stock/application/queries/DownloadStockClosingReport/DownloadStockClosingReport.query';
 import { CreateStockEntranceRequestDto } from 'src/stock/application/dtos/CreateStockEntranceRequest.dto';
 import { CreateStockEntranceCommand } from 'src/stock/application/commands/CreateStockEntrance/CreateStockEntrance.command';
+import { SendStockClosingReportCommand } from 'src/stock/application/commands/SendStockClosingReport/SendStockClosingReport.command';
+import { SendStockClosingReportRequestDto } from 'src/stock/application/dtos/SendStockClosingReportRequest.dto';
 
 @Controller('stock')
 export class stockController {
@@ -265,6 +267,15 @@ export class stockController {
   ) {
     return this.commandBus.execute(
       new CreateStockEntranceCommand(createStockEntranceRequestDto),
+    );
+  }
+
+  @Post('report/closing/send')
+  async sendStockClosingReport(
+    @Body() sendStockClosingReportRequest: SendStockClosingReportRequestDto,
+  ) {
+    return this.commandBus.execute(
+      new SendStockClosingReportCommand(sendStockClosingReportRequest),
     );
   }
 }

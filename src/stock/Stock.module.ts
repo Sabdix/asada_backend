@@ -48,6 +48,7 @@ import { StockEntrances } from './domain/entities/StockEntrances.entity';
 import { StockEntrancesRepository } from './infrastructure/repositories/StockEntrances.repository';
 import { StockEntrancesService } from './application/services/StockEntrances.service';
 import { CreateStockEntranceCommandHandler } from './application/commands/CreateStockEntrance/CreateStockEntrance.command.handler';
+import { SendStockClosingReportCommandHandler } from './application/commands/SendStockClosingReport/SendStockClosingReport.command.handler';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { CreateStockEntranceCommandHandler } from './application/commands/Create
     GetStockByUuidQueryHandler,
 
     CreateStockEntranceCommandHandler,
+    SendStockClosingReportCommandHandler,
 
     CreateStockCommandHandler,
     DeleteStockCommandHandler,
