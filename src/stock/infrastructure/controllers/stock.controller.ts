@@ -45,6 +45,7 @@ import { CreateStockEntranceRequestDto } from 'src/stock/application/dtos/Create
 import { CreateStockEntranceCommand } from 'src/stock/application/commands/CreateStockEntrance/CreateStockEntrance.command';
 import { SendStockClosingReportCommand } from 'src/stock/application/commands/SendStockClosingReport/SendStockClosingReport.command';
 import { SendStockClosingReportRequestDto } from 'src/stock/application/dtos/SendStockClosingReportRequest.dto';
+import { GetProductsNotInBranchQuery } from 'src/stock/application/queries/GetProductsNotInBranch/GetProductsNotInBranch.query';
 
 @Controller('stock')
 export class stockController {
@@ -111,6 +112,11 @@ export class stockController {
     return this.queryBus.execute(
       new GetProductsQuery(size, offset, name, category),
     );
+  }
+
+  @Get('product/not-in-branch/:uuid')
+  async getProductsNotInBranch(@Param('uuid') uuid: string) {
+    return this.queryBus.execute(new GetProductsNotInBranchQuery(uuid));
   }
 
   @Delete('product/:uuid')

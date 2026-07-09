@@ -56,6 +56,7 @@ import { StockRequestDetailRepository } from './infrastructure/repositories/Stoc
 import { StockRequestService } from './application/services/StockRequest.service';
 import { GetStockRequestsQueryHandler } from './application/queries/GetStockRequests/GetStockRequests.query.handler';
 import { GetStockRequestDetailQueryHandler } from './application/queries/GetStockRequestDetail/GetStockRequestDetail.query.handler';
+import { GetProductsNotInBranchQueryHandler } from './application/queries/GetProductsNotInBranch/GetProductsNotInBranch.query.handler';
 import { StockRequestController } from './infrastructure/controllers/stockRequest.controller';
 
 @Module({
@@ -123,6 +124,7 @@ import { StockRequestController } from './infrastructure/controllers/stockReques
 
     GetStockRequestsQueryHandler,
     GetStockRequestDetailQueryHandler,
+    GetProductsNotInBranchQueryHandler,
 
     CreateStockCommandHandler,
     DeleteStockCommandHandler,

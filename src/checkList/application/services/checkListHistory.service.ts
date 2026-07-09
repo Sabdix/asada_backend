@@ -440,7 +440,7 @@ export class CheckListHistoryService {
     const now = new Date();
     const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
     const todayFormatted = format(mexicoCityTime, 'yyyy-MM-dd');
-    const endHourFrom = format(subMinutes(mexicoCityTime, 120), 'HH:mm');
+    const endHourFrom = format(subMinutes(mexicoCityTime, 180), 'HH:mm');
     const endHourTo = format(mexicoCityTime, 'HH:mm');
 
     this.logger.log(`now (UTC): ${now.toISOString()}`);

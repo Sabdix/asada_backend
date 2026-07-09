@@ -68,7 +68,7 @@ export class TasksService {
     }
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
+  @Cron(CronExpression.EVERY_3_HOURS)
   // @Cron(CronExpression.EVERY_30_SECONDS)
   async handleNotifyUnsolvedCheckList() {
     this.logger.log(
