@@ -49,11 +49,14 @@ import { StockEntrancesRepository } from './infrastructure/repositories/StockEnt
 import { StockEntrancesService } from './application/services/StockEntrances.service';
 import { CreateStockEntranceCommandHandler } from './application/commands/CreateStockEntrance/CreateStockEntrance.command.handler';
 import { SendStockClosingReportCommandHandler } from './application/commands/SendStockClosingReport/SendStockClosingReport.command.handler';
+import { SaveStockClosingRequestCommandHandler } from './application/commands/SaveStockClosingRequest/SaveStockClosingRequest.command.handler';
+import { ResendStockRequestCommandHandler } from './application/commands/ResendStockRequest/ResendStockRequest.command.handler';
 import { StockRequest } from './domain/entities/StockRequest.entity';
 import { StockRequestDetail } from './domain/entities/StockRequestDetail.entity';
 import { StockRequestRepository } from './infrastructure/repositories/StockRequest.repository';
 import { StockRequestDetailRepository } from './infrastructure/repositories/StockRequestDetail.repository';
 import { StockRequestService } from './application/services/StockRequest.service';
+import { StockExcelBuilderService } from './application/services/StockExcelBuilder.service';
 import { GetStockRequestsQueryHandler } from './application/queries/GetStockRequests/GetStockRequests.query.handler';
 import { GetStockRequestDetailQueryHandler } from './application/queries/GetStockRequestDetail/GetStockRequestDetail.query.handler';
 import { GetProductsNotInBranchQueryHandler } from './application/queries/GetProductsNotInBranch/GetProductsNotInBranch.query.handler';
@@ -97,6 +100,7 @@ import { StockRequestController } from './infrastructure/controllers/stockReques
     StockHistoryService,
     StockEntrancesService,
     StockRequestService,
+    StockExcelBuilderService,
     WorkAreaService,
 
     GetProductsQueryQueryHandler,
@@ -121,6 +125,8 @@ import { StockRequestController } from './infrastructure/controllers/stockReques
 
     CreateStockEntranceCommandHandler,
     SendStockClosingReportCommandHandler,
+    SaveStockClosingRequestCommandHandler,
+    ResendStockRequestCommandHandler,
 
     GetStockRequestsQueryHandler,
     GetStockRequestDetailQueryHandler,

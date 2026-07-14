@@ -1,19 +1,16 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
-import { SendStockClosingReportCommand } from './SendStockClosingReport.command';
+import { ResendStockRequestCommand } from './ResendStockRequest.command';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
-import { SendMethod } from '../../dtos/SendStockClosingReportRequest.dto';
 import { StockRequestService } from '../../services/StockRequest.service';
 import { StockExcelBuilderService } from '../../services/StockExcelBuilder.service';
 import mailjet from 'src/notification/infrastructure/config/mailjet.config';
 
-@CommandHandler(SendStockClosingReportCommand)
-export class SendStockClosingReportCommandHandler
-  implements ICommandHandler<SendStockClosingReportCommand>
+@CommandHandler(ResendStockRequestCommand)
+export class ResendStockRequestCommandHandler
+  implements ICommandHandler<ResendStockRequestCommand>
 {
-  private readonly logger = new Logger(
-    SendStockClosingReportCommandHandler.name,
-  );
+  private readonly logger = new Logger(ResendStockRequestCommandHandler.name);
 
   constructor(
     private readonly stockRequestService: StockRequestService,
@@ -21,21 +18,25 @@ export class SendStockClosingReportCommandHandler
   ) {}
 
   async execute(
-    command: SendStockClosingReportCommand,
+    command: ResendStockRequestCommand,
   ): Promise<WsResponse<string>> {
-    const { method, to, cc, subject, data } = command.data;
-
-    if (method === SendMethod.WHATSAPP) {
-      return WsResponse.buildBadRequestResponse('WHATSAPP not implemented yet');
-    }
+    const { uuid, to, cc, subject } = command;
 
     try {
-      // Build Excel using the new format (grouped by category)
-      const fecha = data[0]?.Fecha || new Date().toISOString().split('T')[0];
-      const reportItems = data.map((item) => ({
-        producto: item.Producto,
-        unidadMedida: item.UnidadMedida,
-        pedido: item.ASolicitar,
+      // 1. Read saved detail from DB
+      const details =
+        await this.stockRequestService.getDetailByRequestUuid(uuid);
+
+      if (!details || details.length === 0) {
+        return WsResponse.buildNotFoundResponse('STOCK_REQUEST NOT FOUND');
+      }
+
+      // 2. Build Excel using the new format (grouped by category)
+      const fecha = details[0]?.fecha || new Date().toISOString().split('T')[0];
+      const reportItems = details.map((item) => ({
+        producto: item.producto,
+        unidadMedida: item.unidad_medida || '',
+        pedido: Number(item.a_solicitar) || 0,
       }));
 
       const excelBuffer = await this.stockExcelBuilderService.buildReport(
@@ -44,7 +45,7 @@ export class SendStockClosingReportCommandHandler
       );
       const base64Content = excelBuffer.toString('base64');
 
-      // Build recipients
+      // 3. Send via Mailjet
       const recipients = [{ Email: to, Name: 'Destinatario' }];
       const ccList = cc
         ? cc
@@ -53,7 +54,6 @@ export class SendStockClosingReportCommandHandler
             .map((email) => ({ Email: email.trim(), Name: 'CC' }))
         : [];
 
-      // Send via Mailjet with inline attachment
       await mailjet.post('send', { version: 'v3.1' }).request({
         Messages: [
           {
@@ -78,24 +78,13 @@ export class SendStockClosingReportCommandHandler
         ],
       });
 
-      this.logger.log(`Stock closing report sent via MAIL to ${to}`);
-
-      // Log the request to database
-      await this.stockRequestService.createRequest(
-        to,
-        cc || '',
-        subject || '',
-        method,
-        null,
-        data,
-      );
-
-      return WsResponse.buildOkResponse('Report sent successfully');
+      this.logger.log(`Stock request ${uuid} resent via MAIL to ${to}`);
+      return WsResponse.buildOkResponse('Report resent successfully');
     } catch (error) {
-      this.logger.error('Error sending stock closing report', error);
+      this.logger.error('Error resending stock request', error);
       return WsResponse.buildErrorResponse(
         1,
-        'Error sending report via email',
+        'Error resending report via email',
         error?.message ?? error,
       );
     }
