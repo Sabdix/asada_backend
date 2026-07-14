@@ -2,6 +2,8 @@ import { Expose } from 'class-transformer';
 
 export class StockHistoryReportDto {
   @Expose()
+  UuidProducto: string;
+  @Expose()
   Producto: string;
   @Expose()
   UnidadMedida: string;

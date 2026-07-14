@@ -19,6 +19,7 @@ export class GetProductsNotInBranchQueryHandler
 
     const data: StockHistoryReportDto[] = products.map((product) => {
       const dto = new StockHistoryReportDto();
+      dto.UuidProducto = product.uuid;
       dto.Producto = product.name;
       dto.UnidadMedida = product.measurementUnit || '';
       dto.CantidadRequerida = '0';
