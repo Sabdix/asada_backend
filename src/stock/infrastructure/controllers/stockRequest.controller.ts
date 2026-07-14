@@ -4,7 +4,7 @@ import { GetStockRequestsQuery } from 'src/stock/application/queries/GetStockReq
 import { GetStockRequestDetailQuery } from 'src/stock/application/queries/GetStockRequestDetail/GetStockRequestDetail.query';
 import { SaveStockClosingRequestCommand } from 'src/stock/application/commands/SaveStockClosingRequest/SaveStockClosingRequest.command';
 import { ResendStockRequestCommand } from 'src/stock/application/commands/ResendStockRequest/ResendStockRequest.command';
-import { SendStockClosingReportRequestDto } from 'src/stock/application/dtos/SendStockClosingReportRequest.dto';
+import { SaveStockClosingRequestDto } from 'src/stock/application/dtos/SaveStockClosingRequest.dto';
 import { ResendStockRequestDto } from 'src/stock/application/dtos/ResendStockRequest.dto';
 
 @Controller('stock-request')
@@ -31,9 +31,7 @@ export class StockRequestController {
   }
 
   @Post('save')
-  async saveStockClosingRequest(
-    @Body() body: SendStockClosingReportRequestDto,
-  ) {
+  async saveStockClosingRequest(@Body() body: SaveStockClosingRequestDto) {
     return this.commandBus.execute(new SaveStockClosingRequestCommand(body));
   }
 

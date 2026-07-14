@@ -8,28 +8,38 @@ import { StockRequestService } from '../../services/StockRequest.service';
 export class SaveStockClosingRequestCommandHandler
   implements ICommandHandler<SaveStockClosingRequestCommand>
 {
-  private readonly logger = new Logger(SaveStockClosingRequestCommandHandler.name);
+  private readonly logger = new Logger(
+    SaveStockClosingRequestCommandHandler.name,
+  );
 
   constructor(private readonly stockRequestService: StockRequestService) {}
 
-  async execute(command: SaveStockClosingRequestCommand): Promise<WsResponse<string>> {
-    const { method, to, cc, subject, data } = command.data;
+  async execute(
+    command: SaveStockClosingRequestCommand,
+  ): Promise<WsResponse<string>> {
+    const { branchId, data } = command.data;
 
     try {
       const savedRequest = await this.stockRequestService.createRequest(
-        to,
-        cc || '',
-        subject || '',
-        method,
-        null,
+        '',
+        '',
+        '',
+        'PENDING',
+        branchId || null,
         data,
       );
 
-      this.logger.log(`Stock closing request saved with UUID: ${savedRequest.uuid}`);
+      this.logger.log(
+        `Stock closing request saved with UUID: ${savedRequest.uuid}`,
+      );
       return WsResponse.buildOkResponse(savedRequest.uuid);
     } catch (error) {
       this.logger.error('Error saving stock closing request', error);
-      return WsResponse.buildErrorResponse(1, 'Error saving stock closing request', error?.message ?? error);
+      return WsResponse.buildErrorResponse(
+        1,
+        'Error saving stock closing request',
+        error?.message ?? error,
+      );
     }
   }
 }
