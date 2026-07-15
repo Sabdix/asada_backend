@@ -1,9 +1,20 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetStockRequestsQuery } from 'src/stock/application/queries/GetStockRequests/GetStockRequests.query';
 import { GetStockRequestDetailQuery } from 'src/stock/application/queries/GetStockRequestDetail/GetStockRequestDetail.query';
 import { SaveStockClosingRequestCommand } from 'src/stock/application/commands/SaveStockClosingRequest/SaveStockClosingRequest.command';
 import { ResendStockRequestCommand } from 'src/stock/application/commands/ResendStockRequest/ResendStockRequest.command';
+import { UpdateStockRequestCommand } from 'src/stock/application/commands/UpdateStockRequest/UpdateStockRequest.command';
+import { DeleteStockRequestCommand } from 'src/stock/application/commands/DeleteStockRequest/DeleteStockRequest.command';
 import { SaveStockClosingRequestDto } from 'src/stock/application/dtos/SaveStockClosingRequest.dto';
 import { ResendStockRequestDto } from 'src/stock/application/dtos/ResendStockRequest.dto';
 
@@ -33,6 +44,19 @@ export class StockRequestController {
   @Post('save')
   async saveStockClosingRequest(@Body() body: SaveStockClosingRequestDto) {
     return this.commandBus.execute(new SaveStockClosingRequestCommand(body));
+  }
+
+  @Put(':uuid')
+  async updateStockRequest(
+    @Param('uuid') uuid: string,
+    @Body() body: SaveStockClosingRequestDto,
+  ) {
+    return this.commandBus.execute(new UpdateStockRequestCommand(uuid, body));
+  }
+
+  @Delete(':uuid')
+  async deleteStockRequest(@Param('uuid') uuid: string) {
+    return this.commandBus.execute(new DeleteStockRequestCommand(uuid));
   }
 
   @Post(':uuid/resend')

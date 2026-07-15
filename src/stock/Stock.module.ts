@@ -51,6 +51,8 @@ import { CreateStockEntranceCommandHandler } from './application/commands/Create
 import { SendStockClosingReportCommandHandler } from './application/commands/SendStockClosingReport/SendStockClosingReport.command.handler';
 import { SaveStockClosingRequestCommandHandler } from './application/commands/SaveStockClosingRequest/SaveStockClosingRequest.command.handler';
 import { ResendStockRequestCommandHandler } from './application/commands/ResendStockRequest/ResendStockRequest.command.handler';
+import { UpdateStockRequestCommandHandler } from './application/commands/UpdateStockRequest/UpdateStockRequest.command.handler';
+import { DeleteStockRequestCommandHandler } from './application/commands/DeleteStockRequest/DeleteStockRequest.command.handler';
 import { StockRequest } from './domain/entities/StockRequest.entity';
 import { StockRequestDetail } from './domain/entities/StockRequestDetail.entity';
 import { StockRequestRepository } from './infrastructure/repositories/StockRequest.repository';
@@ -127,6 +129,8 @@ import { StockRequestController } from './infrastructure/controllers/stockReques
     SendStockClosingReportCommandHandler,
     SaveStockClosingRequestCommandHandler,
     ResendStockRequestCommandHandler,
+    UpdateStockRequestCommandHandler,
+    DeleteStockRequestCommandHandler,
 
     GetStockRequestsQueryHandler,
     GetStockRequestDetailQueryHandler,

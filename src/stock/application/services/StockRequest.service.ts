@@ -19,15 +19,16 @@ export class StockRequestService {
     method: string,
     branchId: string | null,
     data: StockClosingReportItemDto[],
+    status: string = 'sent',
   ): Promise<StockRequest> {
     const stockRequest = this.stockRequestRepository.create({
       date: new Date(),
       recipient_email: to,
       cc: cc || null,
-      subject: subject || 'Reporte Cierre Vespertino - Bodega',
+      subject: subject || null,
       uuid_branch: branchId || null,
       method,
-      status: 'sent',
+      status,
     } as Partial<StockRequest>);
 
     const savedRequest = await this.stockRequestRepository.save(stockRequest);
@@ -87,5 +88,58 @@ export class StockRequestService {
       where: { uuid_stock_request: uuid },
       order: { createdAt: 'ASC' },
     });
+  }
+
+  async updateRequest(
+    uuid: string,
+    data: StockClosingReportItemDto[],
+    branchId?: string,
+  ): Promise<StockRequest> {
+    const request = await this.stockRequestRepository.findOneBy({ uuid });
+    if (!request) return null;
+
+    if (branchId !== undefined) {
+      request.uuid_branch = branchId || null;
+    }
+
+    await this.stockRequestRepository.save(request);
+
+    // Remove old details and insert new ones
+    await this.stockRequestDetailRepository.softDelete({
+      uuid_stock_request: uuid,
+    });
+
+    const details = data.map((item) =>
+      this.stockRequestDetailRepository.create({
+        uuid_stock_request: uuid,
+        producto: item.Producto,
+        unidad_medida: item.UnidadMedida,
+        cantidad_requerida: item.CantidadRequerida,
+        cantidad_requerida_festivo: item.CantidadRequeridaFestivo,
+        fecha: item.Fecha,
+        cantidad_actual: item.CantidadActual,
+        cantidad_previa: item.CantidadPrevia,
+        a_solicitar: item.ASolicitar,
+        a_solicitar_festivo: item.ASolicitarFestivo,
+        revisor: item.Revisor,
+        tipo: item.Tipo,
+        checklist: item.CheckList,
+        entradas: item.Entradas,
+        diferencia: item.Diferencia,
+        turno: item.Turno,
+      } as Partial<StockRequestDetail>),
+    );
+
+    await this.stockRequestDetailRepository.save(details);
+
+    return request;
+  }
+
+  async deleteRequest(uuid: string): Promise<boolean> {
+    await this.stockRequestDetailRepository.softDelete({
+      uuid_stock_request: uuid,
+    });
+    const result = await this.stockRequestRepository.softDelete({ uuid });
+    return result.affected > 0;
   }
 }

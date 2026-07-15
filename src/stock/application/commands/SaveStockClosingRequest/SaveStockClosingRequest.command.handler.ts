@@ -27,6 +27,7 @@ export class SaveStockClosingRequestCommandHandler
         'PENDING',
         branchId || null,
         data,
+        'PENDING',
       );
 
       this.logger.log(
