@@ -94,12 +94,12 @@ export class StockRequestService {
     uuid: string,
     data: StockClosingReportItemDto[],
     branchId?: string,
-  ): Promise<StockRequest> {
+  ): Promise<StockRequest | null> {
     const request = await this.stockRequestRepository.findOneBy({ uuid });
     if (!request) return null;
 
     if (branchId !== undefined) {
-      request.uuid_branch = branchId || null;
+      request.uuid_branch = branchId || '';
     }
 
     await this.stockRequestRepository.save(request);
@@ -140,6 +140,6 @@ export class StockRequestService {
       uuid_stock_request: uuid,
     });
     const result = await this.stockRequestRepository.softDelete({ uuid });
-    return result.affected > 0;
+    return (result.affected ?? 0) > 0;
   }
 }
