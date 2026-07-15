@@ -136,6 +136,10 @@ export class StockRequestService {
     return request;
   }
 
+  async updateStatus(uuid: string, status: string): Promise<void> {
+    await this.stockRequestRepository.update({ uuid }, { status });
+  }
+
   async deleteRequest(uuid: string): Promise<boolean> {
     await this.stockRequestDetailRepository.softDelete({
       uuid_stock_request: uuid,

@@ -79,6 +79,10 @@ export class ResendStockRequestCommandHandler
       });
 
       this.logger.log(`Stock request ${uuid} resent via MAIL to ${to}`);
+
+      // Update status to sent
+      await this.stockRequestService.updateStatus(uuid, 'sent');
+
       return WsResponse.buildOkResponse('Report resent successfully');
     } catch (error) {
       this.logger.error('Error resending stock request', error);
