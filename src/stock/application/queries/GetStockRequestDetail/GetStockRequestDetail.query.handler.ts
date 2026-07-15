@@ -21,22 +21,21 @@ export class GetStockRequestDetailQueryHandler
     }
 
     // Round decimals to 2 places
-    const rounded = details.map((detail) => ({
-      ...detail,
-      a_solicitar:
+    for (const detail of details) {
+      detail.a_solicitar =
         detail.a_solicitar != null
           ? Math.round(Number(detail.a_solicitar) * 100) / 100
-          : null,
-      a_solicitar_festivo:
+          : 0;
+      detail.a_solicitar_festivo =
         detail.a_solicitar_festivo != null
           ? Math.round(Number(detail.a_solicitar_festivo) * 100) / 100
-          : null,
-      entradas:
+          : 0;
+      detail.entradas =
         detail.entradas != null
           ? Math.round(Number(detail.entradas) * 100) / 100
-          : null,
-    }));
+          : 0;
+    }
 
-    return WsResponse.buildOkResponse(rounded);
+    return WsResponse.buildOkResponse(details);
   }
 }
