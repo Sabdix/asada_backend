@@ -19,6 +19,24 @@ export class GetStockRequestDetailQueryHandler
     if (!details || details.length === 0) {
       return WsResponse.buildNotFoundResponse('STOCK_REQUEST_DETAIL NOT FOUND');
     }
-    return WsResponse.buildOkResponse(details);
+
+    // Round decimals to 2 places
+    const rounded = details.map((detail) => ({
+      ...detail,
+      a_solicitar:
+        detail.a_solicitar != null
+          ? Math.round(Number(detail.a_solicitar) * 100) / 100
+          : null,
+      a_solicitar_festivo:
+        detail.a_solicitar_festivo != null
+          ? Math.round(Number(detail.a_solicitar_festivo) * 100) / 100
+          : null,
+      entradas:
+        detail.entradas != null
+          ? Math.round(Number(detail.entradas) * 100) / 100
+          : null,
+    }));
+
+    return WsResponse.buildOkResponse(rounded);
   }
 }
