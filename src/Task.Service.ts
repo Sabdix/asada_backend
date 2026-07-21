@@ -68,8 +68,7 @@ export class TasksService {
     }
   }
 
-  @Cron(CronExpression.EVERY_2_HOURS)
-  // @Cron(CronExpression.EVERY_30_SECONDS)
+  @Cron('0 0 9,12,15,21 * * *')
   async handleNotifyUnsolvedCheckList() {
     this.logger.log(
       'Inicia ejecucion del cronjob de alertamiento de checklists',

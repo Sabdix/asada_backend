@@ -440,7 +440,19 @@ export class CheckListHistoryService {
     const now = new Date();
     const mexicoCityTime = toZonedTime(now, 'America/Mexico_City');
     const todayFormatted = format(mexicoCityTime, 'yyyy-MM-dd');
-    const endHourFrom = format(subMinutes(mexicoCityTime, 120), 'HH:mm');
+
+    // Execution schedule: 9, 12, 15, 21
+    // Gaps: 9→12 = 3h, 12→15 = 3h, 15→21 = 6h, 21→9(next day) = 12h
+    const currentHour = mexicoCityTime.getHours();
+    const scheduleGaps: Record<number, number> = {
+      9: 180,   // 3 hours since 21:00 previous day (but we only look at today)
+      12: 180,  // 3 hours since 09:00
+      15: 180,  // 3 hours since 12:00
+      21: 360,  // 6 hours since 15:00
+    };
+    const minutesBack = scheduleGaps[currentHour] ?? 180;
+
+    const endHourFrom = format(subMinutes(mexicoCityTime, minutesBack), 'HH:mm');
     const endHourTo = format(mexicoCityTime, 'HH:mm');
 
     this.logger.log(`now (UTC): ${now.toISOString()}`);
