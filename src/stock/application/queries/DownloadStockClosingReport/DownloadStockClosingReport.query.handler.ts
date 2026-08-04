@@ -2,16 +2,16 @@ import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { WsResponse } from 'src/common/dtos/WsResponse.dto';
 import * as ExcelJS from 'exceljs';
 import * as fs from 'fs/promises';
-import { DownloadStockReportQuery } from './DownloadStockReport.query';
+import { DownloadStockClosingReportQuery } from './DownloadStockClosingReport.query';
 import { StockHistoryService } from '../../services/StockHistory.service';
 import { BranchService } from 'src/branch/application/services/Branch.service';
 import { StockHistoryReportDto } from '../../dtos/StockHistoryReportDto';
 import { StockEntrancesService } from '../../services/StockEntrances.service';
 import { StockHistoryType } from 'src/stock/domain/enums/StockHistoryType.enum';
 
-@QueryHandler(DownloadStockReportQuery)
-export class DownloadStockReportQueryHandler
-  implements IQueryHandler<DownloadStockReportQuery>
+@QueryHandler(DownloadStockClosingReportQuery)
+export class DownloadStockClosingReportQueryHandler
+  implements IQueryHandler<DownloadStockClosingReportQuery>
 {
   constructor(
     private stockHistoryService: StockHistoryService,
@@ -20,23 +20,42 @@ export class DownloadStockReportQueryHandler
   ) {}
 
   async execute(
-    query: DownloadStockReportQuery,
-  ): Promise<WsResponse<string | Buffer>> {
+    query: DownloadStockClosingReportQuery,
+  ): Promise<WsResponse<Buffer | StockHistoryReportDto[] | string>> {
     try {
       const branch = await this.branchService.getBranchByUuid(query.branchId);
       if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
+      // Usar la misma fecha como inicio y fin del día
+      const date = new Date(query.date);
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+
       const stockHistories =
         await this.stockHistoryService.getBranchStockHistoryByRangeTime(
-          new Date(query.initialDate),
-          new Date(query.endDate),
+          startOfDay,
+          endOfDay,
           branch.uuid,
         );
 
       if (stockHistories.length === 0)
         return WsResponse.buildNotFoundResponse('STOCK_HISTORIES NOT FOUND');
 
-      // ── 1. Agrupar por producto (ya vienen ordenados por createdAt ASC) ──
+      // Filtrar solo registros de cierre vespertino
+      const cierreVespertino = stockHistories.filter((sh) => {
+        if (sh.type !== StockHistoryType.CIERRE) return false;
+        const checklistName = sh.checklist?.name?.toLowerCase() ?? '';
+        return checklistName.includes('vespertino');
+      });
+
+      if (cierreVespertino.length === 0)
+        return WsResponse.buildNotFoundResponse(
+          'NO CLOSING VESPERTINO RECORDS FOUND',
+        );
+
+      // Agrupar por producto para cálculo de diferencia
       const stockByProduct = new Map<string, typeof stockHistories>();
       for (const sh of stockHistories) {
         const key = sh.stock.product.name;
@@ -44,7 +63,7 @@ export class DownloadStockReportQueryHandler
         stockByProduct.get(key)!.push(sh);
       }
 
-      // ── 2. Helper: extraer turno del nombre del checklist ──
+      // Helper: extraer turno del nombre del checklist
       const getTurno = (
         checklistName: string,
       ): 'matutino' | 'vespertino' | null => {
@@ -54,12 +73,10 @@ export class DownloadStockReportQueryHandler
         return null;
       };
 
-      // ── 3. Construir DTOs ──
+      // Construir DTOs solo para cierre vespertino
       const data: StockHistoryReportDto[] = [];
 
-      for (const stockHistory of stockHistories) {
-        console.log(stockHistory);
-
+      for (const stockHistory of cierreVespertino) {
         const stockHistoryReport = new StockHistoryReportDto();
         stockHistoryReport.CantidadActual = stockHistory.quantity.toString();
         stockHistoryReport.CantidadPrevia =
@@ -86,63 +103,39 @@ export class DownloadStockReportQueryHandler
             stockHistory.stock.uuid,
           );
 
-        // ── 4. Calcular Diferencia solo en Apertura vs Cierre previo del turno complementario ──
+        // Calcular Diferencia: busca apertura vespertina previa del mismo producto
         let diferencia: number | string = '';
+        const siblings = stockByProduct.get(stockHistory.stock.product.name)!;
+        const currentIndex = siblings.indexOf(stockHistory);
 
-        if (
-          stockHistory.type === StockHistoryType.APERTURA &&
-          stockHistory.checklist?.name
-        ) {
-          const turnoActual = getTurno(stockHistory.checklist.name);
-          const siblings = stockByProduct.get(stockHistory.stock.product.name)!;
-          const currentIndex = siblings.indexOf(stockHistory);
-
-          // Apertura Matutina  ← busca Cierre Vespertino (día anterior)
-          // Apertura Vespertina ← busca Cierre Matutino  (mismo día)
-          const turnoEsperado =
-            turnoActual === 'matutino' ? 'vespertino' : 'matutino';
-
-          for (let i = currentIndex - 1; i >= 0; i--) {
-            const candidate = siblings[i];
-            if (
-              candidate.type === StockHistoryType.CIERRE &&
-              candidate.checklist?.name &&
-              getTurno(candidate.checklist.name) === turnoEsperado
-            ) {
-              diferencia = Math.abs(
-                Number(candidate.quantity) - Number(stockHistory.quantity),
-              );
-              break;
-            }
+        for (let i = currentIndex - 1; i >= 0; i--) {
+          const candidate = siblings[i];
+          if (
+            candidate.type === StockHistoryType.APERTURA &&
+            candidate.checklist?.name &&
+            getTurno(candidate.checklist.name) === 'vespertino'
+          ) {
+            diferencia = Math.abs(
+              Number(candidate.quantity) - Number(stockHistory.quantity),
+            );
+            break;
           }
         }
 
         stockHistoryReport.Diferencia = diferencia.toString();
-
-        // ── Columna Turno: combina tipo + turno del checklist ──
-        const turno = stockHistory.checklist?.name
-          ? getTurno(stockHistory.checklist.name)
-          : null;
-        const tipoLabel =
-          stockHistory.type === StockHistoryType.APERTURA
-            ? 'Apertura'
-            : 'Cierre';
-        const turnoLabel =
-          turno === 'matutino'
-            ? 'Matutino'
-            : turno === 'vespertino'
-              ? 'Vespertino'
-              : '';
-        stockHistoryReport.Turno = turnoLabel
-          ? `${tipoLabel} ${turnoLabel}`
-          : tipoLabel;
+        stockHistoryReport.Turno = 'Cierre Vespertino';
 
         data.push(stockHistoryReport);
       }
 
-      // ── 5. Generar Excel ──
+      // Responder según formato solicitado
+      if (query.format === 'JSON') {
+        return WsResponse.buildOkResponse(data);
+      }
+
+      // Generar Excel
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('Reporte de Bodega');
+      const worksheet = workbook.addWorksheet('Cierre Vespertino');
 
       worksheet.columns = [
         { header: 'Fecha', key: 'Fecha', width: 15 },
@@ -175,22 +168,26 @@ export class DownloadStockReportQueryHandler
           width: 15,
           style: { numFmt: '0.000' },
         },
-        { header: 'Entradas registradas en turno', key: 'Entradas', width: 30 },
+        {
+          header: 'Entradas registradas en turno',
+          key: 'Entradas',
+          width: 30,
+        },
       ];
 
       data.forEach((item) => worksheet.addRow(item));
 
-      const tempFilePath = 'temp_report.xlsx';
+      const tempFilePath = 'temp_closing_report.xlsx';
       await workbook.xlsx.writeFile(tempFilePath);
       const excelBuffer = await fs.readFile(tempFilePath);
       await fs.unlink(tempFilePath);
 
       return WsResponse.buildOkResponse(excelBuffer);
     } catch (error) {
-      console.error('Error al generar el reporte de Excel:', error);
+      console.error('Error al generar el reporte de cierre vespertino:', error);
       return WsResponse.buildErrorResponse(
         1,
-        'Error al generar el reporte de Excel.',
+        'Error al generar el reporte de cierre vespertino.',
         error,
       );
     }

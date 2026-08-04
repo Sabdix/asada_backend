@@ -20,6 +20,8 @@ import { Stock } from 'src/stock/domain/entities/Stock.entity';
 import { StockEntrances } from 'src/stock/domain/entities/StockEntrances.entity';
 import { StockHistory } from 'src/stock/domain/entities/StockHistory.entity';
 import { StockProduct } from 'src/stock/domain/entities/StockProduct.entity';
+import { StockRequest } from 'src/stock/domain/entities/StockRequest.entity';
+import { StockRequestDetail } from 'src/stock/domain/entities/StockRequestDetail.entity';
 import { Role } from 'src/user/domain/entities/Role.entity';
 import { User } from 'src/user/domain/entities/User.entity';
 import { WorkArea } from 'src/user/domain/entities/WorkArea.entity';
@@ -80,9 +82,11 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       Stock,
       StockHistory,
       StockEntrances,
-      WorkArea
+      StockRequest,
+      StockRequestDetail,
+      WorkArea,
     ],
     synchronize: false,
     logging: false,
-  })
+  }),
 };
