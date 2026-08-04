@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, ValidateIf } from 'class-validator';
 
 export class AssingCheckListRequestDto {
     @IsNotEmpty()
@@ -11,6 +11,7 @@ export class AssingCheckListRequestDto {
     endHour: string;
     @IsNotEmpty()
     specialEvent: boolean;
+    @ValidateIf((o) => o.specialEvent === true)
     @IsNotEmpty()
     eventDate: Date;
 }

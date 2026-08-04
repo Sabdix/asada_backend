@@ -31,7 +31,9 @@ export class AssignCheckListCommandHandler implements ICommandHandler<AssignChec
         
         const checkListArray = new Array<CheckListUserDto>
 
-        command.body.eventDate = startOfDay(command.body.eventDate)
+        if (command.body.eventDate) {
+            command.body.eventDate = startOfDay(command.body.eventDate)
+        }
 
         for (const weekDay of command.body.weekDay){
             const checkListUser = await this.checkListUserService.creteCheckList(command.body, weekDay, command.uuid)
