@@ -8,6 +8,7 @@ import { BranchService } from 'src/branch/application/services/Branch.service';
 import { StockHistoryReportDto } from '../../dtos/StockHistoryReportDto';
 import { StockEntrancesService } from '../../services/StockEntrances.service';
 import { StockHistoryType } from 'src/stock/domain/enums/StockHistoryType.enum';
+import { StockService } from '../../services/Stock.service';
 
 @QueryHandler(DownloadStockClosingReportQuery)
 export class DownloadStockClosingReportQueryHandler
@@ -17,6 +18,7 @@ export class DownloadStockClosingReportQueryHandler
     private stockHistoryService: StockHistoryService,
     private branchService: BranchService,
     private stockEntranceService: StockEntrancesService,
+    private stockService: StockService,
   ) {}
 
   async execute(
@@ -26,13 +28,18 @@ export class DownloadStockClosingReportQueryHandler
       const branch = await this.branchService.getBranchByUuid(query.branchId);
       if (!branch) return WsResponse.buildNotFoundResponse('BRANCH NOT FOUND');
 
-      // Usar la misma fecha como inicio y fin del día
       const date = new Date(query.date);
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
       const endOfDay = new Date(date);
       endOfDay.setHours(23, 59, 59, 999);
 
+      // Obtener todos los stocks de la branch (todos los productos configurados)
+      const allStocks = await this.stockService.getStockByBranch(branch.uuid);
+      if (allStocks.length === 0)
+        return WsResponse.buildNotFoundResponse('NO STOCKS FOUND FOR BRANCH');
+
+      // Obtener historial del día
       const stockHistories =
         await this.stockHistoryService.getBranchStockHistoryByRangeTime(
           startOfDay,
@@ -40,90 +47,77 @@ export class DownloadStockClosingReportQueryHandler
           branch.uuid,
         );
 
-      if (stockHistories.length === 0)
-        return WsResponse.buildNotFoundResponse('STOCK_HISTORIES NOT FOUND');
-
-      // Filtrar solo registros de cierre vespertino
-      const cierreVespertino = stockHistories.filter((sh) => {
-        if (sh.type !== StockHistoryType.CIERRE) return false;
-        const checklistName = sh.checklist?.name?.toLowerCase() ?? '';
-        return checklistName.includes('vespertino');
-      });
-
-      if (cierreVespertino.length === 0)
-        return WsResponse.buildNotFoundResponse(
-          'NO CLOSING VESPERTINO RECORDS FOUND',
-        );
-
-      // Agrupar por producto para cálculo de diferencia
-      const stockByProduct = new Map<string, typeof stockHistories>();
+      // Indexar cierres vespertinos por uuid_stock
+      const cierresVespertinos = new Map<string, typeof stockHistories[number]>();
       for (const sh of stockHistories) {
-        const key = sh.stock.product.name;
-        if (!stockByProduct.has(key)) stockByProduct.set(key, []);
-        stockByProduct.get(key)!.push(sh);
+        if (sh.type !== StockHistoryType.CIERRE) continue;
+        const checklistName = sh.checklist?.name?.toLowerCase() ?? '';
+        if (checklistName.includes('vespertino')) {
+          cierresVespertinos.set(sh.stock.uuid, sh);
+        }
       }
 
-      // Helper: extraer turno del nombre del checklist
-      const getTurno = (
-        checklistName: string,
-      ): 'matutino' | 'vespertino' | null => {
-        const lower = checklistName.toLowerCase();
-        if (lower.includes('matutino')) return 'matutino';
-        if (lower.includes('vespertino')) return 'vespertino';
-        return null;
-      };
-
-      // Construir DTOs solo para cierre vespertino
+      // Construir DTOs para todos los productos
       const data: StockHistoryReportDto[] = [];
 
-      for (const stockHistory of cierreVespertino) {
+      for (const stock of allStocks) {
         const stockHistoryReport = new StockHistoryReportDto();
-        stockHistoryReport.CantidadActual = stockHistory.quantity.toString();
-        stockHistoryReport.CantidadPrevia =
-          stockHistory.previousQuantity.toString();
-        stockHistoryReport.CantidadRequerida =
-          stockHistory.stock.requiredStock.toString();
-        stockHistoryReport.CantidadRequeridaFestivo =
-          stockHistory.stock.holidayRequiredStock.toString();
-        stockHistoryReport.Fecha = stockHistory.date.toString();
-        stockHistoryReport.Producto = stockHistory.stock.product.name;
-        stockHistoryReport.Revisor = `${stockHistory.user?.name} ${stockHistory.user?.last_name} ${stockHistory.user?.second_last_name}`;
-        stockHistoryReport.UnidadMedida =
-          stockHistory.stock.product.measurementUnit;
-        stockHistoryReport.Tipo = stockHistory.type;
-        stockHistoryReport.ASolicitar =
-          stockHistory.stock.requiredStock - stockHistory.quantity;
-        stockHistoryReport.ASolicitarFestivo =
-          stockHistory.stock.holidayRequiredStock - stockHistory.quantity;
-        stockHistoryReport.CheckList = stockHistory.checklist?.name ?? '';
-        stockHistoryReport.Entradas =
-          await this.stockEntranceService.getTodayEntrances(
-            stockHistory.stock.branch.uuid,
-            stockHistory.uuid_user,
-            stockHistory.stock.uuid,
+        const cierreVespertino = cierresVespertinos.get(stock.uuid);
+        const tieneCierreVespertino = !!cierreVespertino;
+
+        stockHistoryReport.UuidProducto = stock.product.uuid;
+        stockHistoryReport.Producto = stock.product.name;
+        stockHistoryReport.UnidadMedida = stock.product.measurementUnit;
+        stockHistoryReport.CantidadRequerida = stock.requiredStock.toString();
+        stockHistoryReport.CantidadRequeridaFestivo = stock.holidayRequiredStock.toString();
+        stockHistoryReport.Fecha = date.toISOString().split('T')[0];
+        stockHistoryReport.CierreVespertino = tieneCierreVespertino;
+
+        if (tieneCierreVespertino) {
+          stockHistoryReport.CantidadActual = cierreVespertino.quantity.toString();
+          stockHistoryReport.CantidadPrevia = cierreVespertino.previousQuantity.toString();
+          stockHistoryReport.Revisor = `${cierreVespertino.user?.name ?? ''} ${cierreVespertino.user?.last_name ?? ''} ${cierreVespertino.user?.second_last_name ?? ''}`.trim();
+          stockHistoryReport.Tipo = cierreVespertino.type;
+          stockHistoryReport.CheckList = cierreVespertino.checklist?.name ?? '';
+          stockHistoryReport.ASolicitar = stock.requiredStock - cierreVespertino.quantity;
+          stockHistoryReport.ASolicitarFestivo = stock.holidayRequiredStock - cierreVespertino.quantity;
+          stockHistoryReport.Entradas = await this.stockEntranceService.getTodayEntrances(
+            branch.uuid,
+            cierreVespertino.uuid_user,
+            stock.uuid,
           );
 
-        // Calcular Diferencia: busca apertura vespertina previa del mismo producto
-        let diferencia: number | string = '';
-        const siblings = stockByProduct.get(stockHistory.stock.product.name)!;
-        const currentIndex = siblings.indexOf(stockHistory);
-
-        for (let i = currentIndex - 1; i >= 0; i--) {
-          const candidate = siblings[i];
-          if (
-            candidate.type === StockHistoryType.APERTURA &&
-            candidate.checklist?.name &&
-            getTurno(candidate.checklist.name) === 'vespertino'
-          ) {
-            diferencia = Math.abs(
-              Number(candidate.quantity) - Number(stockHistory.quantity),
-            );
-            break;
+          // Calcular diferencia: apertura vespertina vs cierre vespertino
+          let diferencia: number | string = '';
+          const siblings = stockHistories.filter(
+            (sh) => sh.stock.uuid === stock.uuid,
+          );
+          for (let i = siblings.length - 1; i >= 0; i--) {
+            const candidate = siblings[i];
+            if (
+              candidate.type === StockHistoryType.APERTURA &&
+              candidate.checklist?.name?.toLowerCase().includes('vespertino')
+            ) {
+              diferencia = Math.abs(
+                Number(candidate.quantity) - Number(cierreVespertino.quantity),
+              );
+              break;
+            }
           }
+          stockHistoryReport.Diferencia = diferencia.toString();
+          stockHistoryReport.Turno = 'Cierre Vespertino';
+        } else {
+          stockHistoryReport.CantidadActual = '';
+          stockHistoryReport.CantidadPrevia = '';
+          stockHistoryReport.Revisor = '';
+          stockHistoryReport.Tipo = '';
+          stockHistoryReport.CheckList = '';
+          stockHistoryReport.ASolicitar = 0;
+          stockHistoryReport.ASolicitarFestivo = 0;
+          stockHistoryReport.Entradas = 0;
+          stockHistoryReport.Diferencia = '';
+          stockHistoryReport.Turno = '';
         }
-
-        stockHistoryReport.Diferencia = diferencia.toString();
-        stockHistoryReport.Turno = 'Cierre Vespertino';
 
         data.push(stockHistoryReport);
       }
@@ -142,37 +136,15 @@ export class DownloadStockClosingReportQueryHandler
         { header: 'Usuario capturo', key: 'Revisor', width: 30 },
         { header: 'Producto', key: 'Producto', width: 20 },
         { header: 'Stock Requerido', key: 'CantidadRequerida', width: 20 },
-        {
-          header: 'Stock Requerido (Festivo)',
-          key: 'CantidadRequeridaFestivo',
-          width: 25,
-        },
+        { header: 'Stock Requerido (Festivo)', key: 'CantidadRequeridaFestivo', width: 25 },
         { header: 'Cantidad Conteo Previo', key: 'CantidadPrevia', width: 15 },
         { header: 'Conteo en turno', key: 'CantidadActual', width: 15 },
         { header: 'Turno', key: 'Turno', width: 25 },
-        {
-          header: 'Diferencia',
-          key: 'Diferencia',
-          width: 15,
-          style: { numFmt: '0.000' },
-        },
-        {
-          header: 'A solicitar',
-          key: 'ASolicitar',
-          width: 15,
-          style: { numFmt: '0.000' },
-        },
-        {
-          header: 'A solicitar Festivo',
-          key: 'ASolicitarFestivo',
-          width: 15,
-          style: { numFmt: '0.000' },
-        },
-        {
-          header: 'Entradas registradas en turno',
-          key: 'Entradas',
-          width: 30,
-        },
+        { header: 'Cierre Vespertino', key: 'CierreVespertino', width: 18 },
+        { header: 'Diferencia', key: 'Diferencia', width: 15, style: { numFmt: '0.000' } },
+        { header: 'A solicitar', key: 'ASolicitar', width: 15, style: { numFmt: '0.000' } },
+        { header: 'A solicitar Festivo', key: 'ASolicitarFestivo', width: 15, style: { numFmt: '0.000' } },
+        { header: 'Entradas registradas en turno', key: 'Entradas', width: 30 },
       ];
 
       data.forEach((item) => worksheet.addRow(item));

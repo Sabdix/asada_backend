@@ -33,4 +33,6 @@ export class StockHistoryReportDto {
   Diferencia: string;
   @Expose()
   Turno: string;
+  @Expose()
+  CierreVespertino: boolean;
 }
