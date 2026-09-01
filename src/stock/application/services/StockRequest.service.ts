@@ -71,17 +71,27 @@ export class StockRequestService {
     offset: number,
     branchId?: string,
   ): Promise<[StockRequest[], number]> {
-    const where: any = {};
+    const queryBuilder = this.stockRequestRepository
+      .createQueryBuilder('sr')
+      .leftJoinAndSelect('branch', 'b', 'b.uuid = sr.uuid_branch')
+      .where('sr.deletedAt IS NULL')
+      .orderBy('sr.createdAt', 'DESC')
+      .take(size || 10)
+      .skip(offset || 0);
+
     if (branchId) {
-      where.uuid_branch = branchId;
+      queryBuilder.andWhere('sr.uuid_branch = :branchId', { branchId });
     }
 
-    return this.stockRequestRepository.findAndCount({
-      where,
-      order: { createdAt: 'DESC' },
-      take: size || 10,
-      skip: offset || 0,
+    const total = await queryBuilder.getCount();
+    const raw = await queryBuilder.getRawAndEntities();
+
+    const requests = raw.entities.map((entity, index) => {
+      entity.branchName = raw.raw[index]?.b_name ?? null;
+      return entity;
     });
+
+    return [requests, total];
   }
 
   async getDetailByRequestUuid(uuid: string) {

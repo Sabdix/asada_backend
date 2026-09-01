@@ -27,4 +27,7 @@ export class StockRequest extends EntityBase {
 
   @OneToMany(() => StockRequestDetail, (detail) => detail.stockRequest)
   details: StockRequestDetail[];
+
+  // No persistida: se llena en getAllPaginated con el nombre de la sucursal
+  branchName?: string | null;
 }
