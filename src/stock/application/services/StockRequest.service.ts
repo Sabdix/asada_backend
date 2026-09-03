@@ -73,7 +73,12 @@ export class StockRequestService {
   ): Promise<[StockRequest[], number]> {
     const queryBuilder = this.stockRequestRepository
       .createQueryBuilder('sr')
-      .leftJoinAndSelect('branch', 'b', 'b.uuid = sr.uuid_branch')
+      .leftJoin(
+        'branch',
+        'b',
+        'b.uuid = sr.uuid_branch COLLATE utf8mb3_unicode_ci AND b.deleted_at IS NULL',
+      )
+      .addSelect('b.name', 'b_name')
       .where('sr.deletedAt IS NULL')
       .orderBy('sr.createdAt', 'DESC')
       .take(size || 10)
