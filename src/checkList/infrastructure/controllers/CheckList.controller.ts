@@ -475,14 +475,40 @@ export class CheckListController {
     @Query('uuid_branch') uuidBranch: string,
     @Query('date') date: string,
     @Query('uuid_checklist') uuidCheckList: string,
+    @Res() res: Response,
   ) {
-    return this.queryBus.execute(
-      new GetCheckListAnswersByBranchDateAndCheckListQuery(
-        uuidBranch,
-        date,
-        uuidCheckList,
-      ),
-    );
+    try {
+      const result = await this.queryBus.execute(
+        new GetCheckListAnswersByBranchDateAndCheckListQuery(
+          uuidBranch,
+          date,
+          uuidCheckList,
+        ),
+      );
+
+      if (result?.code !== undefined && result.code !== 0) {
+        return res.status(HttpStatus.NOT_FOUND).json(result);
+      }
+
+      const buffer = result?.data ?? result;
+
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+      res.setHeader(
+        'Content-Disposition',
+        'attachment; filename=respuestas_checklist.xlsx',
+      );
+
+      res.status(HttpStatus.OK).send(buffer);
+    } catch (error) {
+      console.error('Error al generar el Excel:', error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send('Error al generar el reporte.');
+    }
   }
 }
+
 
