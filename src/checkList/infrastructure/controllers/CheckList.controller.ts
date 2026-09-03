@@ -64,6 +64,7 @@ import { GetCheckListItemsByCheckListQuery } from 'src/checkList/application/que
 import { GetCheckListQrByUuidQuery } from 'src/checkList/application/queries/getCheckListQrByUuid/getCheckListQrByUuid.query';
 import { GetCriteriaAnswerByCriteriaQuery } from 'src/checkList/application/queries/getCriteriaAnswerByCriteria/getCriteriaAnswerByCriteria.query';
 import { GetItemCriteriaByItemQuery } from 'src/checkList/application/queries/getItemCriteriaByItem/getItemCriteriaByItem.query';
+import { GetCheckListAnswersByBranchDateAndCheckListQuery } from 'src/checkList/application/queries/getCheckListAnswersByBranchDateAndCheckList/getCheckListAnswersByBranchDateAndCheckList.query';
 
 
 @Controller('checklist')
@@ -468,4 +469,20 @@ export class CheckListController {
       ),
     );
   }
+
+  @Get('answers/by-branch-date-checklist')
+  async getCheckListAnswersByBranchDateAndCheckList(
+    @Query('uuid_branch') uuidBranch: string,
+    @Query('date') date: string,
+    @Query('uuid_checklist') uuidCheckList: string,
+  ) {
+    return this.queryBus.execute(
+      new GetCheckListAnswersByBranchDateAndCheckListQuery(
+        uuidBranch,
+        date,
+        uuidCheckList,
+      ),
+    );
+  }
 }
+

@@ -70,4 +70,43 @@ export class CheckListUserAnswersService {
             .getMany();
     }
 
+    getCheckListUserAnswersByBranchDateAndCheckList(
+        uuid_branch: string,
+        date: string,
+        uuid_check_list: string
+    ) {
+        return this.chekListUserAnswersRepository
+            .createQueryBuilder('clua')
+            .innerJoinAndSelect('clua.check_list_history', 'clh')
+            .innerJoinAndSelect('clh.user', 'u')
+            .leftJoinAndSelect('u.branch', 'b')
+            .leftJoinAndSelect(
+                'clua.check_list_criteria_answer',
+                'clca',
+                'clca.deletedAt IS NOT NULL OR clca.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clca.checkListItemCriteria',
+                'clic',
+                'clic.deletedAt IS NOT NULL OR clic.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'clic.checkListItem',
+                'cli',
+                'cli.deletedAt IS NOT NULL OR cli.deletedAt IS NULL'
+            )
+            .leftJoinAndSelect(
+                'cli.check_list',
+                'cl',
+                'cl.deletedAt IS NOT NULL OR cl.deletedAt IS NULL'
+            )
+            .where('clua.deletedAt IS NULL')
+            .andWhere('clh.deletedAt IS NULL')
+            .andWhere('clh.date = :date', { date })
+            .andWhere('clh.uuid_check_list = :uuid_check_list', { uuid_check_list })
+            .andWhere('(u.uuid_branch = :uuid_branch OR b.uuid = :uuid_branch)', { uuid_branch })
+            .getMany();
+    }
+
 }
+

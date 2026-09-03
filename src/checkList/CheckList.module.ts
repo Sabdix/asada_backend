@@ -78,6 +78,7 @@ import { DeleteCheckListGroupCommandHandler } from "./application/commands/Delet
 import { GetCheckListGroupsQueryHandler } from "./application/queries/GetCheckListGroups/GetCheckListGroups.query.handler";
 import { GetCheckListGroupByUuidQueryHandler } from "./application/queries/GetCheckListGroupByUuid/GetCheckListGroupByUuid.query.handler";
 import { GetCheckListGroupQrByUuidQueryHandler } from "./application/queries/GetCheckListGroupQrByUuid/GetCheckListGroupQrByUuid.query.handler";
+import { GetCheckListAnswersByBranchDateAndCheckListQueryHandler } from "./application/queries/getCheckListAnswersByBranchDateAndCheckList/getCheckListAnswersByBranchDateAndCheckList.query.handler";
 
 @Module({
     imports: [
@@ -145,6 +146,7 @@ import { GetCheckListGroupQrByUuidQueryHandler } from "./application/queries/Get
         AnswerCheckListCommandHandler,
         getCheckListHistoryAnswersByHistoryQueryHandler,
         GetAssignedGroupedCheckListQueryHandler,
+        GetCheckListAnswersByBranchDateAndCheckListQueryHandler,
 
         CheckListGroupService,
         CheckListGroupRepository,
