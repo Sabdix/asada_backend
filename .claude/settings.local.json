@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__postman-full__getCollection",
+      "mcp__postman-full__getCollectionRequest",
+      "mcp__postman-full__getCollectionResponse",
+      "mcp__postman-full__createCollectionRequest",
+      "mcp__postman-full__createCollectionResponse",
+      "mcp__postman-full__createCollectionFolder",
+      "mcp__postman-full__patchCollection",
+      "mcp__postman-full__updateCollectionRequest",
+      "mcp__postman-full__updateCollectionResponse"
+    ]
+  }
+}

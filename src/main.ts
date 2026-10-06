@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { json, urlencoded } from 'express';
 import { createServer } from 'http';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import compression from 'compression';
 
 async function bootstrap() {
   const server = createServer({
@@ -29,6 +30,7 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
+  app.use(compression());
 
   await app.listen(configService.get<number>('PORT') ?? 3000);
 }
