@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { json, urlencoded } from 'express';
 import { createServer } from 'http';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import compression from 'compression';
+import * as compression from 'compression';
 
 async function bootstrap() {
   const server = createServer({
