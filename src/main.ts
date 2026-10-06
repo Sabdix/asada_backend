@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { json, urlencoded } from 'express';
 import { createServer } from 'http';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const server = createServer({
@@ -19,6 +20,16 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '200mb' }));
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('api');
+
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('ASADA API')
+    .setDescription('API de ASADA')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api/docs', app, document);
+
   await app.listen(configService.get<number>('PORT') ?? 3000);
 }
 bootstrap();

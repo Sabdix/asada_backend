@@ -13,6 +13,7 @@ import { RecipeModule } from './recipe/Recipe.module';
 import { StockModule } from './stock/Stock.module';
 import { NotificationModule } from './notification/notification.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { DocumentsModule } from './documents/Documents.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
     RecipeModule,
     StockModule,
     NotificationModule,
-    DashboardModule
+    DashboardModule,
+    DocumentsModule,
   ],
   controllers: [],
   providers: [TasksService],

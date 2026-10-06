@@ -22,6 +22,8 @@ import { StockProduct } from '../../stock/domain/entities/StockProduct.entity';
 import { Role } from '../../user/domain/entities/Role.entity';
 import { User } from '../../user/domain/entities/User.entity';
 import { WorkArea } from '../../user/domain/entities/WorkArea.entity';
+import { Folder } from '../../documents/entities/Folder.entity';
+import { Document } from '../../documents/entities/Document.entity';
 import { SnakeNamingStrategy } from './snake-naming.strategy';
 dotenv.config();
 
@@ -55,6 +57,8 @@ export const AppDataSource = new DataSource({
     Stock,
     StockHistory,
     WorkArea,
+    Folder,
+    Document,
   ],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   synchronize: false,

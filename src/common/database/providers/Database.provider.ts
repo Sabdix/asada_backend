@@ -25,6 +25,8 @@ import { StockRequestDetail } from 'src/stock/domain/entities/StockRequestDetail
 import { Role } from 'src/user/domain/entities/Role.entity';
 import { User } from 'src/user/domain/entities/User.entity';
 import { WorkArea } from 'src/user/domain/entities/WorkArea.entity';
+import { Folder } from 'src/documents/entities/Folder.entity';
+import { Document } from 'src/documents/entities/Document.entity';
 
 export const databaseProvider: TypeOrmModuleAsyncOptions = {
   /*type: 'mysql',
@@ -85,6 +87,8 @@ export const databaseProvider: TypeOrmModuleAsyncOptions = {
       StockRequest,
       StockRequestDetail,
       WorkArea,
+      Folder,
+      Document,
     ],
     synchronize: false,
     logging: false,
