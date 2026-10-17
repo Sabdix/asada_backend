@@ -165,10 +165,20 @@ export class TasksService {
     }
 
     const primaryManager = allManagers[0];
-    const ccManagers = allManagers
-      .slice(1)
-      .map((m) => m.mail_alertas)
-      .filter(Boolean)
+    const extraCcEmails = [
+      'lomelif683@gmail.com',
+      'victorservinaguirre00@gmail.com',
+      'Katibernal1995@gmail.com',
+      'Jesusgomezsalinas6@gmail.com',
+    ];
+
+    const ccManagers = [
+      ...new Set([
+        ...allManagers.slice(1).map((m) => m.mail_alertas),
+        ...extraCcEmails,
+      ]),
+    ]
+      .filter((email) => Boolean(email) && email !== primaryManager.mail_alertas)
       .join(',');
 
     this.logger.log(
