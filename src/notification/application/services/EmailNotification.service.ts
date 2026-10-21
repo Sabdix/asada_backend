@@ -7,35 +7,39 @@ export class EmailNotificationService implements INotificationService {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
     try {
       const cc = notification.cc
-        .replace(';', ',')
-        .split(',')
-        .map((cc) => {
-          return {
-            Email: cc,
-            Name: 'Manager',
-          };
-        });
+        ? notification.cc
+            .split(/[,;]+/)
+            .map((email) => email.trim())
+            .filter((email) => Boolean(email))
+            .map((email) => ({
+              Email: email,
+              Name: 'Manager',
+            }))
+        : undefined;
 
-      return await mailjet.post('send', { version: 'v3.1' }).request({
-        Messages: [
+      const message: any = {
+        From: {
+          Email: 'asada.pinon.cuentas.digitales@outlook.com',
+          Name: 'Asada de Piñon',
+        },
+        To: [
           {
-            From: {
-              Email: 'asada.pinon.cuentas.digitales@outlook.com',
-              Name: 'Asada de Piñon',
-            },
-            To: [
-              {
-                Email: notification.to,
-                Name: 'Empleado',
-              },
-            ],
-            Cc: cc,
-            Subject: notification.subject,
-            TemplateID: notification.templateId,
-            TemplateLanguage: true,
-            Variables: notification.dynamicTemplateData,
+            Email: notification.to,
+            Name: 'Empleado',
           },
         ],
+        Subject: notification.subject,
+        TemplateID: notification.templateId,
+        TemplateLanguage: true,
+        Variables: notification.dynamicTemplateData,
+      };
+
+      if (cc && cc.length > 0) {
+        message.Cc = cc;
+      }
+
+      return await mailjet.post('send', { version: 'v3.1' }).request({
+        Messages: [message],
       });
     } catch (ex) {
       console.error(ex);

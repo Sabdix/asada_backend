@@ -159,35 +159,36 @@ export class TasksService {
       }
     }
 
-    if (allManagers.length === 0) {
-      this.logger.warn('No se encontraron managers, se omite notificacion');
-      return;
-    }
-
-    const primaryManager = allManagers[0];
-    const extraCcEmails = [
+    // Enviar exclusivamente a la lista de destinatarios
+    const targetEmails = [
       'lomelif683@gmail.com',
       'victorservinaguirre00@gmail.com',
       'Katibernal1995@gmail.com',
       'Jesusgomezsalinas6@gmail.com',
-      'amakirx@gmail.com'
+      'amakirx@gmail.com',
+      'mendozagreciaemilce@gmail.com',
+      'lozanoenrique90@gmail.com',
+      'danielajustiniani131@gmail.com',
+      'spantoja@cinepolis.com',
+      'adrcoria@gmail.com',
     ];
 
-    const ccManagers = [
-      ...new Set([
-        ...extraCcEmails,
-      ]),
-    ]
-      .filter((email) => Boolean(email) && email !== primaryManager.mail_alertas)
-      .join(',');
+    const uniqueEmails = [...new Set(targetEmails)].filter(Boolean);
+    if (uniqueEmails.length === 0) {
+      this.logger.warn('No hay correos destinatarios configurados');
+      return;
+    }
+
+    const [toEmail, ...ccList] = uniqueEmails;
+    const ccEmails = ccList.join(',');
 
     this.logger.log(
-      `Enviando correo unico - To: ${primaryManager.mail_alertas}, CC: ${ccManagers || 'ninguno'}, Total pendientes: ${totalPending}`,
+      `Enviando correo unico - To: ${toEmail}, CC: ${ccEmails || 'ninguno'}, Total pendientes: ${totalPending}`,
     );
 
     await this.sendSummaryMail(
-      primaryManager.mail_alertas,
-      ccManagers,
+      toEmail,
+      ccEmails,
       branches,
       totalPending,
     );
