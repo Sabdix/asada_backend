@@ -18,6 +18,10 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import * as fs from 'fs';
+import * as path from 'path';
+import { randomUUID } from 'node:crypto';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -31,6 +35,18 @@ import { CreateFolderDto, RenameFolderDto } from './dto/Folder.dto';
 import { UpdateDocumentDto, SearchDocumentsDto } from './dto/Document.dto';
 import { JwtAuthGuard } from 'src/auth/infrastructure/guards/JwtAuth.guard';
 import { CurrentUser } from 'src/auth/infrastructure/decorators/CurrentUser.decorator';
+import { getDocumentsStoragePath } from './storage-path';
+
+const MAX_UPLOAD_SIZE_BYTES = Number(
+  process.env.MAX_UPLOAD_SIZE_BYTES ?? 2 * 1024 ** 3,
+);
+
+if (
+  !Number.isSafeInteger(MAX_UPLOAD_SIZE_BYTES) ||
+  MAX_UPLOAD_SIZE_BYTES <= 0
+) {
+  throw new Error('MAX_UPLOAD_SIZE_BYTES debe ser un entero positivo y seguro');
+}
 
 @ApiTags('documents')
 @ApiBearerAuth()
@@ -77,10 +93,25 @@ export class DocumentsController {
     return await this.documentsService.search(searchDto);
   }
 
-  // --- ARCHIVOS / DOCUMENTOS ---
+  // --- ARCHIVOS / DOCUMENTOS ---1
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_request, _file, callback) => {
+          const destination = getDocumentsStoragePath();
+          fs.mkdir(destination, { recursive: true }, (error) =>
+            callback(error, destination),
+          );
+        },
+        filename: (_request, file, callback) => {
+          callback(null, `${randomUUID()}${path.extname(file.originalname)}`);
+        },
+      }),
+      limits: { fileSize: MAX_UPLOAD_SIZE_BYTES },
+    }),
+  )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -96,7 +127,7 @@ export class DocumentsController {
   async uploadFile(
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addMaxSizeValidator({ maxSize: 50 * 1024 * 1024 }) // 50MB máximo configurable
+        .addMaxSizeValidator({ maxSize: MAX_UPLOAD_SIZE_BYTES })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),

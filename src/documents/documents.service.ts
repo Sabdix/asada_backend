@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,7 +13,7 @@ import { CreateFolderDto, RenameFolderDto } from './dto/Folder.dto';
 import { UpdateDocumentDto, SearchDocumentsDto } from './dto/Document.dto';
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomUUID } from 'node:crypto';
+import { getDocumentsStoragePath } from './storage-path';
 
 @Injectable()
 export class DocumentsService {
@@ -29,10 +28,9 @@ export class DocumentsService {
     private readonly configService: ConfigService,
   ) {
     // Almacenamiento local seguro fuera de la carpeta pública
-    const customPath = this.configService.get<string>('STORAGE_PATH');
-    this.storagePath = customPath
-      ? path.resolve(customPath)
-      : path.resolve(process.cwd(), '../secure_storage');
+    this.storagePath = getDocumentsStoragePath(
+      this.configService.get<string>('STORAGE_PATH'),
+    );
 
     this.ensureStorageDirectoryExists();
   }
@@ -186,32 +184,32 @@ export class DocumentsService {
       throw new BadRequestException('No se ha proporcionado ningún archivo');
     }
 
-    if (folderId) {
-      await this.getFolderById(folderId);
-    }
-
-    const fileExtension = path.extname(file.originalname);
-    const storedFilename = `${randomUUID()}${fileExtension}`;
-    const destinationPath = path.join(this.storagePath, storedFilename);
-
     try {
-      await fs.promises.writeFile(destinationPath, file.buffer);
-    } catch (err: any) {
-      this.logger.error(`Error guardando archivo físico: ${err?.message || err}`);
-      throw new InternalServerErrorException('Error al guardar el archivo en almacenamiento físico');
+      if (folderId) {
+        await this.getFolderById(folderId);
+      }
+
+      const document = this.documentRepository.create({
+        originalName: file.originalname,
+        storedFilename: file.filename,
+        mimeType: file.mimetype,
+        size: file.size,
+        folderId: folderId || null,
+        metadata: metadata || {},
+        uploadedBy: userId || null,
+      });
+
+      return await this.documentRepository.save(document);
+    } catch (error) {
+      try {
+        await fs.promises.unlink(file.path);
+      } catch (cleanupError) {
+        if ((cleanupError as NodeJS.ErrnoException).code !== 'ENOENT') {
+          this.logger.error(`Error eliminando carga fallida: ${cleanupError}`);
+        }
+      }
+      throw error;
     }
-
-    const document = this.documentRepository.create({
-      originalName: file.originalname,
-      storedFilename,
-      mimeType: file.mimetype,
-      size: file.size,
-      folderId: folderId || null,
-      metadata: metadata || {},
-      uploadedBy: userId || null,
-    });
-
-    return await this.documentRepository.save(document);
   }
 
   async getDocumentById(id: string): Promise<Document> {
