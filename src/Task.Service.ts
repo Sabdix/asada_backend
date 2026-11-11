@@ -171,6 +171,8 @@ export class TasksService {
       'danielajustiniani131@gmail.com',
       'spantoja@cinepolis.com',
       'adrcoria@gmail.com',
+      'qfbadrianapa@hotmail.com',
+      'mendozaanestdr@hotmail.com'
     ];
 
     const uniqueEmails = [...new Set(targetEmails)].filter(Boolean);
